@@ -1,1 +1,122 @@
 // Protofile for the users-service
+
+syntax = "proto3";
+
+package userproto;
+
+/*
+Everything the usersservice should provide.
+*/
+service users {
+    
+    /*
+    CreateUser will create user.
+    */
+    rpc createUser(CreateUserRequest) returns (CreatedUserResponse) {}
+
+    /*
+    FindUser will find a user by his userid.
+    */
+    rpc findUser(FindUser) returns (FindUserResponse) {}
+
+    /*
+    DeleteUser will delete a user by his userid.
+    */
+    rpc deleteUser(DeleteUserRequest) returns (DeleteUserResponse) {}
+
+    /*
+    changeUser will change a users entry in the service.
+    */
+    rpc changeUser(ChangeUserRequest) returns (ChangeUserResponse) {}
+
+    /*
+    GetAllUsers will return a list with all users.
+    */
+    rpc receiveAndSendAllUsers(AllUsersRequest) returns (AllUsersResponse) {}
+}
+
+message UserMessageResponse {
+    int32 userid = 1;
+    string name = 2; 
+}
+
+message UserMessageRequest {
+    int32 userid = 1;
+}
+
+/*
+UserMessageRequestByName is message to send the users name to the service
+*/
+message UserMessageRequestByName {
+    string name = 1;
+}
+
+/*
+Create a user request.
+*/
+message CreatedUserResponse {
+    string name = 1;
+}
+
+/*
+Create a user response.
+*/
+message CreatedUserResponse {
+    UserMessageResponse userid = 1;
+}
+
+/*
+Request to delete a user.
+*/
+message DeleteUserRequest {
+    UserMessageRequest userid = 1;
+}
+
+/*
+Response on a deleteuser request.
+*/
+message DeleteUserResponse {
+    bool isDeleted = 1;
+}
+
+/*
+FindUserRequest is the request to find a user by his userid message
+*/
+message FindUserRequest {
+    UserMessageRequest find = 1;
+}
+
+/*
+FindUserByNameRequest is the request to find a user by his username.
+*/
+message FindUserByNameRequest {
+    UserMessageRequestByName find = 1;
+}
+
+/*
+FindUserResponse is the response on a find user request.
+*/
+message FindUserResponse {
+    UserMessageResponse find = 1;
+}
+
+/*
+ChangeUserRequest will be a request to change a user.
+*/
+message ChangeUserRequest {
+    UserMessageResponse change = 1;
+}
+
+/*
+AllUsersRequest will be a request for all users.
+*/
+message AllUsersRequest {
+
+}
+
+/*
+AllUsersResponse will by a list of all users.
+*/
+message AllUsersResponse {
+    repeated UserMessageResponse users = 1;
+}
