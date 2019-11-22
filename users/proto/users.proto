@@ -1,5 +1,3 @@
-// Protofile for the users-service
-
 syntax = "proto3";
 
 package userproto;
@@ -17,7 +15,12 @@ service users {
     /*
     FindUser will find a user by his userid.
     */
-    rpc findUser(FindUser) returns (FindUserResponse) {}
+    rpc findUser(FindUserRequest) returns (FindUserResponse) {}
+
+    /*
+    FindUserByName will find a user by his name.
+    */
+    rpc findUserByName(FindUserByNameRequest) returns (FindUserResponse) {}
 
     /*
     DeleteUser will delete a user by his userid.
@@ -54,7 +57,7 @@ message UserMessageRequestByName {
 /*
 Create a user request.
 */
-message CreatedUserResponse {
+message CreateUserRequest {
     string name = 1;
 }
 
@@ -105,6 +108,13 @@ ChangeUserRequest will be a request to change a user.
 */
 message ChangeUserRequest {
     UserMessageResponse change = 1;
+}
+
+/*
+ChangeUserRequest will be a request to change a user.
+*/
+message ChangeUserResponse {
+    bool change = 1;
 }
 
 /*
