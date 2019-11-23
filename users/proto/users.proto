@@ -65,14 +65,14 @@ message CreateUserRequest {
 Create a user response.
 */
 message CreatedUserResponse {
-    UserMessageResponse userid = 1;
+    UserMessageResponse user = 1;
 }
 
 /*
 Request to delete a user.
 */
 message DeleteUserRequest {
-    UserMessageRequest userid = 1;
+    UserMessageRequest user = 1;
 }
 
 /*
@@ -86,21 +86,21 @@ message DeleteUserResponse {
 FindUserRequest is the request to find a user by his userid message
 */
 message FindUserRequest {
-    UserMessageRequest find = 1;
+    UserMessageRequest user = 1;
 }
 
 /*
 FindUserByNameRequest is the request to find a user by his username.
 */
 message FindUserByNameRequest {
-    UserMessageRequestByName find = 1;
+    UserMessageRequestByName user = 1;
 }
 
 /*
 FindUserResponse is the response on a find user request.
 */
 message FindUserResponse {
-    UserMessageResponse find = 1;
+    UserMessageResponse user = 1;
 }
 
 /*
