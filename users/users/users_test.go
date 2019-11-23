@@ -140,6 +140,55 @@ func TestAddChangeAndGetInfo(t *testing.T) {
 	if beforeChange != FirstName {
 		t.Errorf("Beforename is wrong got: %s wanted %s", beforeChange, FirstName)
 	} else if AfterChange != NewName {
+		t.Errorf("Aftername is wrong got: %s wanted %s", AfterChange, FirstName)
+	} else if AfterChange == NewName && !chresponse.Change {
+		t.Errorf("Name was changed. Found by getinformationfrommap but did not send the correct response.")
+	} else {
+		t.Log("Create a user and change him later on is fine.")
+	}
+}
+
+/*
+TestChange will create a user and later on delete him.
+*/
+func TestAddandDeleteAUser(t *testing.T) {
+	TestName := "Tim"
+	service := users.CreateNewUserHandleInstance()
+	responseInsert := protoo.CreatedUserResponse{User: &protoo.UserMessageResponse{}}
+	service.CreateUser(nil, &protoo.CreateUserRequest{Name: TestName}, &responseInsert)
+	id := responseInsert.User.Userid
+	deleteResponse := protoo.DeleteUserResponse{}
+	beforeChange := service.GetInformationFromMap(responseInsert.User.Userid).(string)
+	service.DeleteUser(nil, &protoo.DeleteUserRequest{User: &protoo.UserMessageRequest{Userid: id}}, &deleteResponse)
+	AfterChange := service.GetInformationFromMap(responseInsert.User.Userid).(string)
+
+	if beforeChange != TestName {
+		t.Errorf("Cant even set a user -> got: %s wanted %s", beforeChange, TestName)
+	} else if AfterChange == "" && !deleteResponse.IsDeleted {
+		t.Errorf("User was deleted. Found by getinformationfrommap but did not send the correct response.")
+	} else {
+		t.Log("Create a user and change him later on is fine.")
+	}
+}
+
+/*
+TestChange will create bunch of users and read them later on all from the service.
+*/
+func TestAddMultipleUsersAndReadAllOfThem(t *testing.T) {
+	FirstName := "Tim"
+	NewName := "Paulanius"
+	service := users.CreateNewUserHandleInstance()
+	responseInsert := protoo.CreatedUserResponse{User: &protoo.UserMessageResponse{}}
+	service.CreateUser(nil, &protoo.CreateUserRequest{Name: FirstName}, &responseInsert)
+	id := responseInsert.User.Userid
+	chresponse := protoo.ChangeUserResponse{}
+	beforeChange := service.GetInformationFromMap(responseInsert.User.Userid).(string)
+	service.ChangeUser(nil, &protoo.ChangeUserRequest{Change: &protoo.UserMessageResponse{Userid: id, Name: NewName}}, &chresponse)
+	AfterChange := service.GetInformationFromMap(responseInsert.User.Userid).(string)
+
+	if beforeChange != FirstName {
+		t.Errorf("Beforename is wrong got: %s wanted %s", beforeChange, FirstName)
+	} else if AfterChange != NewName {
 		t.Errorf("Aftername is wrong got: %s wanted %s", beforeChange, FirstName)
 	} else if AfterChange == NewName && !chresponse.Change {
 		t.Errorf("Name was changed. Found by getinformationfrommap but did not send the correct response.")

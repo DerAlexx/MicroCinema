@@ -111,12 +111,14 @@ func (u *UserHandlerService) CreateUser(context context.Context, request *proto.
 DeleteUser will delete a user from the map.
 */
 func (u *UserHandlerService) DeleteUser(context context.Context, request *proto.DeleteUserRequest, response *proto.DeleteUserResponse) error {
-	if u.containsID(request.GetUser().GetUserid()) {
-		delete(*u.getUserMap(), request.GetUser().GetUserid())
+	if u.containsID(request.User.Userid) {
+		//u.user[request.User.Userid] = nil
+		delete(*u.getUserMap(), request.User.Userid)
+		//response.IsDeleted = true
 		return nil
 		//TODO Missing check whether or not a users has reservations left of. --> Delete the Reservations.
 	}
-	return fmt.Errorf("cannot delete user with the id %d", request.GetUser().GetUserid())
+	return fmt.Errorf("cannot delete user with the id %d", request.User.Userid)
 }
 
 /*
