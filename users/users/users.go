@@ -72,6 +72,15 @@ type UserHandlerService struct {
 }
 
 /*
+CreateNewUserHandleInstance will create a new service for the user management.
+*/
+func CreateNewUserHandleInstance() *UserHandlerService {
+	return &UserHandlerService{
+		user: make(map[int32]*userS),
+	}
+}
+
+/*
 appendANewUser will add a new user in the datastructure.
 */
 func (u *UserHandlerService) appendANewUser(id int32, user *userS) bool {
@@ -111,24 +120,23 @@ func (u *UserHandlerService) DeleteUser(context context.Context, request *proto.
 }
 
 /*
-getInformationFromMap will find a users information by a given parameter for example a string (Name) or his id (int32)
+GetInformationFromMap will find a users information by a given parameter for example a string (Name) or his id (int32)
 */
-func (u *UserHandlerService) getInformationFromMap(value interface{}) interface{} {
+func (u *UserHandlerService) GetInformationFromMap(value interface{}) interface{} {
 	switch value.(type) {
 	case string:
 		for k, v := range *u.getUserMap() {
-			if v == value {
+			if v.getName() == value.(string) {
 				return k
 			}
 		}
-		return ""
+		return int32(-1)
 	case int32:
-		for k, v := range *u.getUserMap() {
-			if k == value {
-				return v
-			}
+		name := ((*u.getUserMap())[value.(int32)]).getName()
+		if name != "" {
+			return name
 		}
-		return -1
+		return ""
 	}
 	return nil
 }
@@ -138,7 +146,7 @@ FindUser will find a user in the datastructure. (For finding a user by his Name 
 */
 func (u *UserHandlerService) FindUser(context context.Context, in *proto.FindUserRequest, out *proto.FindUserResponse) error {
 	if u.containsID(in.GetUser().GetUserid()) {
-		name := u.getInformationFromMap(in.GetUser().GetUserid()).(string)
+		name := u.GetInformationFromMap(in.GetUser().GetUserid()).(string)
 		if name != "" {
 			out.User.Userid = in.GetUser().GetUserid()
 			out.User.Name = name
@@ -153,7 +161,7 @@ FindUserByName will find a user by his Name and not by his ID. (For finding a us
 */
 func (u *UserHandlerService) FindUserByName(context context.Context, in *proto.FindUserByNameRequest, out *proto.FindUserResponse) error {
 	if in.User.GetName() != "" {
-		userID := u.getInformationFromMap(in.GetUser().GetName()).(int32)
+		userID := u.GetInformationFromMap(in.GetUser().GetName()).(int32)
 		if userID != -1 {
 			out.User.Userid = userID
 			out.User.Name = in.User.GetName()
