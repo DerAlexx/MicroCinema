@@ -1,1 +1,86 @@
-// Proto Cinema File - ProtoBuffer
+syntax = "proto3";
+package proto;
+
+service Cinema {
+    rpc Create (CreateCinemaRequest) returns (CreateCinemaResponse) {
+    }
+
+    rpc Delete (DeleteCinemaRequest) returns (DeleteCinemaResponse) {
+    }
+
+    rpc Reservation (ReservationRequest) returns (ReservationResponse) {
+    }
+
+    rpc Storno (StornoRequest) returns (StornoResponse) {
+    }
+
+    rpc AvailableSeats (AvailableSeatsRequest) returns (AvailableSeatsResponse) {
+    }
+
+}
+
+message CinemaMessage {
+    // Name of the cinema.
+    string name = 1;
+
+    // Cinema Id
+    int64 id = 2;
+
+    // Data for occupation of seats
+    repeated SeatMessage seats = 3;
+
+    int64 rownumber = 4;
+
+    int64 columnnumber = 5;
+}
+
+message SeatMessage {
+    int64 row = 4;
+    int64 column = 5;
+    bool reserved = 6;
+}
+
+message CreateCinemaRequest {
+    string name = 1;
+    int64 row = 4;
+    int64 column = 5;
+}
+
+message CreateCinemaResponse {
+    CinemaMessage data = 7;
+}
+
+message DeleteCinemaRequest {
+    int64 id = 2;
+}
+
+message DeleteCinemaResponse {
+    bool success = 8;
+}
+
+message ReservationRequest {
+    int64 id = 2;
+    repeated SeatMessage seats = 9;
+}
+
+message ReservationResponse {
+    repeated SeatMessage seats = 9;
+}
+
+message StornoRequest {
+    int64 id = 2;
+    repeated SeatMessage seats = 9;
+}
+
+message StornoResponse {
+    repeated SeatMessage seats = 9;
+}
+
+message AvailableSeatsRequest {
+    int64 id = 2;
+    repeated SeatMessage seats = 9;
+}
+
+message AvailableSeatsResponse {
+    bool available = 10;
+}
