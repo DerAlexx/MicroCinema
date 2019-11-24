@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"math/rand"
+	"sync"
 	"time"
 
 	proto "github.com/ob-vss-ws19/blatt-4-pwn2own/users/proto"
@@ -69,6 +70,7 @@ UserHandlerService will be the representation of our service.
 type UserHandlerService struct {
 	user         map[int32]*userS
 	dependencies []interface{}
+	mutex        *sync.Mutex
 }
 
 /*
@@ -76,7 +78,8 @@ CreateNewUserHandleInstance will create a new service for the user management.
 */
 func CreateNewUserHandleInstance() *UserHandlerService {
 	return &UserHandlerService{
-		user: make(map[int32]*userS),
+		user:  make(map[int32]*userS),
+		mutex: &sync.Mutex{},
 	}
 }
 
@@ -98,12 +101,15 @@ return a response.
 func (u *UserHandlerService) CreateUser(context context.Context, request *proto.CreateUserRequest, response *proto.CreatedUserResponse) error {
 	if request.GetName() != "" {
 		uid := u.getRandomUserID(maxuserid)
+		u.mutex.Lock()
 		if u.appendANewUser(uid, &userS{name: request.GetName()}) {
 			response.User.Name = request.GetName()
 			response.User.Userid = uid
+			u.mutex.Unlock()
 			return nil
 		}
 	}
+	u.mutex.Unlock()
 	return fmt.Errorf("cannot create user with name: %s", request.GetName())
 }
 
@@ -112,9 +118,10 @@ DeleteUser will delete a user from the map.
 */
 func (u *UserHandlerService) DeleteUser(context context.Context, request *proto.DeleteUserRequest, response *proto.DeleteUserResponse) error {
 	if u.containsID(request.User.Userid) {
-		//u.user[request.User.Userid] = nil
-		delete(*u.getUserMap(), request.User.Userid)
-		//response.IsDeleted = true
+		u.mutex.Lock()
+		delete(u.user, request.User.Userid)
+		response.IsDeleted = true
+		u.mutex.Unlock()
 		return nil
 		//TODO Missing check whether or not a users has reservations left of. --> Delete the Reservations.
 	}
@@ -127,14 +134,19 @@ GetInformationFromMap will find a users information by a given parameter for exa
 func (u *UserHandlerService) GetInformationFromMap(value interface{}) interface{} {
 	switch value.(type) {
 	case string:
+		u.mutex.Lock()
 		for k, v := range *u.getUserMap() {
 			if v.getName() == value.(string) {
+				u.mutex.Unlock()
 				return k
 			}
 		}
+		u.mutex.Unlock()
 		return int32(-1)
 	case int32:
+		u.mutex.Lock()
 		name := ((*u.getUserMap())[value.(int32)]).getName()
+		u.mutex.Unlock()
 		if name != "" {
 			return name
 		}
@@ -179,7 +191,9 @@ change will change a user in the datastructure.
 */
 func (u *UserHandlerService) change(id int32, pname string) bool {
 	if u.containsID(id) {
+		u.mutex.Lock()
 		(*u.getUserMap())[id] = &userS{name: pname}
+		u.mutex.Unlock()
 		return true
 	}
 	return false
