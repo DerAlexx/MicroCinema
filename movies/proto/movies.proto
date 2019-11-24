@@ -1,1 +1,19 @@
 // Proto for movies
+
+syntax = "proto3";
+
+package movieproto;
+
+/*
+Everything the movies need.
+*/
+
+service movies {
+    // Create a movie.
+    rpc CreateMovie(CreateMovieRequest) returns (CreatedMovieResponse) {};
+
+    // Change a movie.
+    rpc ChangeMovie(ChangeMovieRequest) returns (ChangeMovieResponse) {};
+
+
+}
