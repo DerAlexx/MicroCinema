@@ -14,7 +14,13 @@ service Cinema {
     rpc Storno (StornoRequest) returns (StornoResponse) {
     }
 
-    rpc AvailableSeats (AvailableSeatsRequest) returns (AvailableSeatsResponse) {
+    rpc CheckSeats (CheckSeatsRequest) returns (CheckSeatsResponse) {
+    }
+
+    rpc FreeSeats (FreeSeatsRequest) returns (FreeSeatsResponse) {
+    }
+
+    rpc Reset (ResetRequest) returns (ResetResponse) {
     }
 
 }
@@ -61,13 +67,28 @@ message StornoResponse {
     bool answer = 1;
 }
 
-//------------------------------------------------------------
-
-message AvailableSeatsRequest {
+message ResetRequest {
     int64 id = 1;
-    repeated SeatMessage seats = 2;
 }
 
-message AvailableSeatsResponse {
+message ResetResponse {
+    bool answer = 1;
+}
+
+
+message CheckSeatsRequest {
+    int64 id = 1;
+    repeated SeatMessage seatcheck = 2;
+}
+
+message CheckSeatsResponse {
     bool available = 1;
+}
+
+message FreeSeatsRequest {
+    int64 id = 1;
+}
+
+message FreeSeatsResponse {
+    repeated SeatMessage freeseats = 1;
 }

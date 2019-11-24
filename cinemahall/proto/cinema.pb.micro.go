@@ -38,7 +38,9 @@ type CinemaService interface {
 	Delete(ctx context.Context, in *DeleteCinemaRequest, opts ...client.CallOption) (*DeleteCinemaResponse, error)
 	Reservation(ctx context.Context, in *ReservationRequest, opts ...client.CallOption) (*ReservationResponse, error)
 	Storno(ctx context.Context, in *StornoRequest, opts ...client.CallOption) (*StornoResponse, error)
-	AvailableSeats(ctx context.Context, in *AvailableSeatsRequest, opts ...client.CallOption) (*AvailableSeatsResponse, error)
+	CheckSeats(ctx context.Context, in *CheckSeatsRequest, opts ...client.CallOption) (*CheckSeatsResponse, error)
+	FreeSeats(ctx context.Context, in *FreeSeatsRequest, opts ...client.CallOption) (*FreeSeatsResponse, error)
+	Reset(ctx context.Context, in *ResetRequest, opts ...client.CallOption) (*ResetResponse, error)
 }
 
 type cinemaService struct {
@@ -99,9 +101,29 @@ func (c *cinemaService) Storno(ctx context.Context, in *StornoRequest, opts ...c
 	return out, nil
 }
 
-func (c *cinemaService) AvailableSeats(ctx context.Context, in *AvailableSeatsRequest, opts ...client.CallOption) (*AvailableSeatsResponse, error) {
-	req := c.c.NewRequest(c.name, "Cinema.AvailableSeats", in)
-	out := new(AvailableSeatsResponse)
+func (c *cinemaService) CheckSeats(ctx context.Context, in *CheckSeatsRequest, opts ...client.CallOption) (*CheckSeatsResponse, error) {
+	req := c.c.NewRequest(c.name, "Cinema.CheckSeats", in)
+	out := new(CheckSeatsResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *cinemaService) FreeSeats(ctx context.Context, in *FreeSeatsRequest, opts ...client.CallOption) (*FreeSeatsResponse, error) {
+	req := c.c.NewRequest(c.name, "Cinema.FreeSeats", in)
+	out := new(FreeSeatsResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *cinemaService) Reset(ctx context.Context, in *ResetRequest, opts ...client.CallOption) (*ResetResponse, error) {
+	req := c.c.NewRequest(c.name, "Cinema.Reset", in)
+	out := new(ResetResponse)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
 		return nil, err
@@ -116,7 +138,9 @@ type CinemaHandler interface {
 	Delete(context.Context, *DeleteCinemaRequest, *DeleteCinemaResponse) error
 	Reservation(context.Context, *ReservationRequest, *ReservationResponse) error
 	Storno(context.Context, *StornoRequest, *StornoResponse) error
-	AvailableSeats(context.Context, *AvailableSeatsRequest, *AvailableSeatsResponse) error
+	CheckSeats(context.Context, *CheckSeatsRequest, *CheckSeatsResponse) error
+	FreeSeats(context.Context, *FreeSeatsRequest, *FreeSeatsResponse) error
+	Reset(context.Context, *ResetRequest, *ResetResponse) error
 }
 
 func RegisterCinemaHandler(s server.Server, hdlr CinemaHandler, opts ...server.HandlerOption) error {
@@ -125,7 +149,9 @@ func RegisterCinemaHandler(s server.Server, hdlr CinemaHandler, opts ...server.H
 		Delete(ctx context.Context, in *DeleteCinemaRequest, out *DeleteCinemaResponse) error
 		Reservation(ctx context.Context, in *ReservationRequest, out *ReservationResponse) error
 		Storno(ctx context.Context, in *StornoRequest, out *StornoResponse) error
-		AvailableSeats(ctx context.Context, in *AvailableSeatsRequest, out *AvailableSeatsResponse) error
+		CheckSeats(ctx context.Context, in *CheckSeatsRequest, out *CheckSeatsResponse) error
+		FreeSeats(ctx context.Context, in *FreeSeatsRequest, out *FreeSeatsResponse) error
+		Reset(ctx context.Context, in *ResetRequest, out *ResetResponse) error
 	}
 	type Cinema struct {
 		cinema
@@ -154,6 +180,14 @@ func (h *cinemaHandler) Storno(ctx context.Context, in *StornoRequest, out *Stor
 	return h.CinemaHandler.Storno(ctx, in, out)
 }
 
-func (h *cinemaHandler) AvailableSeats(ctx context.Context, in *AvailableSeatsRequest, out *AvailableSeatsResponse) error {
-	return h.CinemaHandler.AvailableSeats(ctx, in, out)
+func (h *cinemaHandler) CheckSeats(ctx context.Context, in *CheckSeatsRequest, out *CheckSeatsResponse) error {
+	return h.CinemaHandler.CheckSeats(ctx, in, out)
+}
+
+func (h *cinemaHandler) FreeSeats(ctx context.Context, in *FreeSeatsRequest, out *FreeSeatsResponse) error {
+	return h.CinemaHandler.FreeSeats(ctx, in, out)
+}
+
+func (h *cinemaHandler) Reset(ctx context.Context, in *ResetRequest, out *ResetResponse) error {
+	return h.CinemaHandler.Reset(ctx, in, out)
 }

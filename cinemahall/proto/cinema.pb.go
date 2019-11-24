@@ -31,7 +31,7 @@ func (m *CreateCinemaRequest) Reset()         { *m = CreateCinemaRequest{} }
 func (m *CreateCinemaRequest) String() string { return proto.CompactTextString(m) }
 func (*CreateCinemaRequest) ProtoMessage()    {}
 func (*CreateCinemaRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_cinema_250a50cb4ac2bbe2, []int{0}
+	return fileDescriptor_cinema_585c20d77b7e4b2d, []int{0}
 }
 func (m *CreateCinemaRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_CreateCinemaRequest.Unmarshal(m, b)
@@ -84,7 +84,7 @@ func (m *CreateCinemaResponse) Reset()         { *m = CreateCinemaResponse{} }
 func (m *CreateCinemaResponse) String() string { return proto.CompactTextString(m) }
 func (*CreateCinemaResponse) ProtoMessage()    {}
 func (*CreateCinemaResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_cinema_250a50cb4ac2bbe2, []int{1}
+	return fileDescriptor_cinema_585c20d77b7e4b2d, []int{1}
 }
 func (m *CreateCinemaResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_CreateCinemaResponse.Unmarshal(m, b)
@@ -129,7 +129,7 @@ func (m *DeleteCinemaRequest) Reset()         { *m = DeleteCinemaRequest{} }
 func (m *DeleteCinemaRequest) String() string { return proto.CompactTextString(m) }
 func (*DeleteCinemaRequest) ProtoMessage()    {}
 func (*DeleteCinemaRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_cinema_250a50cb4ac2bbe2, []int{2}
+	return fileDescriptor_cinema_585c20d77b7e4b2d, []int{2}
 }
 func (m *DeleteCinemaRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_DeleteCinemaRequest.Unmarshal(m, b)
@@ -167,7 +167,7 @@ func (m *DeleteCinemaResponse) Reset()         { *m = DeleteCinemaResponse{} }
 func (m *DeleteCinemaResponse) String() string { return proto.CompactTextString(m) }
 func (*DeleteCinemaResponse) ProtoMessage()    {}
 func (*DeleteCinemaResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_cinema_250a50cb4ac2bbe2, []int{3}
+	return fileDescriptor_cinema_585c20d77b7e4b2d, []int{3}
 }
 func (m *DeleteCinemaResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_DeleteCinemaResponse.Unmarshal(m, b)
@@ -206,7 +206,7 @@ func (m *SeatMessage) Reset()         { *m = SeatMessage{} }
 func (m *SeatMessage) String() string { return proto.CompactTextString(m) }
 func (*SeatMessage) ProtoMessage()    {}
 func (*SeatMessage) Descriptor() ([]byte, []int) {
-	return fileDescriptor_cinema_250a50cb4ac2bbe2, []int{4}
+	return fileDescriptor_cinema_585c20d77b7e4b2d, []int{4}
 }
 func (m *SeatMessage) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SeatMessage.Unmarshal(m, b)
@@ -252,7 +252,7 @@ func (m *ReservationRequest) Reset()         { *m = ReservationRequest{} }
 func (m *ReservationRequest) String() string { return proto.CompactTextString(m) }
 func (*ReservationRequest) ProtoMessage()    {}
 func (*ReservationRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_cinema_250a50cb4ac2bbe2, []int{5}
+	return fileDescriptor_cinema_585c20d77b7e4b2d, []int{5}
 }
 func (m *ReservationRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_ReservationRequest.Unmarshal(m, b)
@@ -297,7 +297,7 @@ func (m *ReservationResponse) Reset()         { *m = ReservationResponse{} }
 func (m *ReservationResponse) String() string { return proto.CompactTextString(m) }
 func (*ReservationResponse) ProtoMessage()    {}
 func (*ReservationResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_cinema_250a50cb4ac2bbe2, []int{6}
+	return fileDescriptor_cinema_585c20d77b7e4b2d, []int{6}
 }
 func (m *ReservationResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_ReservationResponse.Unmarshal(m, b)
@@ -336,7 +336,7 @@ func (m *StornoRequest) Reset()         { *m = StornoRequest{} }
 func (m *StornoRequest) String() string { return proto.CompactTextString(m) }
 func (*StornoRequest) ProtoMessage()    {}
 func (*StornoRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_cinema_250a50cb4ac2bbe2, []int{7}
+	return fileDescriptor_cinema_585c20d77b7e4b2d, []int{7}
 }
 func (m *StornoRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_StornoRequest.Unmarshal(m, b)
@@ -381,7 +381,7 @@ func (m *StornoResponse) Reset()         { *m = StornoResponse{} }
 func (m *StornoResponse) String() string { return proto.CompactTextString(m) }
 func (*StornoResponse) ProtoMessage()    {}
 func (*StornoResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_cinema_250a50cb4ac2bbe2, []int{8}
+	return fileDescriptor_cinema_585c20d77b7e4b2d, []int{8}
 }
 func (m *StornoResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_StornoResponse.Unmarshal(m, b)
@@ -408,88 +408,240 @@ func (m *StornoResponse) GetAnswer() bool {
 	return false
 }
 
-type AvailableSeatsRequest struct {
-	Id                   int64          `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	Seats                []*SeatMessage `protobuf:"bytes,2,rep,name=seats,proto3" json:"seats,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}       `json:"-"`
-	XXX_unrecognized     []byte         `json:"-"`
-	XXX_sizecache        int32          `json:"-"`
+type ResetRequest struct {
+	Id                   int64    `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *AvailableSeatsRequest) Reset()         { *m = AvailableSeatsRequest{} }
-func (m *AvailableSeatsRequest) String() string { return proto.CompactTextString(m) }
-func (*AvailableSeatsRequest) ProtoMessage()    {}
-func (*AvailableSeatsRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_cinema_250a50cb4ac2bbe2, []int{9}
+func (m *ResetRequest) Reset()         { *m = ResetRequest{} }
+func (m *ResetRequest) String() string { return proto.CompactTextString(m) }
+func (*ResetRequest) ProtoMessage()    {}
+func (*ResetRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_cinema_585c20d77b7e4b2d, []int{9}
 }
-func (m *AvailableSeatsRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_AvailableSeatsRequest.Unmarshal(m, b)
+func (m *ResetRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ResetRequest.Unmarshal(m, b)
 }
-func (m *AvailableSeatsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_AvailableSeatsRequest.Marshal(b, m, deterministic)
+func (m *ResetRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ResetRequest.Marshal(b, m, deterministic)
 }
-func (dst *AvailableSeatsRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_AvailableSeatsRequest.Merge(dst, src)
+func (dst *ResetRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ResetRequest.Merge(dst, src)
 }
-func (m *AvailableSeatsRequest) XXX_Size() int {
-	return xxx_messageInfo_AvailableSeatsRequest.Size(m)
+func (m *ResetRequest) XXX_Size() int {
+	return xxx_messageInfo_ResetRequest.Size(m)
 }
-func (m *AvailableSeatsRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_AvailableSeatsRequest.DiscardUnknown(m)
+func (m *ResetRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_ResetRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_AvailableSeatsRequest proto.InternalMessageInfo
+var xxx_messageInfo_ResetRequest proto.InternalMessageInfo
 
-func (m *AvailableSeatsRequest) GetId() int64 {
+func (m *ResetRequest) GetId() int64 {
 	if m != nil {
 		return m.Id
 	}
 	return 0
 }
 
-func (m *AvailableSeatsRequest) GetSeats() []*SeatMessage {
+type ResetResponse struct {
+	Answer               bool     `protobuf:"varint,1,opt,name=answer,proto3" json:"answer,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *ResetResponse) Reset()         { *m = ResetResponse{} }
+func (m *ResetResponse) String() string { return proto.CompactTextString(m) }
+func (*ResetResponse) ProtoMessage()    {}
+func (*ResetResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_cinema_585c20d77b7e4b2d, []int{10}
+}
+func (m *ResetResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ResetResponse.Unmarshal(m, b)
+}
+func (m *ResetResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ResetResponse.Marshal(b, m, deterministic)
+}
+func (dst *ResetResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ResetResponse.Merge(dst, src)
+}
+func (m *ResetResponse) XXX_Size() int {
+	return xxx_messageInfo_ResetResponse.Size(m)
+}
+func (m *ResetResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_ResetResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ResetResponse proto.InternalMessageInfo
+
+func (m *ResetResponse) GetAnswer() bool {
 	if m != nil {
-		return m.Seats
+		return m.Answer
+	}
+	return false
+}
+
+type CheckSeatsRequest struct {
+	Id                   int64          `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Seatcheck            []*SeatMessage `protobuf:"bytes,2,rep,name=seatcheck,proto3" json:"seatcheck,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}       `json:"-"`
+	XXX_unrecognized     []byte         `json:"-"`
+	XXX_sizecache        int32          `json:"-"`
+}
+
+func (m *CheckSeatsRequest) Reset()         { *m = CheckSeatsRequest{} }
+func (m *CheckSeatsRequest) String() string { return proto.CompactTextString(m) }
+func (*CheckSeatsRequest) ProtoMessage()    {}
+func (*CheckSeatsRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_cinema_585c20d77b7e4b2d, []int{11}
+}
+func (m *CheckSeatsRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_CheckSeatsRequest.Unmarshal(m, b)
+}
+func (m *CheckSeatsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_CheckSeatsRequest.Marshal(b, m, deterministic)
+}
+func (dst *CheckSeatsRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_CheckSeatsRequest.Merge(dst, src)
+}
+func (m *CheckSeatsRequest) XXX_Size() int {
+	return xxx_messageInfo_CheckSeatsRequest.Size(m)
+}
+func (m *CheckSeatsRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_CheckSeatsRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_CheckSeatsRequest proto.InternalMessageInfo
+
+func (m *CheckSeatsRequest) GetId() int64 {
+	if m != nil {
+		return m.Id
+	}
+	return 0
+}
+
+func (m *CheckSeatsRequest) GetSeatcheck() []*SeatMessage {
+	if m != nil {
+		return m.Seatcheck
 	}
 	return nil
 }
 
-type AvailableSeatsResponse struct {
+type CheckSeatsResponse struct {
 	Available            bool     `protobuf:"varint,1,opt,name=available,proto3" json:"available,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *AvailableSeatsResponse) Reset()         { *m = AvailableSeatsResponse{} }
-func (m *AvailableSeatsResponse) String() string { return proto.CompactTextString(m) }
-func (*AvailableSeatsResponse) ProtoMessage()    {}
-func (*AvailableSeatsResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_cinema_250a50cb4ac2bbe2, []int{10}
+func (m *CheckSeatsResponse) Reset()         { *m = CheckSeatsResponse{} }
+func (m *CheckSeatsResponse) String() string { return proto.CompactTextString(m) }
+func (*CheckSeatsResponse) ProtoMessage()    {}
+func (*CheckSeatsResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_cinema_585c20d77b7e4b2d, []int{12}
 }
-func (m *AvailableSeatsResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_AvailableSeatsResponse.Unmarshal(m, b)
+func (m *CheckSeatsResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_CheckSeatsResponse.Unmarshal(m, b)
 }
-func (m *AvailableSeatsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_AvailableSeatsResponse.Marshal(b, m, deterministic)
+func (m *CheckSeatsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_CheckSeatsResponse.Marshal(b, m, deterministic)
 }
-func (dst *AvailableSeatsResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_AvailableSeatsResponse.Merge(dst, src)
+func (dst *CheckSeatsResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_CheckSeatsResponse.Merge(dst, src)
 }
-func (m *AvailableSeatsResponse) XXX_Size() int {
-	return xxx_messageInfo_AvailableSeatsResponse.Size(m)
+func (m *CheckSeatsResponse) XXX_Size() int {
+	return xxx_messageInfo_CheckSeatsResponse.Size(m)
 }
-func (m *AvailableSeatsResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_AvailableSeatsResponse.DiscardUnknown(m)
+func (m *CheckSeatsResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_CheckSeatsResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_AvailableSeatsResponse proto.InternalMessageInfo
+var xxx_messageInfo_CheckSeatsResponse proto.InternalMessageInfo
 
-func (m *AvailableSeatsResponse) GetAvailable() bool {
+func (m *CheckSeatsResponse) GetAvailable() bool {
 	if m != nil {
 		return m.Available
 	}
 	return false
+}
+
+type FreeSeatsRequest struct {
+	Id                   int64    `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *FreeSeatsRequest) Reset()         { *m = FreeSeatsRequest{} }
+func (m *FreeSeatsRequest) String() string { return proto.CompactTextString(m) }
+func (*FreeSeatsRequest) ProtoMessage()    {}
+func (*FreeSeatsRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_cinema_585c20d77b7e4b2d, []int{13}
+}
+func (m *FreeSeatsRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_FreeSeatsRequest.Unmarshal(m, b)
+}
+func (m *FreeSeatsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_FreeSeatsRequest.Marshal(b, m, deterministic)
+}
+func (dst *FreeSeatsRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_FreeSeatsRequest.Merge(dst, src)
+}
+func (m *FreeSeatsRequest) XXX_Size() int {
+	return xxx_messageInfo_FreeSeatsRequest.Size(m)
+}
+func (m *FreeSeatsRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_FreeSeatsRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_FreeSeatsRequest proto.InternalMessageInfo
+
+func (m *FreeSeatsRequest) GetId() int64 {
+	if m != nil {
+		return m.Id
+	}
+	return 0
+}
+
+type FreeSeatsResponse struct {
+	Freeseats            []*SeatMessage `protobuf:"bytes,1,rep,name=freeseats,proto3" json:"freeseats,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}       `json:"-"`
+	XXX_unrecognized     []byte         `json:"-"`
+	XXX_sizecache        int32          `json:"-"`
+}
+
+func (m *FreeSeatsResponse) Reset()         { *m = FreeSeatsResponse{} }
+func (m *FreeSeatsResponse) String() string { return proto.CompactTextString(m) }
+func (*FreeSeatsResponse) ProtoMessage()    {}
+func (*FreeSeatsResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_cinema_585c20d77b7e4b2d, []int{14}
+}
+func (m *FreeSeatsResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_FreeSeatsResponse.Unmarshal(m, b)
+}
+func (m *FreeSeatsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_FreeSeatsResponse.Marshal(b, m, deterministic)
+}
+func (dst *FreeSeatsResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_FreeSeatsResponse.Merge(dst, src)
+}
+func (m *FreeSeatsResponse) XXX_Size() int {
+	return xxx_messageInfo_FreeSeatsResponse.Size(m)
+}
+func (m *FreeSeatsResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_FreeSeatsResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_FreeSeatsResponse proto.InternalMessageInfo
+
+func (m *FreeSeatsResponse) GetFreeseats() []*SeatMessage {
+	if m != nil {
+		return m.Freeseats
+	}
+	return nil
 }
 
 func init() {
@@ -502,39 +654,48 @@ func init() {
 	proto.RegisterType((*ReservationResponse)(nil), "cinemahallproto.ReservationResponse")
 	proto.RegisterType((*StornoRequest)(nil), "cinemahallproto.StornoRequest")
 	proto.RegisterType((*StornoResponse)(nil), "cinemahallproto.StornoResponse")
-	proto.RegisterType((*AvailableSeatsRequest)(nil), "cinemahallproto.AvailableSeatsRequest")
-	proto.RegisterType((*AvailableSeatsResponse)(nil), "cinemahallproto.AvailableSeatsResponse")
+	proto.RegisterType((*ResetRequest)(nil), "cinemahallproto.ResetRequest")
+	proto.RegisterType((*ResetResponse)(nil), "cinemahallproto.ResetResponse")
+	proto.RegisterType((*CheckSeatsRequest)(nil), "cinemahallproto.CheckSeatsRequest")
+	proto.RegisterType((*CheckSeatsResponse)(nil), "cinemahallproto.CheckSeatsResponse")
+	proto.RegisterType((*FreeSeatsRequest)(nil), "cinemahallproto.FreeSeatsRequest")
+	proto.RegisterType((*FreeSeatsResponse)(nil), "cinemahallproto.FreeSeatsResponse")
 }
 
-func init() { proto.RegisterFile("cinema.proto", fileDescriptor_cinema_250a50cb4ac2bbe2) }
+func init() { proto.RegisterFile("cinema.proto", fileDescriptor_cinema_585c20d77b7e4b2d) }
 
-var fileDescriptor_cinema_250a50cb4ac2bbe2 = []byte{
-	// 417 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x52, 0x4f, 0xef, 0xd2, 0x40,
-	0x10, 0xfd, 0xb5, 0xd5, 0x46, 0x06, 0x05, 0xb3, 0x20, 0x69, 0x1a, 0xa2, 0x64, 0x05, 0xed, 0xc5,
-	0x1e, 0x30, 0xd1, 0xc4, 0x78, 0x31, 0x18, 0x2f, 0xc6, 0x4b, 0x39, 0x98, 0x68, 0x3c, 0x2c, 0x30,
-	0xd1, 0x26, 0xa5, 0x8b, 0xdd, 0x02, 0x5f, 0xd1, 0x8f, 0x65, 0xba, 0x5b, 0x4a, 0xff, 0x6c, 0x7f,
-	0xe5, 0xb6, 0x3b, 0xf3, 0xe6, 0xbd, 0x37, 0xbb, 0x0f, 0x1e, 0x6f, 0xc3, 0x18, 0xf7, 0xcc, 0x3f,
-	0x24, 0x3c, 0xe5, 0x64, 0xa8, 0x6e, 0x7f, 0x58, 0x14, 0xc9, 0x02, 0x5d, 0xc3, 0x68, 0x95, 0x20,
-	0x4b, 0x71, 0x25, 0x1b, 0x01, 0xfe, 0x3d, 0xa2, 0x48, 0x09, 0x81, 0x07, 0x31, 0xdb, 0xa3, 0x63,
-	0xcc, 0x0c, 0xaf, 0x17, 0xc8, 0x33, 0x79, 0x0a, 0x56, 0xc2, 0xcf, 0x8e, 0x39, 0x33, 0x3c, 0x2b,
-	0xc8, 0x8e, 0x64, 0x02, 0xf6, 0x96, 0x47, 0xc7, 0x7d, 0xec, 0x58, 0xb2, 0x98, 0xdf, 0xe8, 0x07,
-	0x18, 0x57, 0x49, 0xc5, 0x81, 0xc7, 0x02, 0xb5, 0xac, 0x03, 0x30, 0xc3, 0x5d, 0x4e, 0x6a, 0x86,
-	0x3b, 0xba, 0x80, 0xd1, 0x67, 0x8c, 0xb0, 0x6e, 0x48, 0xc1, 0x8c, 0x02, 0xe6, 0xc3, 0xb8, 0x0a,
-	0xcb, 0x25, 0x26, 0x60, 0xb3, 0x58, 0x9c, 0x31, 0x91, 0xd8, 0x47, 0x41, 0x7e, 0xa3, 0xef, 0xa1,
-	0xbf, 0x46, 0x96, 0x7e, 0x43, 0x21, 0xd8, 0xef, 0x62, 0x17, 0x43, 0xb7, 0x8b, 0x59, 0xd9, 0x25,
-	0x02, 0x12, 0xa0, 0xc0, 0xe4, 0xc4, 0xd2, 0x90, 0xc7, 0x2d, 0x76, 0xc8, 0x17, 0x18, 0x0a, 0x64,
-	0x69, 0x72, 0x45, 0x3a, 0xe6, 0xcc, 0xf2, 0xfa, 0xcb, 0xa9, 0x5f, 0x7b, 0x71, 0xbf, 0x64, 0x23,
-	0xa8, 0x0f, 0xd1, 0x37, 0x30, 0xaa, 0xa8, 0x75, 0x6c, 0xf5, 0x0b, 0x9e, 0xac, 0x53, 0x9e, 0xc4,
-	0xbc, 0xcd, 0xd7, 0x47, 0x80, 0x4c, 0x42, 0x48, 0xd0, 0x4d, 0x96, 0x4a, 0x78, 0xea, 0xc1, 0xe0,
-	0x42, 0xdf, 0x61, 0xe4, 0x27, 0x3c, 0xfb, 0x74, 0x62, 0x61, 0xc4, 0x36, 0x11, 0x66, 0x6c, 0xa2,
-	0xcd, 0xd0, 0x12, 0x1e, 0x4a, 0x81, 0x9b, 0xbc, 0x28, 0x28, 0x7d, 0x07, 0x93, 0x3a, 0x79, 0x6e,
-	0x67, 0x0a, 0x3d, 0x76, 0xe9, 0xe4, 0x8e, 0xae, 0x85, 0xe5, 0x3f, 0x0b, 0x6c, 0x15, 0x0f, 0xf2,
-	0x1d, 0x6c, 0x95, 0x48, 0x32, 0x6f, 0x28, 0x6a, 0xf2, 0xef, 0x2e, 0x3a, 0x50, 0x4a, 0x9f, 0xde,
-	0x65, 0xc4, 0x2a, 0x87, 0x1a, 0x62, 0x4d, 0x8e, 0x35, 0xc4, 0xba, 0x18, 0xd3, 0x3b, 0xf2, 0x03,
-	0xfa, 0xa5, 0x24, 0x90, 0x97, 0x8d, 0xb9, 0x66, 0x2a, 0xdd, 0xf9, 0xfd, 0xa0, 0x82, 0xfb, 0x2b,
-	0xd8, 0xea, 0x5f, 0xc9, 0xf3, 0xe6, 0xfb, 0x97, 0xf3, 0xe4, 0xbe, 0x68, 0xed, 0x17, 0x64, 0x5b,
-	0x18, 0x54, 0x7f, 0x87, 0xbc, 0x6a, 0x0c, 0x69, 0xb3, 0xe1, 0xbe, 0xee, 0xc4, 0x5d, 0x44, 0x36,
-	0xb6, 0xec, 0xbf, 0xfd, 0x1f, 0x00, 0x00, 0xff, 0xff, 0x3a, 0x48, 0xd4, 0x12, 0xce, 0x04, 0x00,
+var fileDescriptor_cinema_585c20d77b7e4b2d = []byte{
+	// 497 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x53, 0x4d, 0x6b, 0xdb, 0x40,
+	0x10, 0x8d, 0xe4, 0x54, 0x54, 0xcf, 0xf9, 0x5c, 0x87, 0x20, 0x44, 0xea, 0xba, 0x9b, 0x84, 0xfa,
+	0x52, 0x1f, 0xdc, 0x43, 0xc1, 0xf4, 0xe6, 0x12, 0x0a, 0xa5, 0x14, 0xe4, 0x42, 0xa1, 0x50, 0xca,
+	0xc6, 0x99, 0x36, 0xa2, 0xb2, 0x94, 0xee, 0x2a, 0xf1, 0x9f, 0xed, 0x8f, 0x29, 0x5a, 0xc9, 0xb2,
+	0xac, 0x0f, 0xcb, 0x37, 0xed, 0xcc, 0x9b, 0x37, 0x6f, 0x46, 0xf3, 0x70, 0x30, 0xf7, 0x43, 0x5a,
+	0x88, 0xd1, 0x83, 0x8c, 0xe2, 0x88, 0x1d, 0xa7, 0xaf, 0x7b, 0x11, 0x04, 0x3a, 0xc0, 0x67, 0xe8,
+	0x4d, 0x25, 0x89, 0x98, 0xa6, 0x3a, 0xe1, 0xd1, 0xdf, 0x47, 0x52, 0x31, 0x63, 0xd8, 0x0f, 0xc5,
+	0x82, 0x1c, 0x63, 0x60, 0x0c, 0x6d, 0x4f, 0x7f, 0xb3, 0x13, 0x74, 0x64, 0xb4, 0x74, 0xcc, 0x81,
+	0x31, 0xec, 0x78, 0xc9, 0x27, 0x3b, 0x87, 0x35, 0x8f, 0x82, 0xc7, 0x45, 0xe8, 0x74, 0x74, 0x30,
+	0x7b, 0xf1, 0x09, 0xce, 0x36, 0x49, 0xd5, 0x43, 0x14, 0x2a, 0xaa, 0x65, 0x3d, 0x82, 0xe9, 0xdf,
+	0x65, 0xa4, 0xa6, 0x7f, 0xc7, 0xaf, 0xd1, 0xfb, 0x40, 0x01, 0x95, 0x05, 0xa5, 0x30, 0x23, 0x87,
+	0x8d, 0x70, 0xb6, 0x09, 0xcb, 0x5a, 0x9c, 0xc3, 0x12, 0xa1, 0x5a, 0x92, 0xd4, 0xd8, 0xe7, 0x5e,
+	0xf6, 0xe2, 0xef, 0xd0, 0x9d, 0x91, 0x88, 0x3f, 0x93, 0x52, 0xe2, 0x77, 0x3e, 0x8b, 0x51, 0x37,
+	0x8b, 0xb9, 0x31, 0x4b, 0x00, 0xe6, 0x91, 0x22, 0xf9, 0x24, 0x62, 0x3f, 0x0a, 0x1b, 0xe4, 0xb0,
+	0x1b, 0x1c, 0x2b, 0x12, 0xb1, 0x5c, 0x23, 0x1d, 0x73, 0xd0, 0x19, 0x76, 0xc7, 0x17, 0xa3, 0xd2,
+	0xc6, 0x47, 0x05, 0x19, 0x5e, 0xb9, 0x88, 0xbf, 0x41, 0x6f, 0xa3, 0x5b, 0xcb, 0x54, 0x3f, 0x70,
+	0x38, 0x8b, 0x23, 0x19, 0x46, 0x4d, 0xba, 0xde, 0x03, 0x49, 0x0b, 0xa5, 0x41, 0x3b, 0x49, 0x2a,
+	0xe0, 0xf9, 0x10, 0x47, 0x2b, 0xfa, 0x16, 0x21, 0x7d, 0x1c, 0x24, 0xba, 0xe3, 0xa6, 0xdf, 0xf5,
+	0x1a, 0x87, 0x59, 0xbe, 0x85, 0xe8, 0x27, 0x4e, 0xa7, 0xf7, 0x34, 0xff, 0x93, 0x48, 0x52, 0x4d,
+	0x53, 0x4d, 0x60, 0x27, 0x2a, 0xe7, 0x09, 0x70, 0xa7, 0xa1, 0xd6, 0x70, 0x3e, 0x06, 0x2b, 0x36,
+	0xc8, 0xe4, 0x5c, 0xc0, 0x16, 0x4f, 0xc2, 0x0f, 0xc4, 0x6d, 0x40, 0x99, 0xa2, 0x75, 0x80, 0x73,
+	0x9c, 0xdc, 0x48, 0xa2, 0x6d, 0x9a, 0xf8, 0x17, 0x9c, 0x16, 0x30, 0x19, 0xed, 0x04, 0xf6, 0x2f,
+	0x49, 0xa4, 0x57, 0xea, 0x18, 0xbb, 0x08, 0xcd, 0xe1, 0xe3, 0x7f, 0xfb, 0xb0, 0xd2, 0xe3, 0x66,
+	0xdf, 0x60, 0xa5, 0x7e, 0x62, 0x57, 0x95, 0xea, 0x1a, 0xf7, 0xba, 0xd7, 0x2d, 0xa8, 0x54, 0x1d,
+	0xdf, 0x4b, 0x88, 0x53, 0x17, 0xd5, 0x10, 0xd7, 0xb8, 0xb0, 0x86, 0xb8, 0xce, 0x84, 0x7c, 0x8f,
+	0x7d, 0x47, 0xb7, 0x70, 0xc7, 0xec, 0xb2, 0x52, 0x57, 0xf5, 0x94, 0x7b, 0xb5, 0x1d, 0x94, 0x73,
+	0x7f, 0x82, 0x95, 0x5e, 0x25, 0xeb, 0x57, 0x77, 0x59, 0x74, 0x83, 0xfb, 0xb2, 0x31, 0x5f, 0xd8,
+	0x00, 0xd6, 0xe7, 0xc0, 0x78, 0x75, 0x71, 0xe5, 0x63, 0x74, 0x2f, 0xb7, 0x62, 0x72, 0xe2, 0xaf,
+	0xb0, 0xf3, 0x7b, 0x60, 0xaf, 0x2a, 0x35, 0xe5, 0x7b, 0x72, 0xf9, 0x36, 0x48, 0xce, 0xfa, 0x11,
+	0xcf, 0xb4, 0x8f, 0xd8, 0x8b, 0xda, 0x65, 0xad, 0xfc, 0xe7, 0xf6, 0x9b, 0xd2, 0x2b, 0xa6, 0x5b,
+	0x4b, 0x87, 0xdf, 0xfe, 0x0f, 0x00, 0x00, 0xff, 0xff, 0x37, 0x15, 0xe3, 0xba, 0x20, 0x06, 0x00,
 	0x00,
 }
