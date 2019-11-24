@@ -1,5 +1,5 @@
 syntax = "proto3";
-package proto;
+package cinemahallproto;
 
 service Cinema {
     rpc Create (CreateCinemaRequest) returns (CreateCinemaResponse) {
@@ -19,68 +19,55 @@ service Cinema {
 
 }
 
-message CinemaMessage {
-    // Name of the cinema.
-    string name = 1;
-
-    // Cinema Id
-    int64 id = 2;
-
-    // Data for occupation of seats
-    repeated SeatMessage seats = 3;
-
-    int64 rownumber = 4;
-
-    int64 columnnumber = 5;
-}
-
-message SeatMessage {
-    int64 row = 4;
-    int64 column = 5;
-    bool reserved = 6;
-}
-
 message CreateCinemaRequest {
     string name = 1;
-    int64 row = 4;
-    int64 column = 5;
+    int64 row = 2;
+    int64 column = 3;
 }
 
 message CreateCinemaResponse {
-    CinemaMessage data = 7;
+    string name = 1;
+    int64 id = 2;
 }
 
 message DeleteCinemaRequest {
-    int64 id = 2;
+    int64 id = 1;
 }
 
 message DeleteCinemaResponse {
-    bool success = 8;
+    bool answer = 1;
+}
+
+message SeatMessage {
+    int64 row = 1;
+    int64 column = 2;
 }
 
 message ReservationRequest {
-    int64 id = 2;
-    repeated SeatMessage seats = 9;
+    int64 id = 1;
+    repeated SeatMessage seatreservation = 2;
 }
 
 message ReservationResponse {
-    repeated SeatMessage seats = 9;
+    bool answer = 1;
 }
 
 message StornoRequest {
-    int64 id = 2;
-    repeated SeatMessage seats = 9;
+    int64 id = 1;
+    repeated SeatMessage seatstorno = 2;
 }
 
 message StornoResponse {
-    repeated SeatMessage seats = 9;
+    bool answer = 1;
 }
 
+//------------------------------------------------------------
+
 message AvailableSeatsRequest {
-    int64 id = 2;
-    repeated SeatMessage seats = 9;
+    int64 id = 1;
+    repeated SeatMessage seats = 2;
 }
 
 message AvailableSeatsResponse {
-    bool available = 10;
+    bool available = 1;
 }
