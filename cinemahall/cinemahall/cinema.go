@@ -12,7 +12,7 @@ const (
 )
 
 /*
-CinemaPool comment
+CinemaPool contains all cinemas.
 */
 type CinemaPool struct {
 	cinemamap map[int64]*cinema
@@ -29,7 +29,7 @@ type cinema struct {
 }
 
 /*
-NewCinemaPool comment
+NewCinemaPool creates a new CinemaPool
 */
 func NewCinemaPool() *CinemaServiceHandler {
 	newcinema := make(map[int64]*cinema)
@@ -59,8 +59,25 @@ func (handler *CinemaPool) containsandreturncinema(id int64) (*cinema, bool) {
 	return currentcinema, mapcontainscinema
 }
 
+func (currentcinema *cinema) containsSeatMap(row int64, column int64) bool {
+	for seat, occ := range currentcinema.seatmap {
+		if seat.row == row && seat.column == column {
+			return occ
+		}
+	}
+}
+
+func (currentcinema *cinema) getSeat(row int64, column int64) *seats {
+	for seat, occ := range currentcinema.seatmap {
+		if seat.row == row && seat.column == column {
+			return seat
+		}
+	}
+}
+
 /*
-Create comment
+Create creates a new cinema. It will be saved in the CinemaPool. The id to access the new cinema will be randomly generated.
+If the creation was successfull the id will be returned
 */
 func (handler *CinemaPool) Create(ctx context.Context, in *proto.CreateCinemaRequest, out *proto.CreateCinemaResponse) error {
 	log.Printf("Cinema Service - Create | Creating cinema with name: %s, %d rows: and columns: %d \n", in.name, in.row, in.column)
@@ -79,9 +96,9 @@ func (handler *CinemaPool) Create(ctx context.Context, in *proto.CreateCinemaReq
 	}
 
 	createid := getRandomCinemaID()
-	handler.mux.Lock()
+	handler.mutex.Lock()
 	handler.cinemamap[createid] = newseatmap
-	defer handler.mux.Unlock()
+	handler.mutex.Unlock()
 	out.name = in.name
 	out.id = createid
 
@@ -92,22 +109,21 @@ func (handler *CinemaPool) Create(ctx context.Context, in *proto.CreateCinemaReq
 }
 
 /*
-Delete comment
+Delete will delete a cinema(id) from the CinemaPool.
 */
 func (handler *CinemaPool) Delete(ctx context.Context, in *proto.DeleteCinemaRequest, out *proto.DeleteCinemaResponse) error {
 	log.Printf("Cinema Service - Delete | Deleting cinema with id %d\n", in.id)
-	handler.mux.Lock()
+	handler.mutex.Lock()
 	mapcontainscinema := handler.containscinema(in.id)
 	if !mapcontainscinema {
+		handler.mutex.Unlock()
 		out.answer = false
-		handler.mux.Unlock()
-
 		err := fmt.Errorf("Cannot delete cinema with id: %d", in.id)
 		log.Printf("Cinema Service - Delete | %s\n", err.Error())
 		return err
 	}
 	delete(handler.cinemamap, in.id)
-	handler.mux.Unlock()
+	handler.mutex.Unlock()
 	out.answer = true
 
 	log.Println("Cinema Service - Delete | Successfully deleted cinema")
@@ -115,16 +131,16 @@ func (handler *CinemaPool) Delete(ctx context.Context, in *proto.DeleteCinemaReq
 }
 
 /*
-Reservation comment
+Reservation will change the value in the seatmap of a cinema to true (for the given row and column) if the seat is still available
 */
 func (handler *CinemaPool) Reservation(ctx context.Context, in *proto.ReservationRequest, out *proto.ReservationResponse) error {
 	log.Printf("Cinema Service - Reservation | Reservating seats %v for cinema id %d\n", in.column, in.id)
 
-	handler.mux.Lock()
+	handler.mutex.Lock()
 	currentcinema, mapcontainscinema := containsandreturncinema(in.id)
 
 	if !mapcontainscinema {
-		defer handler.mux.Unlock()
+		handler.mutex.Unlock()
 		err := fmt.Error("Cannot execute reservation because cinema doesnt exist")
 		log.Printf("Cinema Service - Reservation | %s\n", err.Error())
 		out.answer = false
@@ -132,67 +148,134 @@ func (handler *CinemaPool) Reservation(ctx context.Context, in *proto.Reservatio
 	}
 	for curreservation := range in.seatreservation {
 		if currentcinema.containsSeatMap(curreservation.row, curreservation.column) {
-			currentcinema.seatmap[getSeat(curreservation.row, curreservation.column)] == true
+			currentcinema.seatmap[getSeat(curreservation.row, curreservation.column)] = true
 		}
 	}
 	handler.cinemamap[in.id] = currentcinema
-	defer handler.mux.Unlock()
+	handler.mutex.Unlock()
 
 	log.Println("Cinema Service - Reservation | Reservation successfull")
 	out.answer = true
 	return nil
-
-}
-
-func (currentcinema *cinema) containsSeatMap(row int64, column int64) bool {
-	for seat, occ := range currentcinema.seatmap {
-		if seat.row == row && seat.column == column {
-			return occ
-		}
-	}
-}
-
-func (currentcinema *cinema) getSeat(row int64, column int64) *seats {
-	for seat, occ := range currentcinema.seatmap {
-		if seat.row == row && seat.column == column {
-			return seat
-		}
-	}
 }
 
 /*
-Storno comment
+Storno will undo a reservation
 */
 func (handler *CinemaPool) Storno(ctx context.Context, in *proto.StornoRequest, out *proto.StornoResponse) error {
 	log.Println("Cinema Service - Storno | Deleting reservation")
 
-	handler.mux.Lock()
+	handler.mutex.Lock()
 	currentcinema, mapcontainscinema := containsandreturncinema(in.id)
 
 	if !mapcontainscinema {
-		defer handler.mux.Unlock()
+		handler.mutex.Unlock()
 		err := fmt.Errorf("Cannot execute storno because cinema doesnt exist")
 		log.Printf("Cinema Service - Storno | %s\n", err.Error())
 		out.answer = false
 		return err
 	}
 	for curreservation := range in.seatstorno {
-		if !currentcinema.containsSeatMap(curreservation.row, curreservation.column) {
-			currentcinema.seatmap[getSeat(curreservation.row, curreservation.column)] == false
+		if currentcinema.containsSeatMap(curreservation.row, curreservation.column) {
+			currentcinema.seatmap[getSeat(curreservation.row, curreservation.column)] = false
 		}
 	}
 	handler.cinemamap[in.id] = currentcinema
+	handler.mutex.Unlock()
 
 	out.answer = true
 
 	log.Println("Cinema Service - Storno | Successfully deleted reservation")
 	return nil
-
 }
 
 /*
-AvailableSeats comment
+CheckSeats checks if the requested seats are available
 */
-func (handler *CinemaPool) AvailableSeats(ctx context.Context, in *proto.AvailableSeatsRequest, out *proto.AvailableSeatsResponse) error {
+func (handler *CinemaPool) CheckSeats(ctx context.Context, in *proto.CheckSeatsRequest, out *proto.CheckSeatsResponse) error {
+	log.Println("Cinema Service - CheckSeats | Deleting reservation")
 
+	handler.mutex.Lock()
+	currentcinema, mapcontainscinema := containsandreturncinema(in.id)
+
+	if !mapcontainscinema {
+		handler.mutex.Unlock()
+		err := fmt.Errorf("Cannot execute checkseats because cinema doesnt exist")
+		log.Printf("Cinema Service - CheckSeats | %s\n", err.Error())
+		out.answer = false
+		return err
+	}
+
+	check := true
+
+	for curseat := range in.seatcheck {
+		if currentcinema.containsSeatMap(curseat.row, curseat.column) {
+			value := currentcinema.seatmap[getSeat(curseat.row, curseat.column)]
+			if value {
+				check := false
+			}
+		}
+	}
+	handler.mutex.Unlock()
+
+	out.answer = check
+
+	if check {
+		log.Println("Cinema Service - CheckSeats | Seats are available")
+		return nil
+	}
+	log.Println("Cinema Service - CheckSeats | Seats are already reserved")
+	return nil
+}
+
+/*
+FreeSeats returns all seats that are available
+*/
+func (handler *CinemaPool) FreeSeats(ctx context.Context, in *proto.FreeSeatsRequest, out *proto.FreeSeatsResponse) error {
+	log.Println("Cinema Service - FreeSeats | Return all free seats")
+
+	handler.mutex.Lock()
+	currentcinema, mapcontainscinema := containsandreturncinema(in.id)
+
+	if !mapcontainscinema {
+		handler.mutex.Unlock()
+		err := fmt.Errorf("Cannot execute freeseats because cinema doesnt exist")
+		log.Printf("Cinema Service - FreeSeats | %s\n", err.Error())
+		out.answer = false
+		return err
+	}
+
+	retseatmap := [*seats]bool{}
+	for curseat := range currentcinema.seatmap {
+		if currentcinema.containsSeatMap(curseat.row, curseat.column) {
+			value := currentcinema.seatmap[getSeat(curseat.row, curseat.column)]
+			if value {
+				retseatmap[currentcinema.seatmap[getSeat(curseat.row, curseat.column)]] = true
+			}
+		}
+	}
+	handler.mutex.Unlock()
+
+	avseats := proto.FreeSeatsResponse{
+		freeseats: retseatmap,
+	}
+	out.freeseats = avseats
+
+	log.Println("Cinema Service - FreeSeats | Successfully executed FreeSeats")
+	return nil
+}
+
+/*
+Reset resets the CinemaPool
+*/
+func (handler *CinemaServiceHandler) Reset(context.Context, *proto.ResetRequest, *proto.ResetResponse) error {
+	log.Printf("Cinema Service - Clear | Reset Service with id\n", in.id)
+
+	handler.mux.Lock()
+	handler.cinemamap = make(map[int64]*cinema)
+	handler.mutex.Unlock()
+
+	log.Println("Cinema Service - Clear | Reset successfull")
+	out.answer = true
+	return nil
 }
