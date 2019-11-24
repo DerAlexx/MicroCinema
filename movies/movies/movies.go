@@ -22,6 +22,13 @@ type Movie struct {
 }
 
 /*
+getName will return the name of the given movie.
+*/
+func (mo *Movie) getName() string {
+	return mo.name
+}
+
+/*
 MovieHandlerService will be the representation of our service.
 */
 type MovieHandlerService struct {
@@ -131,4 +138,72 @@ func (m *MovieHandlerService) ChangeMovie(ctx context.Context, in *proto.ChangeM
 		}
 	}
 	return fmt.Errorf("cannot change the movie. The movieid or the name are not ok. See: %d %s", in.Movie.Id, in.Movie.Name)
+}
+
+/*
+StreamMovie will stream all movies from a service.
+*/
+func (m *MovieHandlerService) StreamMovie(ctx context.Context, in *proto.StreamMovieRequest, out *proto.StreamMovieResponse) error {
+	if len(*m.getMoviesMap()) > 0 {
+		movies := []*proto.Movie{}
+		for k, v := range *m.getMoviesMap() {
+			movies = append(movies, &proto.Movie{Id: k, Name: v.getName()})
+		}
+		out.Movies = movies
+	}
+	return fmt.Errorf("There are currently no users store (Advice: find some customers)")
+}
+
+/*
+DeleteMovie will delete a movie from the "db".
+*/
+func (m *MovieHandlerService) DeleteMovie(ctx context.Context, in *proto.DeleteMovieRequest, out *proto.DeleteMovieResponse) error {
+	if m.containsID(in.Id) {
+		m.mutex.Lock()
+		delete(m.movies, in.Id)
+		out.Deleted = true
+		m.mutex.Unlock()
+		return nil
+	}
+	return fmt.Errorf("cannot delete user with the id %d", in.Id)
+}
+
+/*
+find will search by a given value for its oppotsite. E.g if you
+have the name you can get the id.
+*/
+func (m *MovieHandlerService) find(value interface{}) interface{} {
+	switch value.(type) {
+	case int32:
+		if m.containsID(value.(int32)) {
+			return (*m.getMoviesMap())[value.(int32)].getName()
+		}
+		return ""
+	case string:
+		for k, v := range *m.getMoviesMap() {
+			if v.getName() == value.(string) {
+				return k
+			}
+		}
+		return 0
+	default:
+		return nil
+	}
+}
+
+/*
+FindMovie will find a movie.
+*/
+func (m *MovieHandlerService) FindMovie(ctx context.Context, in *proto.FindMovieRequest, out *proto.FindMovieResponse) error {
+	if m.containsID(in.Movie.Id) {
+		out.Movie.Name = m.find(in.Movie.Id).(string)
+		out.Movie.Id = in.Movie.Id
+		return nil
+	} else if in.Movie.Name != "" {
+		out.Movie.Name = in.Movie.Name
+		out.Movie.Id = m.find(in.Movie.Name).(int32)
+		return nil
+	} else {
+		return fmt.Errorf("cannot find a movie with the given id %d or the name %s", in.Movie.Id, in.Movie.Name)
+	}
 }
