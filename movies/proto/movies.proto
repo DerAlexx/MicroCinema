@@ -13,7 +13,7 @@ service movies {
 
     // Change a movie.
     rpc ChangeMovie(ChangeMovieRequest) returns (ChangeMovieResponse) {};
-
+ 
     // Delete a Movie.
     rpc DeleteMovie(DeleteMovieRequest) returns (DeleteMovieResponse) {};
     
