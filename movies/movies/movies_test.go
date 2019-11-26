@@ -144,6 +144,6 @@ func TestAddChange(t *testing.T) {
 	} else if AfterChange == NewName && !chresponse.Changed {
 		t.Errorf("Name was changed. Found by getinformationfrommap but did not send the correct response.")
 	} else {
-		t.Log("Create a user and change him later on is fine.")
+		t.Log("Create a movie and change it later on is fine.")
 	}
 }

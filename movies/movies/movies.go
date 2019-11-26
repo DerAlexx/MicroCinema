@@ -51,7 +51,7 @@ Function to produce a random moviesID.
 @param length will be the length of the number.
 @param seed will be a seed in order to produce "really" random numbers.
 */
-func (m *MovieHandlerService) getRandomUserID(length int32) int32 {
+func (m *MovieHandlerService) getRandomMovieID(length int32) int32 {
 	rand.Seed(time.Now().UnixNano())
 	for {
 		potantialID := rand.Int31n(length)
@@ -69,7 +69,7 @@ func (m *MovieHandlerService) getMoviesMap() *map[int32]*Movie {
 }
 
 /*
-setMoviesMap will set the map of a userhandlerservice instance.
+setMoviesMap will set the map of a moviehandlerservice instance.
 @param movies will be the map to set.
 */
 func (m *MovieHandlerService) setMoviesMap(movies *map[int32]*Movie) {
@@ -103,7 +103,7 @@ CreateMovie will create a movie.
 func (m *MovieHandlerService) CreateMovie(context context.Context, in *proto.CreateMovieRequest, out *proto.CreatedMovieResponse) error {
 	if in.GetName() != "" {
 		m.mutex.Lock()
-		mid := m.getRandomUserID(maxmoviesid)
+		mid := m.getRandomMovieID(maxmoviesid)
 		if m.appendMovie(mid, &Movie{name: in.GetName()}) {
 			out.Movie.Id = mid
 			out.Movie.Name = in.GetName()
@@ -151,7 +151,7 @@ func (m *MovieHandlerService) StreamMovie(ctx context.Context, in *proto.StreamM
 		}
 		out.Movies = movies
 	}
-	return fmt.Errorf("There are currently no users store (Advice: find some customers)")
+	return fmt.Errorf("There are currently no movies store (Advice: find some customers)")
 }
 
 /*
@@ -165,7 +165,7 @@ func (m *MovieHandlerService) DeleteMovie(ctx context.Context, in *proto.DeleteM
 		m.mutex.Unlock()
 		return nil
 	}
-	return fmt.Errorf("cannot delete user with the id %d", in.Id)
+	return fmt.Errorf("cannot delete movie with the id %d", in.Id)
 }
 
 /*
