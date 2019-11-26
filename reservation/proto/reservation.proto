@@ -1,4 +1,4 @@
-// proto for the reservation
+// Proto for the reservations
 
 syntax = "proto3";
 
@@ -31,3 +31,83 @@ service reservation {
     rpc HasReservations(HasReservationsRequest) returns (HasReservationsResponse);
 }
 
+// Message representing a Reservation.
+message Reservation {
+    int32 ResId = 1;
+    int32 Show = 2;
+}
+
+// Request for HasReservations
+message HasReservationsRequest {
+    Reservation res = 1;
+}
+
+// Response for hasReservations
+message HasReservationsResponse {
+    bool has = 1;
+}   
+
+// StreamUsersReservations request.
+message StreamUsersReservationsRequest {
+
+}
+
+// StreamUsersReservations response.
+message StreamUsersReservationsResponse {
+    repeated Reservation reservations = 1;
+}
+
+// ShowReservations request.
+message ShowReservationsRequest {
+    int32 id = 1;
+    int32 user = 2;
+}
+
+// ShowReservations response.
+message ShowReservationsResponse {
+    Reservation res = 1;
+}
+
+// ChangeReservation request.
+message ChangeReservationRequest {
+    Reservation res = 1;
+}
+
+// ChangeReservation response.
+message ChangeReservationResponse {
+    Reservation res = 1;
+    bool Changed = 2; 
+}
+
+// DeleteReservation request.
+message DeleteReservationRequest {
+    int32 id = 1;
+}
+
+// DeleteReservation response.
+message DeleteReservationResponse {
+    bool Deleted = 1;
+}
+
+// AcceptReservation request.
+message AcceptReservationRequest {
+    int32 tmpID = 1;
+    bool want = 2;
+}
+
+// AcceptReservation response.
+message AcceptReservationResponse {
+    int32 finalID = 1;
+    bool taken = 2;
+}
+
+// MakeReservation request.
+message MakeReservationRequest {
+    Reservation res = 1;
+}
+
+// MakeReservation response.
+message MakeReservationResponse {
+    int32 tmpID = 1;
+    bool work = 2;
+}

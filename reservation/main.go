@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	service := micro.NewService(micro.Name("users"))
+	service := micro.NewService(micro.Name("registration"))
 	service.Init()
 	proto.RegisterUsersHandler(service.Server(), new(res.ReservatServiceHandler))
 
