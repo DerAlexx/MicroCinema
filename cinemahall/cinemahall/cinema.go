@@ -67,16 +67,17 @@ func (handler *CinemaPool) containsandreturncinema(id int64) (*cinema, bool) {
 }
 
 func (currentcinema *cinema) containsSeatMap(row int64, column int64) bool {
-	for seat, occ := range currentcinema.seatmap {
+	x := false
+	for seat := range currentcinema.seatmap {
 		if int64(seat.row) == row && int64(seat.column) == column {
-			return true
+			x = true
 		}
 	}
-	return false
+	return x
 }
 
 func (currentcinema *cinema) getSeat(row int64, column int64) *seats {
-	for seat, occ := range currentcinema.seatmap {
+	for seat := range currentcinema.seatmap {
 		if int64(seat.row) == row && int64(seat.column) == column {
 			return seat
 		}
@@ -204,22 +205,22 @@ func (handler *CinemaPool) CheckSeats(ctx context.Context, in *proto.CheckSeatsR
 		return errors.New("Cinema Service - CheckSeats | Cannot execute storno because cinema doesnt exist")
 	}
 
-	check := true
+	isnotreserved := true
 
 	for _, curseat := range in.Seatcheck {
 		if currentcinema.containsSeatMap(curseat.Row, curseat.Column) {
 			value := currentcinema.seatmap[currentcinema.getSeat(curseat.Row, curseat.Column)]
 			if value {
-				check := false
+				isnotreserved = false
 			}
 		}
 	}
 
 	handler.mutex.Unlock()
 
-	out.Available = check
+	out.Available = isnotreserved
 
-	if check {
+	if isnotreserved {
 		log.Println("Cinema Service - CheckSeats | Seats are available")
 		return nil
 	}
@@ -243,24 +244,27 @@ func (handler *CinemaPool) FreeSeats(ctx context.Context, in *proto.FreeSeatsReq
 	}
 
 	retseatmap := map[*seats]bool{}
-	for curseat := range currentcinema.seatmap {
-		if currentcinema.containsSeatMap(int64(curseat.row), int64(curseat.column)) {
-			value := currentcinema.seatmap[currentcinema.getSeat(int64(curseat.row), int64(curseat.column))]
-			if value {
-				x := currentcinema.getSeat(int64(curseat.row), int64(curseat.column))
-				currentcinema.seatmap[x] = true
-			}
+	for curseat, y := range currentcinema.seatmap {
+		if !y {
+			retseatmap[curseat] = y
 		}
 	}
 	handler.mutex.Unlock()
 
-	avseats := proto.FreeSeatsResponse{
-		Freeseats: retseatmap,
-	}
-	out.freeseats = avseats
+	out.Freeseats = makeSendable(retseatmap)
 
 	fmt.Println("Cinema Service - FreeSeats | Successfully executed FreeSeats")
 	return nil
+}
+
+func makeSendable(m map[*seats]bool) []*proto.SeatMessage {
+	x := []*proto.SeatMessage{}
+	if len(m) > 0 {
+		for k := range m {
+			x = append(x, &proto.SeatMessage{Row: int64(k.row), Column: int64(k.column)})
+		}
+	}
+	return x
 }
 
 /*
@@ -276,4 +280,5 @@ func (handler *CinemaPool) Reset(context context.Context, in *proto.ResetRequest
 	log.Println("Cinema Service - Clear | Reset successfull")
 	out.Answer = true
 	return nil
+
 }

@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 
+	"github.com/ob-vss-ws19/blatt-4-pwn2own/cinemahall/cinemahall"
+
 	protooo "github.com/ob-vss-ws19/blatt-4-pwn2own/cinemahall/proto"
 
 	micro "github.com/micro/go-micro"
