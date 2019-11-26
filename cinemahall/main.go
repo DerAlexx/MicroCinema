@@ -3,8 +3,9 @@ package main
 import (
 	"fmt"
 
+	protooo "github/ob-vss-ws19/blatt-4-pwn2own/cinemahall/proto"
+
 	micro "github.com/micro/go-micro"
-	"github.com/ob-vss-ws19/blatt-4-pwn2own/cinemahall/proto"
 )
 
 const serviceName = "cinema-service"
@@ -20,7 +21,7 @@ func main() {
 	service.Init()
 
 	//RegisterHandler => fehlt
-	proto.RegisterCinemaHandler(service.Server(), NewCinemaPool())
+	protooo.RegisterCinemaHandler(service.Server(), new(cinemahall.CinemaServiceHandler))
 
 	// Run the server
 	if err := service.Run(); err != nil {
