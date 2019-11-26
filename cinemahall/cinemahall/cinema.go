@@ -2,9 +2,10 @@ package cinemahall
 
 import (
 	"context"
-	proto "github/ob-vss-ws19/blatt-4-pwn2own/cinemahall/proto"
 	"math/rand"
 	"time"
+
+	proto "github.com/ob-vss-ws19/blatt-4-pwn2own/cinemahall/proto"
 )
 
 const (

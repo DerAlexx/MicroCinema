@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	protooo "github/ob-vss-ws19/blatt-4-pwn2own/cinemahall/proto"
+	protooo "github.com/ob-vss-ws19/blatt-4-pwn2own/cinemahall/proto"
 
 	micro "github.com/micro/go-micro"
 )
@@ -20,7 +20,6 @@ func main() {
 	// Init will parse the command line flags.
 	service.Init()
 
-	//RegisterHandler => fehlt
 	protooo.RegisterCinemaHandler(service.Server(), new(cinemahall.CinemaServiceHandler))
 
 	// Run the server
