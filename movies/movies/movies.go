@@ -137,7 +137,7 @@ func (m *MovieHandlerService) ChangeMovie(ctx context.Context, in *proto.ChangeM
 			return nil
 		}
 	}
-	return fmt.Errorf("cannot change the movie. The movieid or the name are not ok. See: %d %s", in.Movie.Id, in.Movie.Name)
+	return fmt.Errorf("cannot change the movie. The movie id or the name are not ok. See: %d %s", in.Movie.Id, in.Movie.Name)
 }
 
 /*
@@ -169,10 +169,10 @@ func (m *MovieHandlerService) DeleteMovie(ctx context.Context, in *proto.DeleteM
 }
 
 /*
-find will search by a given value for its oppotsite. E.g if you
+Find will search by a given value for its oppotsite. E.g if you
 have the name you can get the id.
 */
-func (m *MovieHandlerService) find(value interface{}) interface{} {
+func (m *MovieHandlerService) Find(value interface{}) interface{} {
 	switch value.(type) {
 	case int32:
 		if m.containsID(value.(int32)) {
@@ -196,12 +196,12 @@ FindMovie will find a movie.
 */
 func (m *MovieHandlerService) FindMovie(ctx context.Context, in *proto.FindMovieRequest, out *proto.FindMovieResponse) error {
 	if m.containsID(in.Movie.Id) {
-		out.Movie.Name = m.find(in.Movie.Id).(string)
+		out.Movie.Name = m.Find(in.Movie.Id).(string)
 		out.Movie.Id = in.Movie.Id
 		return nil
 	} else if in.Movie.Name != "" {
 		out.Movie.Name = in.Movie.Name
-		out.Movie.Id = m.find(in.Movie.Name).(int32)
+		out.Movie.Id = m.Find(in.Movie.Name).(int32)
 		return nil
 	} else {
 		return fmt.Errorf("cannot find a movie with the given id %d or the name %s", in.Movie.Id, in.Movie.Name)
