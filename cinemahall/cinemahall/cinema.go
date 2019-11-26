@@ -139,7 +139,7 @@ func (handler *CinemaPool) Delete(ctx context.Context, in *proto.DeleteCinemaReq
 Reservation will change the value in the seatmap of a cinema to true (for the given row and column) if the seat is still available
 */
 func (handler *CinemaPool) Reservation(ctx context.Context, in *proto.ReservationRequest, out *proto.ReservationResponse) error {
-	fmt.Printf("Cinema Service - Reservation | Reservating seats in row %d and column &d for cinema id %d\n", in.Seatreservation, in.Seatreservation, in.Id) //Fehler
+	fmt.Printf("Cinema Service - Reservation | Reservating seats for cinema id %d", in.Id)
 
 	handler.mutex.Lock()
 	currentcinema, mapcontainscinema := handler.containsandreturncinema(in.Id)

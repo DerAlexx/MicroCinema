@@ -22,7 +22,7 @@ func main() {
 	// Init will parse the command line flags.
 	service.Init()
 
-	protooo.RegisterCinemaHandler(service.Server(), new(cinemahall.CinemaServiceHandler))
+	protooo.RegisterCinemaHandler(service.Server(), new(cinemahall.CinemaPool))
 
 	// Run the server
 	if err := service.Run(); err != nil {
