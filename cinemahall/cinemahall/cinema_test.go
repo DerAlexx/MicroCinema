@@ -156,9 +156,9 @@ func TestFreeSeats(t *testing.T) {
 	responseReservation := protoo.ReservationResponse{}
 	service.Reservation(nil, &protoo.ReservationRequest{Id: response.Id, &protoo.SeatMessage{Row: 1, Column: 1}}, &responseReservation)
 	responseFreeSeats := protoo.FreeSeatsResponse{}
-	service.Reservation(nil, &protoo.CheckSeatsRequest{Id: response.Id, &responseFreeSeats)
+	service.Reservation(nil, &protoo.CheckSeatsRequest{Id: response.Id}, &responseFreeSeats)
 
-	if response.Freeseats.Row != 2 || response.Freeseats.Column != 2{
+	if response.Freeseats.Row != 2 || response.Freeseats.Column != 2 {
 		t.Error("FreeSeats failed")
 	} else {
 		t.Log("FreeSeats will work in a cinema .")

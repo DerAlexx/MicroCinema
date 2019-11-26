@@ -2,7 +2,11 @@ package cinemahall
 
 import (
 	"context"
+	"errors"
+	"fmt"
+	"log"
 	"math/rand"
+	"sync"
 	"time"
 
 	proto "github.com/ob-vss-ws19/blatt-4-pwn2own/cinemahall/proto"
@@ -17,6 +21,7 @@ CinemaPool contains all cinemas.
 */
 type CinemaPool struct {
 	cinemamap map[int64]*cinema
+	mutex     *sync.Mutex
 }
 
 type seats struct {
@@ -32,19 +37,20 @@ type cinema struct {
 /*
 NewCinemaPool creates a new CinemaPool
 */
-func NewCinemaPool() *CinemaServiceHandler {
+func NewCinemaPool() *CinemaPool {
 	newcinema := make(map[int64]*cinema)
 
-	return &CinemaServiceHandler{
-		cinemamap: newcinemas,
+	return &CinemaPool{
+		mutex:     &sync.Mutex{},
+		cinemamap: newcinema,
 	}
 }
 
-func getRandomCinemaID() int64 {
+func (handler *CinemaPool) getRandomCinemaID() int64 {
 	rand.Seed(time.Now().UnixNano())
 	for {
-		potentialID := rand.Intn(maxcinemaid)
-		if !containscinema(potentialID) {
+		potentialID := int64(rand.Intn(maxcinemaid))
+		if !handler.containscinema(potentialID) {
 			return potentialID
 		}
 	}
@@ -56,24 +62,26 @@ func (handler *CinemaPool) containscinema(id int64) bool {
 }
 
 func (handler *CinemaPool) containsandreturncinema(id int64) (*cinema, bool) {
-	currentcinema, mapcontainscinema := handler.cinemamap[in.id]
+	currentcinema, mapcontainscinema := handler.cinemamap[id]
 	return currentcinema, mapcontainscinema
 }
 
 func (currentcinema *cinema) containsSeatMap(row int64, column int64) bool {
 	for seat, occ := range currentcinema.seatmap {
-		if seat.row == row && seat.column == column {
-			return occ
+		if int64(seat.row) == row && int64(seat.column) == column {
+			return true
 		}
 	}
+	return false
 }
 
 func (currentcinema *cinema) getSeat(row int64, column int64) *seats {
 	for seat, occ := range currentcinema.seatmap {
-		if seat.row == row && seat.column == column {
+		if int64(seat.row) == row && int64(seat.column) == column {
 			return seat
 		}
 	}
+	return nil
 }
 
 /*
@@ -81,53 +89,48 @@ Create creates a new cinema. It will be saved in the CinemaPool. The id to acces
 If the creation was successfull the id will be returned
 */
 func (handler *CinemaPool) Create(ctx context.Context, in *proto.CreateCinemaRequest, out *proto.CreateCinemaResponse) error {
-	log.Printf("Cinema Service - Create | Creating cinema with name: %s, %d rows: and columns: %d \n", in.name, in.row, in.column)
+	fmt.Printf("Cinema Service - Create | Creating cinema with name: %s, %d rows: and columns: %d \n", in.Name, in.Row, in.Column)
 
-	if len(in.name) == 0 || in.row == 0 || in.column == 0 {
-		err := fmt.Errorf("Cannot create a cinema with an empty name, zero rows or zero columns")
-		log.Errorf("Cinema Service - Create | %s\n", err.Error())
-		return err
+	if len(in.Name) == 0 || in.Row == 0 || in.Column == 0 {
+		return errors.New("Cinema Service - Create | Cannot create a cinema with an empty name, zero rows or zero columns")
 	}
 
-	newseatmap := [*seats]bool{}
-	for i := int64(0); i < in.row; i++ {
-		for j := int64(0); j < in.column; j++ {
-			newseatmap[&seats{row: i, column: j}] = false
+	newseatmap := map[*seats]bool{}
+	for i := int64(0); i < in.Row; i++ {
+		for j := int64(0); j < in.Column; j++ {
+			newseatmap[&seats{row: int(i), column: int(j)}] = false
 		}
 	}
 
-	createid := getRandomCinemaID()
+	createid := handler.getRandomCinemaID()
 	handler.mutex.Lock()
-	handler.cinemamap[createid] = newseatmap
+	handler.cinemamap[createid] = &cinema{name: in.Name, seatmap: newseatmap}
 	handler.mutex.Unlock()
-	out.name = in.name
-	out.id = createid
+	out.Name = in.Name
+	out.Id = createid
 
-	log.Println("Cinema Service - Create | Successfully created cinema")
+	fmt.Println("Cinema Service - Create | Successfully created cinema")
 
 	return nil
-
 }
 
 /*
 Delete will delete a cinema(id) from the CinemaPool.
 */
 func (handler *CinemaPool) Delete(ctx context.Context, in *proto.DeleteCinemaRequest, out *proto.DeleteCinemaResponse) error {
-	log.Printf("Cinema Service - Delete | Deleting cinema with id %d\n", in.id)
+	fmt.Printf("Cinema Service - Delete | Deleting cinema with id %d\n", in.Id)
 	handler.mutex.Lock()
-	mapcontainscinema := handler.containscinema(in.id)
+	mapcontainscinema := handler.containscinema(in.Id)
 	if !mapcontainscinema {
 		handler.mutex.Unlock()
-		out.answer = false
-		err := fmt.Errorf("Cannot delete cinema with id: %d", in.id)
-		log.Printf("Cinema Service - Delete | %s\n", err.Error())
-		return err
+		out.Answer = false
+		return fmt.Errorf("Cinema Service - Delete | Cannot delete cinema with id: %d", in.Id)
 	}
-	delete(handler.cinemamap, in.id)
+	delete(handler.cinemamap, in.Id)
 	handler.mutex.Unlock()
-	out.answer = true
+	out.Answer = true
 
-	log.Println("Cinema Service - Delete | Successfully deleted cinema")
+	fmt.Println("Cinema Service - Delete | Successfully deleted cinema")
 	return nil
 }
 
@@ -135,28 +138,26 @@ func (handler *CinemaPool) Delete(ctx context.Context, in *proto.DeleteCinemaReq
 Reservation will change the value in the seatmap of a cinema to true (for the given row and column) if the seat is still available
 */
 func (handler *CinemaPool) Reservation(ctx context.Context, in *proto.ReservationRequest, out *proto.ReservationResponse) error {
-	log.Printf("Cinema Service - Reservation | Reservating seats %v for cinema id %d\n", in.column, in.id)
+	fmt.Printf("Cinema Service - Reservation | Reservating seats in row %d and column &d for cinema id %d\n", in.Seatreservation, in.Seatreservation, in.Id) //Fehler
 
 	handler.mutex.Lock()
-	currentcinema, mapcontainscinema := containsandreturncinema(in.id)
+	currentcinema, mapcontainscinema := handler.containsandreturncinema(in.Id)
 
 	if !mapcontainscinema {
 		handler.mutex.Unlock()
-		err := fmt.Error("Cannot execute reservation because cinema doesnt exist")
-		log.Printf("Cinema Service - Reservation | %s\n", err.Error())
-		out.answer = false
-		return err
+		out.Answer = false
+		return errors.New("Cinema Service - Reservation | Cannot execute reservation because cinema doesnt exist")
 	}
-	for curreservation := range in.seatreservation {
-		if currentcinema.containsSeatMap(curreservation.row, curreservation.column) {
-			currentcinema.seatmap[getSeat(curreservation.row, curreservation.column)] = true
+	for curreservation := range in.Seatreservation {
+		if currentcinema.containsSeatMap(*curreservation.Row, curreservation.column) {
+			currentcinema.seatmap[currentcinema.getSeat(curreservation.row, curreservation.column)] = true
 		}
 	}
-	handler.cinemamap[in.id] = currentcinema
+	handler.cinemamap[in.Id] = currentcinema
 	handler.mutex.Unlock()
 
-	log.Println("Cinema Service - Reservation | Reservation successfull")
-	out.answer = true
+	fmt.Println("Cinema Service - Reservation | Reservation successfull")
+	out.Answer = true
 	return nil
 }
 
@@ -164,29 +165,27 @@ func (handler *CinemaPool) Reservation(ctx context.Context, in *proto.Reservatio
 Storno will undo a reservation
 */
 func (handler *CinemaPool) Storno(ctx context.Context, in *proto.StornoRequest, out *proto.StornoResponse) error {
-	log.Println("Cinema Service - Storno | Deleting reservation")
+	fmt.Println("Cinema Service - Storno | Deleting reservation")
 
 	handler.mutex.Lock()
-	currentcinema, mapcontainscinema := containsandreturncinema(in.id)
+	currentcinema, mapcontainscinema := handler.containsandreturncinema(in.Id)
 
 	if !mapcontainscinema {
 		handler.mutex.Unlock()
-		err := fmt.Errorf("Cannot execute storno because cinema doesnt exist")
-		log.Printf("Cinema Service - Storno | %s\n", err.Error())
-		out.answer = false
-		return err
+		out.Answer = false
+		return errors.New("Cinema Service - Storno | Cannot execute storno because cinema doesnt exist")
 	}
-	for curreservation := range in.seatstorno {
+	for curreservation := range in.Seatstorno {
 		if currentcinema.containsSeatMap(curreservation.row, curreservation.column) {
-			currentcinema.seatmap[getSeat(curreservation.row, curreservation.column)] = false
+			currentcinema.seatmap[currentcinema.getSeat(curreservation.row, curreservation.column)] = false
 		}
 	}
-	handler.cinemamap[in.id] = currentcinema
+	handler.cinemamap[in.Id] = currentcinema
 	handler.mutex.Unlock()
 
-	out.answer = true
+	out.Answer = true
 
-	log.Println("Cinema Service - Storno | Successfully deleted reservation")
+	fmt.Println("Cinema Service - Storno | Successfully deleted reservation")
 	return nil
 }
 
@@ -194,22 +193,20 @@ func (handler *CinemaPool) Storno(ctx context.Context, in *proto.StornoRequest, 
 CheckSeats checks if the requested seats are available
 */
 func (handler *CinemaPool) CheckSeats(ctx context.Context, in *proto.CheckSeatsRequest, out *proto.CheckSeatsResponse) error {
-	log.Println("Cinema Service - CheckSeats | Deleting reservation")
+	fmt.Println("Cinema Service - CheckSeats | Deleting reservation")
 
 	handler.mutex.Lock()
-	currentcinema, mapcontainscinema := containsandreturncinema(in.id)
+	currentcinema, mapcontainscinema := handler.containsandreturncinema(in.Id)
 
 	if !mapcontainscinema {
 		handler.mutex.Unlock()
-		err := fmt.Errorf("Cannot execute checkseats because cinema doesnt exist")
-		log.Printf("Cinema Service - CheckSeats | %s\n", err.Error())
-		out.answer = false
-		return err
+		out.Available = false
+		return errors.New("Cinema Service - CheckSeats | Cannot execute storno because cinema doesnt exist")
 	}
 
 	check := true
 
-	for curseat := range in.seatcheck {
+	for curseat := range in.Seatcheck {
 		if currentcinema.containsSeatMap(curseat.row, curseat.column) {
 			value := currentcinema.seatmap[getSeat(curseat.row, curseat.column)]
 			if value {
@@ -217,9 +214,10 @@ func (handler *CinemaPool) CheckSeats(ctx context.Context, in *proto.CheckSeatsR
 			}
 		}
 	}
+
 	handler.mutex.Unlock()
 
-	out.answer = check
+	out.Available = check
 
 	if check {
 		log.Println("Cinema Service - CheckSeats | Seats are available")
@@ -233,20 +231,18 @@ func (handler *CinemaPool) CheckSeats(ctx context.Context, in *proto.CheckSeatsR
 FreeSeats returns all seats that are available
 */
 func (handler *CinemaPool) FreeSeats(ctx context.Context, in *proto.FreeSeatsRequest, out *proto.FreeSeatsResponse) error {
-	log.Println("Cinema Service - FreeSeats | Return all free seats")
+	fmt.Println("Cinema Service - FreeSeats | Return all free seats")
 
 	handler.mutex.Lock()
-	currentcinema, mapcontainscinema := containsandreturncinema(in.id)
+	currentcinema, mapcontainscinema := handler.containsandreturncinema(in.Id)
 
 	if !mapcontainscinema {
 		handler.mutex.Unlock()
-		err := fmt.Errorf("Cannot execute freeseats because cinema doesnt exist")
-		log.Printf("Cinema Service - FreeSeats | %s\n", err.Error())
-		out.answer = false
-		return err
+		out.Freeseats = nil
+		return errors.New("Cinema Service - FreeSeats | Cannot execute storno because cinema doesnt exist")
 	}
 
-	retseatmap := [*seats]bool{}
+	retseatmap := map[*seats]bool{}
 	for curseat := range currentcinema.seatmap {
 		if currentcinema.containsSeatMap(curseat.row, curseat.column) {
 			value := currentcinema.seatmap[getSeat(curseat.row, curseat.column)]
@@ -258,19 +254,19 @@ func (handler *CinemaPool) FreeSeats(ctx context.Context, in *proto.FreeSeatsReq
 	handler.mutex.Unlock()
 
 	avseats := proto.FreeSeatsResponse{
-		freeseats: retseatmap,
+		Freeseats: retseatmap,
 	}
 	out.freeseats = avseats
 
-	log.Println("Cinema Service - FreeSeats | Successfully executed FreeSeats")
+	fmt.Println("Cinema Service - FreeSeats | Successfully executed FreeSeats")
 	return nil
 }
 
 /*
 Reset resets the CinemaPool
 */
-func (handler *CinemaServiceHandler) Reset(context.Context, *proto.ResetRequest, *proto.ResetResponse) error {
-	log.Printf("Cinema Service - Clear | Reset Service with id\n", in.id)
+func (handler *CinemaPool) Reset(context.Context, *proto.ResetRequest, *proto.ResetResponse) error {
+	fmt.Println("Cinema Service - Clear | Reset Service with id", in.id)
 
 	handler.mux.Lock()
 	handler.cinemamap = make(map[int64]*cinema)
