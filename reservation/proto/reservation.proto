@@ -37,6 +37,13 @@ message Reservation {
     int32 Show = 2;
 }
 
+// Response of reservations
+message ReservationResponse {
+    int32 tmpID = 1;
+    bool work = 2;
+    string show = 3;
+}
+
 // Request for HasReservations
 message HasReservationsRequest {
     Reservation res = 1;
@@ -91,23 +98,20 @@ message DeleteReservationResponse {
 
 // AcceptReservation request.
 message AcceptReservationRequest {
-    int32 tmpID = 1;
-    bool want = 2;
+    repeated ReservationResponse res = 1;
 }
 
 // AcceptReservation response.
 message AcceptReservationResponse {
-    int32 finalID = 1;
-    bool taken = 2;
+    repeated ReservationResponse res = 1;
 }
 
 // MakeReservation request.
 message MakeReservationRequest {
-    Reservation res = 1;
+    repeated Reservation res = 1;
 }
 
 // MakeReservation response.
 message MakeReservationResponse {
-    int32 tmpID = 1;
-    bool work = 2;
+    repeated ReservationResponse res = 1;
 }
