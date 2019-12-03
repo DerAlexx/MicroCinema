@@ -1,5 +1,5 @@
 syntax = "proto3";
-package proto;
+package showproto;
 
 service Show {
     rpc CreateShow (CreateShowRequest) returns (CreateShowResponse) {
@@ -25,21 +25,20 @@ service Show {
 }
 
 message ShowMessage {
-    int64 cinemaId = 1;
-    int64 movieId = 2;
+    int32 cinemaId = 1;
+    int32 movieId = 2;
 }
-
 
 message CreateShowRequest {
    ShowMessage createData = 1;
 }
 
 message CreateShowResponse {
-    int64 createShowId = 1;
+    int32 createShowId = 1;
 }
 
 message DeleteShowRequest {
-   int64 deleteShowId = 1;
+   int32 deleteShowId = 1;
 }
 
 message DeleteShowResponse {
@@ -47,7 +46,7 @@ message DeleteShowResponse {
 }
 
 message DeleteShowConnectedCinemaRequest {
-   int64 cinemaId = 1;
+   int32 cinemaId = 1;
 }
 
 message DeleteShowConnectedCinemaResponse {
@@ -55,7 +54,7 @@ message DeleteShowConnectedCinemaResponse {
 }
 
 message DeleteShowConnectedMovieRequest {
-   int64 movieId = 1;
+   int32 movieId = 1;
 }
 
 message DeleteShowConnectedMovieResponse {
@@ -63,15 +62,15 @@ message DeleteShowConnectedMovieResponse {
 }
 
 message ListShowRequest {
-   int64 showId = 1;
 }
 
 message ListShowResponse {
-    repeated ShowMessage allShowsData = 1;
+    repeated int32 showId = 1;
+    repeated ShowMessage allShowsData = 2;
 }
 
 message FindShowConnectedMovieRequest {
-    int64 movieId = 1;
+    int32 movieId = 1;
 }
 
 message FindShowConnectedMovieResponse {
@@ -79,7 +78,7 @@ message FindShowConnectedMovieResponse {
 }
 
 message FindShowConnectedCinemaRequest {
-    int64 cinemaId = 1;
+    int32 cinemaId = 1;
 }
 
 message FindShowConnectedCinemaResponse {

@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	protooo "github.com/ob-vss-ws19/blatt-4-pwn2own/show/proto"
+	"github.com/ob-vss-ws19/blatt-4-pwn2own/show/show"
 
 	micro "github.com/micro/go-micro"
 )
@@ -26,5 +27,4 @@ func main() {
 	if err := service.Run(); err != nil {
 		fmt.Println(err)
 	}
-
 }
