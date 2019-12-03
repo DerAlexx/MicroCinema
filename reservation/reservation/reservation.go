@@ -141,8 +141,15 @@ func (r *ReservatServiceHandler) MakeReservation(ctx context.Context, in *proto.
 /*
 swapValuesBetweenMaps will change a pair form unaccepted to reservations.
 */
-func (r *ReservatServiceHandler) swapValuesBetweenMaps(id int32) {
-	//TODO
+func (r *ReservatServiceHandler) swapValuesBetweenMaps(id int32) bool {
+	if r.containsPotantialReservations(id) {
+		r.mutex.Lock()
+		(*r.getReservationsMap())[id] = (*r.getPotantialReservationsMap())[id]
+		delete(*r.getPotantialReservationsMap(), id)
+		r.mutex.Unlock()
+		return true
+	}
+	return false
 }
 
 /*
@@ -151,7 +158,11 @@ AcceptReservation will accept a reservation of a temporally stored reservation r
 func (r *ReservatServiceHandler) AcceptReservation(ctx context.Context, in *proto.AcceptReservationRequest, out *proto.AcceptReservationResponse) error {
 	if in.TmpID > 0 && in.Want && r.containsPotantialReservations(in.TmpID) {
 		r.mutex.Lock()
-		r.swapValuesBetweenMaps(in.TmpID)
+		if swapped := r.swapValuesBetweenMaps(in.TmpID); !swapped {
+			r.mutex.Unlock()
+			return fmt.Errorf("cannot make the potantial reservation a actuall reservation id: %d (invalid id)", in.TmpID)
+		}
+		//TODO reservieren im service. --> Blocken der Sitze.
 		r.mutex.Unlock()
 		return nil
 	} else if r.containsPotantialReservations(in.TmpID) && !in.Want {
@@ -192,32 +203,76 @@ func (r *ReservatServiceHandler) DeleteReservation(ctx context.Context, in *prot
 	return fmt.Errorf("cannot find a entry with the id %d --> cannot delete this", in.Id)
 }
 
+func (r *ReservatServiceHandler) changeReservation(id int32, in proto.Reservation) bool {
+	if r.containsID(id) {
+		(*r.getReservationsMap())[id] = &Reservation{
+			UserID: in.User,
+			ShowID: in.Show,
+			Seats:  convertSeats(in.Seats),
+		}
+		return true
+	}
+	return false
+}
+
 /*
 ChangeReservation will change a reservation for example the place of the reservation.
 */
 func (r *ReservatServiceHandler) ChangeReservation(ctx context.Context, in *proto.ChangeReservationRequest, out *proto.ChangeReservationResponse) error {
+	if r.containsID(in.Res.ResId) {
+		if changed := r.changeReservation(in.Res.ResId, *in.Res); changed {
+			out.Changed = true
+			return nil
+		}
+	}
+	out.Changed = false
+	return fmt.Errorf("cannot change the reservation with the id: %d", in.Res.ResId)
+}
+
+/*
+FindSingleReservation will find a single reservation by a given id an return the reservation.
+*/
+func (r *ReservatServiceHandler) FindSingleReservation(id int32) *Reservation {
+	if (id) > 0 && r.containsID(id) {
+		for k, v := range *r.getReservationsMap() {
+			if k == id {
+				return v
+			}
+		}
+	}
 	return nil
+}
+
+/*
+makeSeatToProtoSeat will switch a seat into a protoseat type --> Typcast like function.
+*/
+func makeSeatToProtoSeat(localseats []int32) []*proto.Seat {
+	convertedSeats := []*proto.Seat{}
+	if len(localseats) > 0 {
+		for _, lSeat := range localseats {
+			convertedSeats = append(convertedSeats, &proto.Seat{
+				Seat: lSeat,
+			})
+		}
+	}
+	return convertedSeats
 }
 
 /*
 ShowReservations will send a reservation to the client
 */
 func (r *ReservatServiceHandler) ShowReservations(ctx context.Context, in *proto.ShowReservationsRequest, out *proto.ShowReservationsResponse) error {
-	return nil
-}
-
-/*
-reverseSeatsTypes will switch back from int32 into proto.Seats.
-*/
-func reverseSeatTypes(seats []int32) []*proto.Seat {
-	if len(seats) > 0 {
-		news := []*proto.Seat{}
-		for _, v := range seats {
-			news = append(news, &proto.Seat{Seat: v})
+	if (in.Id) > 0 && r.containsID(in.Id) {
+		reservation := r.FindSingleReservation(in.Id)
+		out.Res = &proto.Reservation{
+			ResId: in.Id,
+			User:  reservation.UserID,
+			Show:  reservation.ShowID,
+			Seats: makeSeatToProtoSeat(reservation.Seats),
 		}
-		return news
+		return nil
 	}
-	return []*proto.Seat{}
+	return fmt.Errorf("cannot find a user with this id: %d", in.Id)
 }
 
 /*
@@ -231,7 +286,7 @@ func (r *ReservatServiceHandler) prepareStream() []*proto.Reservation {
 				ResId: k,
 				User:  v.UserID,
 				Show:  v.ShowID,
-				Seats: reverseSeatTypes(v.Seats),
+				Seats: makeSeatToProtoSeat(v.Seats),
 			})
 		}
 		return res
