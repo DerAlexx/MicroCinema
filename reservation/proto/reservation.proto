@@ -31,10 +31,16 @@ service reservation {
     rpc HasReservations(HasReservationsRequest) returns (HasReservationsResponse);
 }
 
+message Seat {
+    int32 seat = 1;
+}
+
 // Message representing a Reservation.
 message Reservation {
     int32 ResId = 1;
     int32 Show = 2;
+    int32 User = 3;
+    repeated Seat seats = 4;
 }
 
 // Response of reservations
@@ -52,6 +58,7 @@ message HasReservationsRequest {
 // Response for hasReservations
 message HasReservationsResponse {
     bool has = 1;
+    int32 amount = 2;
 }   
 
 // StreamUsersReservations request.
@@ -98,20 +105,23 @@ message DeleteReservationResponse {
 
 // AcceptReservation request.
 message AcceptReservationRequest {
-    repeated ReservationResponse res = 1;
+    int32 tmpID = 1;
+    bool want = 2;
 }
 
 // AcceptReservation response.
 message AcceptReservationResponse {
-    repeated ReservationResponse res = 1;
+    int32 finalID = 1;
+    bool taken = 2;
 }
 
 // MakeReservation request.
 message MakeReservationRequest {
-    repeated Reservation res = 1;
+    Reservation res = 1;
 }
 
 // MakeReservation response.
 message MakeReservationResponse {
-    repeated ReservationResponse res = 1;
+    int32 tmpID = 1;
+    bool works = 2;
 }
