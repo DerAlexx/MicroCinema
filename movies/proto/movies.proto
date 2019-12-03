@@ -1,0 +1,81 @@
+// Proto for movies
+
+syntax = "proto3";
+
+package movieproto;
+
+/*
+Everything the movies need.
+*/
+service movies {
+    // Create a movie.
+    rpc CreateMovie(CreateMovieRequest) returns (CreatedMovieResponse) {};
+
+    // Change a movie.
+    rpc ChangeMovie(ChangeMovieRequest) returns (ChangeMovieResponse) {};
+ 
+    // Delete a Movie.
+    rpc DeleteMovie(DeleteMovieRequest) returns (DeleteMovieResponse) {};
+    
+    // Find will find a movie
+    rpc FindMovie(FindMovieRequest) returns (FindMovieResponse) {};
+
+    // Stream
+    rpc StreamMovie(StreamMovieRequest) returns (StreamMovieResponse) {};
+}
+
+// Movie representation.
+message Movie {
+    int32 id = 1;
+    string name = 2;
+}
+
+// Create a movie request.
+message CreateMovieRequest {
+    string name = 1;
+}
+
+// Create a movie response.
+message CreatedMovieResponse {
+    Movie movie = 1;
+}
+
+// Change a movie request.
+message ChangeMovieRequest {
+    Movie movie = 1;
+}
+
+// Change a movie response.
+message ChangeMovieResponse {
+    bool changed = 1;
+}
+
+//Find a movie request.
+message FindMovieRequest {
+    Movie movie = 1;
+}
+
+// Find a movie response.
+message FindMovieResponse {
+    Movie movie = 1;
+}
+
+// Delete a movie request.
+message DeleteMovieRequest {
+    int32 id = 1;
+}
+
+// Delete a movie response.
+message DeleteMovieResponse {
+    bool deleted = 1;
+}
+
+// Stream all movies request.
+message StreamMovieRequest {
+
+}
+
+// Stream all movies response.
+message StreamMovieResponse {
+    repeated Movie movies = 1;
+}
