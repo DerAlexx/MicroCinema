@@ -1,0 +1,3 @@
+# Dockerfile for the show-services
+
+FROM obraun/vss-protoactor-jenkins as builder
