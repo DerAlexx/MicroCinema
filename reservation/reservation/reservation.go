@@ -203,6 +203,9 @@ func (r *ReservatServiceHandler) DeleteReservation(ctx context.Context, in *prot
 	return fmt.Errorf("cannot find a entry with the id %d --> cannot delete this", in.Id)
 }
 
+/*
+changeReservation will set the reservation in a map to a new one.
+*/
 func (r *ReservatServiceHandler) changeReservation(id int32, in proto.Reservation) bool {
 	if r.containsID(id) {
 		(*r.getReservationsMap())[id] = &Reservation{
