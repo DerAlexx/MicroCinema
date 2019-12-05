@@ -1,3 +1,9 @@
 # CinemaService Pwn2Own
 
-This is our cinemaservice.
+## Installation
+
+- **Es wird die GO Version 1.12 benötigt**
+
+## Ausführen der Tests
+
+## Ausführen der Services
