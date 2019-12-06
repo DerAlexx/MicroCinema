@@ -31,6 +31,7 @@ pipeline {
                 docker { image 'obraun/vss-protoactor-jenkins' }
             }
             steps {
+                sh 'pwd && ls'
                 sh 'golangci-lint run --disable-all -E errcheck'  //--deadline 20m --enable-all
             }
         }
