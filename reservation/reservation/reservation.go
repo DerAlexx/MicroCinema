@@ -110,12 +110,60 @@ func convertSeats(seats []*proto.Seat) []int32 {
 }
 
 /*
+checkIfSeatIsTaken will check whether a given seat is allready in a reservation.
+*/
+func (r *ReservatServiceHandler) checkIfSeatIsTaken(seat int32) bool {
+	for _, v := range *r.getReservationsMap() {
+		for _, resSeat := range v.Seats {
+			if resSeat == seat {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+/*
+checkIfSeatsStillFree will take a slice of seats and check for all whether or not
+the seats are free or taken.
+*/
+func (r *ReservatServiceHandler) checkIfSeatsStillFree(seats *[]int32) bool {
+	for _, seat := range *seats {
+		if taken := r.checkIfSeatIsTaken(seat); taken {
+			return false
+		}
+	}
+	return true
+}
+
+/*
+addInReservationsMap will add a reservation into the potantialreservationsmap and return true in case it worked.
+*/
+func (r *ReservatServiceHandler) addInReservationsMap(id int32, reserve Reservation) bool {
+	if reserve.UserID > 0 && reserve.ShowID > 0 && len(reserve.Seats) > 0 && r.checkIfSeatsStillFree(&reserve.Seats) {
+		(*r.getReservationsMap())[id] = &reserve
+		return true
+	}
+	fmt.Println(fmt.Errorf("Cannot add a potantial reservation because the given reservation or id were no as expected userID: %d, showID: %d, Seats-len: %d, ReservationID: %d", reserve.UserID, reserve.ShowID, len(reserve.Seats), id))
+	return false
+}
+
+/*
 This method will append a reservation to the structure of unaccepted reservations.
+If the service can reserve the reservation this method will return the ID and a bool to indecate
+whether or not it worked.
 */
 func (r *ReservatServiceHandler) makePotentialReservation(seats []*proto.Seat, userid, showid int32) (bool, int32) {
-	//seat := convertSeats(seats)
+	seat := convertSeats(seats)
+	id := r.getRandomReservationsID(91734628)
+	if added := r.addInReservationsMap(id, Reservation{
+		UserID: userid,
+		ShowID: showid,
+		Seats:  seat,
+	}); added {
+		return true, id
+	}
 	return false, -1
-	//TODO
 }
 
 /*
@@ -156,7 +204,7 @@ func (r *ReservatServiceHandler) swapValuesBetweenMaps(id int32) bool {
 AcceptReservation will accept a reservation of a temporally stored reservation request.
 */
 func (r *ReservatServiceHandler) AcceptReservation(ctx context.Context, in *proto.AcceptReservationRequest, out *proto.AcceptReservationResponse) error {
-	if in.TmpID > 0 && in.Want && r.containsPotantialReservations(in.TmpID) {
+	if in.TmpID > 0 && in.Want && r.containsPotantialReservations(in.TmpID) && r.checkIfSeatsStillFree(&(*r.getPotantialReservationsMap())[in.TmpID].Seats) {
 		r.mutex.Lock()
 		if swapped := r.swapValuesBetweenMaps(in.TmpID); !swapped {
 			r.mutex.Unlock()
