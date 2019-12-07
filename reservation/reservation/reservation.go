@@ -90,7 +90,8 @@ CreateNewReservationHandlerInstance will create a new service for the reservatio
 */
 func CreateNewReservationHandlerInstance() *ReservatServiceHandler {
 	return &ReservatServiceHandler{
-		reservations: make(map[int32]*Reservation),
+		reservations: map[int32]*Reservation{},
+		unaccepted:   map[int32]*Reservation{},
 		mutex:        &sync.Mutex{},
 		//dependencies: addDependency([]*interface{  }),
 	}
@@ -141,7 +142,7 @@ addInReservationsMap will add a reservation into the potantialreservationsmap an
 */
 func (r *ReservatServiceHandler) addInReservationsMap(id int32, reserve Reservation) bool {
 	if reserve.UserID > 0 && reserve.ShowID > 0 && len(reserve.Seats) > 0 && r.checkIfSeatsStillFree(&reserve.Seats) {
-		(*r.getReservationsMap())[id] = &reserve
+		(*r.getPotantialReservationsMap())[id] = &reserve
 		return true
 	}
 	fmt.Println(fmt.Errorf("Cannot add a potantial reservation because the given reservation or id were no as expected userID: %d, showID: %d, Seats-len: %d, ReservationID: %d", reserve.UserID, reserve.ShowID, len(reserve.Seats), id))
@@ -205,21 +206,22 @@ AcceptReservation will accept a reservation of a temporally stored reservation r
 */
 func (r *ReservatServiceHandler) AcceptReservation(ctx context.Context, in *proto.AcceptReservationRequest, out *proto.AcceptReservationResponse) error {
 	if in.TmpID > 0 && in.Want && r.containsPotantialReservations(in.TmpID) && r.checkIfSeatsStillFree(&(*r.getPotantialReservationsMap())[in.TmpID].Seats) {
-		r.mutex.Lock()
 		if swapped := r.swapValuesBetweenMaps(in.TmpID); !swapped {
-			r.mutex.Unlock()
 			return fmt.Errorf("cannot make the potantial reservation a actuall reservation id: %d (invalid id)", in.TmpID)
 		}
 		//TODO reservieren im service. --> Blocken der Sitze.
-		r.mutex.Unlock()
+		out.FinalID = in.TmpID
+		out.Taken = true
 		return nil
 	} else if r.containsPotantialReservations(in.TmpID) && !in.Want {
 		r.mutex.Lock()
 		delete(*r.getPotantialReservationsMap(), in.TmpID)
 		r.mutex.Unlock()
+		out.FinalID = -1
 		out.Taken = false
 		return nil
 	} else {
+		out.FinalID = -1
 		out.Taken = false
 		return fmt.Errorf("cannot accept or delete a reservation with the id: %d (invalid id)", in.TmpID)
 	}
@@ -256,11 +258,13 @@ changeReservation will set the reservation in a map to a new one.
 */
 func (r *ReservatServiceHandler) changeReservation(id int32, in proto.Reservation) bool {
 	if r.containsID(id) {
+		r.mutex.Lock()
 		(*r.getReservationsMap())[id] = &Reservation{
 			UserID: in.User,
 			ShowID: in.Show,
 			Seats:  convertSeats(in.Seats),
 		}
+		r.mutex.Unlock()
 		return true
 	}
 	return false
