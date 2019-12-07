@@ -32,7 +32,7 @@ pipeline {
             }
             steps {
                 sh 'cd cinemahall'
-                sh 'golangci-lint run --disable-all -E errcheck'  //--deadline 20m --enable-all
+                sh 'golangci-lint run --deadline 5m --disable-all -E errcheck'  //--deadline 20m --enable-all
             }
         }
         stage('Build Docker Image') {
