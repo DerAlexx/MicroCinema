@@ -38,11 +38,11 @@ pipeline {
         stage('Build Docker Image') {
             agent any
             steps {
-                sh "docker-build-and-push -b ${BRANCH_NAME} -f cinemahall/dockerfile"
-                sh "docker-build-and-push -b ${BRANCH_NAME} -f movies/dockerfile"
-                sh "docker-build-and-push -b ${BRANCH_NAME} -f reservation/dockerfile"
-                sh "docker-build-and-push -b ${BRANCH_NAME} -f show/dockerfile"
-                sh "docker-build-and-push -b ${BRANCH_NAME} -f users/dockerfile"
+                sh "docker-build-and-push -b ${BRANCH_NAME} -f cinemahall/dockerfile ."
+                sh "docker-build-and-push -b ${BRANCH_NAME} -f movies/dockerfile ."
+                sh "docker-build-and-push -b ${BRANCH_NAME} -f reservation/dockerfile ."
+                sh "docker-build-and-push -b ${BRANCH_NAME} -f show/dockerfile ."
+                sh "docker-build-and-push -b ${BRANCH_NAME} -f users/dockerfile ."
             }
         }
     }
