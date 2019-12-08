@@ -32,6 +32,7 @@ pipeline {
             }
             steps {
                 sh 'echo Hallo'
+                sh 'pwd && ls'
                 //sh 'golangci-lint run --enable-all'  //--deadline 20m --enable-all--disable-all -E errcheck
             }
         }

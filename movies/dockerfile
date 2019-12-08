@@ -4,7 +4,7 @@ FROM obraun/vss-protoactor-jenkins as builder
 COPY . /app
 WORKDIR /app/movies
  
-RUN go build -o moives main.go
+RUN go build -o movies main.go
 
 FROM iron/go
 EXPOSE 8200
