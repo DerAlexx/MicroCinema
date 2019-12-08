@@ -36,9 +36,7 @@ pipeline {
             }
         }
         stage('Build Docker Image') {
-            agent {
-               docker { image 'obraun/vss-protoactor-jenkins'}
-            }
+            agent any
             steps {
                 //sh "docker-build-and-push -b ${BRANCH_NAME} -s cinemahall -f cinemahall/dockerfile ."
                 //sh "docker-build-and-push -b ${BRANCH_NAME} -s movies -f movies/dockerfile ."

@@ -1,11 +1,12 @@
 # Dockerfile for the movies-services
 
 FROM obraun/vss-protoactor-jenkins as builder
+#RUN mkdir -p /app 
 COPY . /app
 WORKDIR /app
 RUN go build -o users main.go
 
 FROM iron/go
-COPY --from=builder /app/main /app
+#COPY --from=builder /app/users/main /app
 EXPOSE 8200
 ENTRYPOINT ["/app"]
