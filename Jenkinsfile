@@ -33,6 +33,7 @@ pipeline {
             steps {
                 sh 'cd cinemahall'
                 sh 'export GO111MODULE=on'
+                sh 'cd /reservation/reservation'
                 sh 'golangci-lint run --enable-all'  //--deadline 20m --enable-all--disable-all -E errcheck
             }
         }
