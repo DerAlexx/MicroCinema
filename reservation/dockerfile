@@ -2,10 +2,10 @@
 
 FROM obraun/vss-protoactor-jenkins as builder
 COPY . /app
-WORKDIR /app
-RUN go build ./main.go
+WORKDIR /app/reservation
+ 
+RUN go build -o reservation main.go
 
 FROM iron/go
-COPY --from=builder /app/main /app
 EXPOSE 8200
-ENTRYPOINT ["/app"]
+ENTRYPOINT ["/app/reservation"]
