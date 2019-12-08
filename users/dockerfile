@@ -3,11 +3,12 @@
 FROM obraun/vss-protoactor-jenkins as builder
 #RUN mkdir -p /app 
 COPY . /app
-WORKDIR /app
-RUN pwd && ls 
+WORKDIR /app/users
+ 
 RUN go build -o users /users/main.go
+RUN pwd && ls
 
 FROM iron/go
 #COPY --from=builder /app/users/main /app
 EXPOSE 8200
-ENTRYPOINT ["/app"]
+ENTRYPOINT ["/app/users"]
