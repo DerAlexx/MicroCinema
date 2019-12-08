@@ -3,7 +3,7 @@ pipeline {
     stages {
         stage('Build') {
             agent {
-                docker { image 'obraun/vss-cinema-jenkins' }
+                docker { image 'obraun/vss-protoactor-jenkins' }
             }
             steps {
                 sh 'cd cinemahall && go build main.go'
@@ -15,7 +15,7 @@ pipeline {
         }
         stage('Test') {
             agent {
-                docker { image 'obraun/vss-cinema-jenkins' }
+                docker { image 'obraun/vss-protoactor-jenkins' }
             }
             steps {
                 sh 'echo run tests...'
@@ -28,7 +28,7 @@ pipeline {
         }
         stage('Lint') {
             agent {
-                docker { image 'obraun/vss-cinema-jenkins' }
+                docker { image 'obraun/vss-protoactor-jenkins' }
             }
             steps {
                 sh 'echo Hallo'
