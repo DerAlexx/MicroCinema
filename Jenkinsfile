@@ -33,7 +33,7 @@ pipeline {
             steps {
                 sh 'cd cinemahall'
                 sh 'export GO111MODULE=on'
-                sh 'golangci-lint run --disable-all -E errcheck'  //--deadline 20m --enable-all--disable-all -E errcheck
+                sh 'golangci-lint run --enable-all'  //--deadline 20m --enable-all--disable-all -E errcheck
             }
         }
         stage('Build Docker Image') {
