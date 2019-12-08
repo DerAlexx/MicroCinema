@@ -3,7 +3,7 @@
 FROM obraun/vss-protoactor-jenkins as builder
 COPY . /app
 WORKDIR /app
-RUN go build ./main.go
+RUN go build -o users main.go
 
 FROM iron/go
 COPY --from=builder /app/main /app
