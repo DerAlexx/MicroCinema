@@ -5,7 +5,7 @@ FROM obraun/vss-protoactor-jenkins as builder
 COPY . /app
 WORKDIR /app/users
  
-RUN go build -o users /users/main.go
+RUN go build -o users main.go
 RUN pwd && ls
 
 FROM iron/go
