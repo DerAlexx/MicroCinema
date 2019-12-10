@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	micro "github.com/micro/go-micro"
+	"github.com/micro/go-micro/service"
 	cinemaprot "github.com/ob-vss-ws19/blatt-4-pwn2own/cinemahall/proto"
 	moviesprot "github.com/ob-vss-ws19/blatt-4-pwn2own/movies/proto"
 	reservationprot "github.com/ob-vss-ws19/blatt-4-pwn2own/reservation/proto"
@@ -23,10 +24,6 @@ func main() {
 	fmt.Println("Creating 5 Movies")
 
 	movieService := moviesprot.NewMoviesService("movies", service.Client())
-	if movieService == nil {
-		fmt.Println("hallo1")
-	}
-
 	response, err := movieService.CreateMovie(context, &moviesprot.CreateMovieRequest{Name: "Movie" + string(i)})
 
 	if err != nil {
