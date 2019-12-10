@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	micro "github.com/micro/go-micro"
-	"github.com/micro/go-micro/service"
 	cinemaprot "github.com/ob-vss-ws19/blatt-4-pwn2own/cinemahall/proto"
 	moviesprot "github.com/ob-vss-ws19/blatt-4-pwn2own/movies/proto"
 	reservationprot "github.com/ob-vss-ws19/blatt-4-pwn2own/reservation/proto"
@@ -22,64 +21,56 @@ func main() {
 	}
 
 	fmt.Println("Creating 5 Movies")
-
-	movieService := moviesprot.NewMoviesService("movies", service.Client())
-	response, err := movieService.CreateMovie(context, &moviesprot.CreateMovieRequest{Name: "Movie" + string(i)})
-
-	if err != nil {
-		println("hallo2")
-	}
-
-	// _, moviearray := createTestMovies(clientService)
+	//_, moviearray := createTestMovies(clientService)
 
 	fmt.Println("Creating 3 Cinemas")
-	cinemaService, cinemaarray := createTestCinemas(clientService)
+	///cinemaService, cinemaarray := createTestCinemas(clientService)
 
 	fmt.Println("Creating 3 Shows")
-	showService, _ := createTestShows(clientService, moviearray, cinemaarray)
+	//showService, _ := createTestShows(clientService, moviearray, cinemaarray)
 
 	fmt.Println("Creating 6 Users")
 	createTestUsers(clientService)
+	/*
+		fmt.Println("Creating 5 Reservation")
+		reservationService, _ := createTestReservations(clientService)
 
-	fmt.Println("Creating 5 Reservation")
-	reservationService, _ := createTestReservations(clientService)
+		fmt.Println("Start Scenario 1")
 
-	fmt.Println("Start Scenario 1")
-
-	fmt.Printf("Delete Cinema with id: %d", cinemaarray[2])
-	response, err := cinemaService.Delete(context.TODO(), &cinemaprot.DeleteCinemaRequest{Id: cinemaarray[2]})
-	if err != nil {
-		fmt.Println(err)
-	}
-	if response.Answer {
-		fmt.Println("Deleting the cinema was successfull")
-	}
-	fmt.Println("Deleting the cinema failed")
-
-	response1, err1 := showService.ListShow(context.TODO(), &showprot.ListShowRequest{})
-	if err1 != nil {
-		fmt.Println(err1)
-	}
-	//list all shows
-	for k := range response1.ShowId {
-		println("ShowID: " + string(response1.ShowId[k]))
-		println("CinemaID: " + string(response1.AllShowsData[k].CinemaId) + " MovieID: " + string(response1.AllShowsData[k].MovieId))
-	}
-
-	response2, err2 := reservationService.StreamUsersReservations(context.TODO(), &reservationprot.StreamUsersReservationsRequest{})
-	if err2 != nil {
-		fmt.Println(err1)
-	}
-	//list all reservations
-	for k := range response2.Reservations {
-		println("ReservationID: " + string(response2.Reservations[k].ResId) + "Show " + string(response2.Reservations[k].Show) + "User " + string(response2.Reservations[k].User))
-		for i := range response2.Reservations[k].Seats {
-			println("Seat: " + string(response2.Reservations[k].Seats[i].Seat))
+		fmt.Printf("Delete Cinema with id: %d", cinemaarray[2])
+		response, err := cinemaService.Delete(context.TODO(), &cinemaprot.DeleteCinemaRequest{Id: cinemaarray[2]})
+		if err != nil {
+			fmt.Println(err)
 		}
-	}
+		if response.Answer {
+			fmt.Println("Deleting the cinema was successfull")
+		}
+		fmt.Println("Deleting the cinema failed")
 
-	fmt.Println("Start Scenario 2")
+		response1, err1 := showService.ListShow(context.TODO(), &showprot.ListShowRequest{})
+		if err1 != nil {
+			fmt.Println(err1)
+		}
+		//list all shows
+		for k := range response1.ShowId {
+			println("ShowID: " + string(response1.ShowId[k]))
+			println("CinemaID: " + string(response1.AllShowsData[k].CinemaId) + " MovieID: " + string(response1.AllShowsData[k].MovieId))
+		}
 
+		response2, err2 := reservationService.StreamUsersReservations(context.TODO(), &reservationprot.StreamUsersReservationsRequest{})
+		if err2 != nil {
+			fmt.Println(err1)
+		}
+		//list all reservations
+		for k := range response2.Reservations {
+			println("ReservationID: " + string(response2.Reservations[k].ResId) + "Show " + string(response2.Reservations[k].Show) + "User " + string(response2.Reservations[k].User))
+			for i := range response2.Reservations[k].Seats {
+				println("Seat: " + string(response2.Reservations[k].Seats[i].Seat))
+			}
+		}
+
+		fmt.Println("Start Scenario 2")
+	*/
 }
 
 func createTestMovies(service micro.Service) (moviesprot.MoviesService, []int32) {
@@ -89,19 +80,22 @@ func createTestMovies(service micro.Service) (moviesprot.MoviesService, []int32)
 	arr := []int32{}
 
 	//for i := 1; i < 5; i++ {
-	response, err := movieService.CreateMovie(context, &moviesprot.CreateMovieRequest{Name: "Movie" + string(i)})
+	response, err := movieService.CreateMovie(context.TODO(), &moviesprot.CreateMovieRequest{Name: "Movie1"})
 	if err != nil {
 		fmt.Println(err)
 	}
-	arr[i] = response.Movie.Id
-	fmt.Printf("Adding Movie succeeded; id: %d, name: %s", response.Movie.Id, response.Movie.Name)
+	if response == nil {
+		fmt.Println(string(response.Movie.Id))
+	}
+	//arr[1] = response.Movie.Id
+	//fmt.Printf("Adding Movie succeeded; id: %d, name: %s", response.Movie.Id, response.Movie.Name)
 	println("hallo2")
 	//}
 	return movieService, arr
 }
 
 func createTestCinemas(service micro.Service) (cinemaprot.CinemaService, []int32) {
-	cinemaService := cinemaprot.NewCinemaService("Cinema", service.Client())
+	cinemaService := cinemaprot.NewCinemaService("cinema-service", service.Client())
 	arr := []int32{}
 
 	for i := 1; i < 3; i++ {
@@ -116,7 +110,7 @@ func createTestCinemas(service micro.Service) (cinemaprot.CinemaService, []int32
 }
 
 func createTestShows(service micro.Service, moviearr []int32, cinemaarr []int32) (showprot.ShowService, []int32) {
-	showService := showprot.NewShowService("Show", service.Client())
+	showService := showprot.NewShowService("show-service", service.Client())
 	arr := []int32{}
 
 	for i := 1; i < 3; i++ {
@@ -131,22 +125,25 @@ func createTestShows(service micro.Service, moviearr []int32, cinemaarr []int32)
 }
 
 func createTestUsers(service micro.Service) (usersprot.UsersService, []int32) {
-	userService := usersprot.NewUsersService("Users", service.Client())
+	userService := usersprot.NewUsersService("users", service.Client())
 	arr := []int32{}
 
 	for i := 1; i < 6; i++ {
-		response, err := userService.CreateUser(context.TODO(), &usersprot.CreateUserRequest{Name: "User" + string(i)})
+		response, err := userService.CreateUser(context.TODO(), &usersprot.CreateUserRequest{Name: ""})
 		if err != nil {
 			fmt.Println(err)
 		}
-		arr[i] = response.User.Userid
-		fmt.Printf("Adding User succeeded; id: %d, name: %s", response.User.Userid, response.User.Name)
+		if response == nil {
+			fmt.Println(string(response.User.Name))
+		}
+		//arr[i] = response.User.Userid
+		//fmt.Printf("Adding User succeeded; id: %d, name: %s", response.User.Userid, response.User.Name)
 	}
 	return userService, arr
 }
 
 func createTestReservations(service micro.Service) (reservationprot.ReservationService, []int32) {
-	reservationService := reservationprot.NewReservationService("Reservation", service.Client())
+	reservationService := reservationprot.NewReservationService("registration", service.Client())
 	arr := []int32{}
 
 	/*response, err := reservationService.
