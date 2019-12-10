@@ -66,7 +66,8 @@ func (handler *ShowPool) CreateShow(ctx context.Context, request *showproto.Crea
 			movieID:  int(request.CreateData.MovieId),
 		}
 		handler.mutex.Unlock()
-		response.CreateShowId = createid
+		fmt.Println(string(createid))
+		response = &showproto.CreateShowResponse{CreateShowId: createid}
 		return nil
 	}
 	return fmt.Errorf("cannot create show with cinemaID: %d and movieId: %d", request.CreateData.CinemaId, request.CreateData.MovieId)

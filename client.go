@@ -22,13 +22,15 @@ func main() {
 	}
 
 	fmt.Println("Creating 5 Movies")
-	//createTestMovies(clientService)
+	createTestMovies(clientService)
 
 	fmt.Println("Creating 3 Cinemas")
-	createTestCinemas(clientService)
+	//createTestCinemas(clientService)
 
 	fmt.Println("Creating 3 Shows")
-	//showService, _ := createTestShows(clientService, moviearray, cinemaarray)
+	//moviearray := [3]int32{1, 2, 3}
+	//cinemaarray := [3]int32{5, 6, 7}
+	//createTestShows(clientService, moviearray, cinemaarray)
 
 	fmt.Println("Creating 6 Users")
 	//createTestUsers(clientService)
@@ -112,20 +114,21 @@ func createTestCinemas(service micro.Service) (cinemaprot.CinemaService, []int32
 	return cinemaService, arr
 }
 
-func createTestShows(service micro.Service, moviearr []int32, cinemaarr []int32) (showprot.ShowService, []int32) {
+func createTestShows(service micro.Service, moviearr [3]int32, cinemaarr [3]int32) (showprot.ShowService, []int32) {
 	showService := showprot.NewShowService("show-service", service.Client())
-	arr := []int32{}
+	arr := make([]int32, 3)
 
-	for i := 1; i < 3; i++ {
-		response, err := showService.CreateShow(context.TODO(), &showprot.CreateShowRequest{CreateData: &showprot.ShowMessage{CinemaId: cinemaarr[len(cinemaarr)-i], MovieId: moviearr[len(moviearr)-i]}})
+	for i := 1; i < 4; i++ {
+		response, err := showService.CreateShow(context.TODO(), &showprot.CreateShowRequest{CreateData: &showprot.ShowMessage{CinemaId: cinemaarr[i-1], MovieId: moviearr[i-1]}})
 		if err != nil {
 			fmt.Println(err)
 		}
 		if response != nil {
-			arr[i] = response.CreateShowId
+			arr[i-1] = response.CreateShowId
 			fmt.Printf("Adding Show succeeded; id: %d", response.CreateShowId)
+		} else {
+			fmt.Println("Error - repsonse is nil")
 		}
-		fmt.Println("Error - repsonse is nil")
 	}
 	return showService, arr
 }
