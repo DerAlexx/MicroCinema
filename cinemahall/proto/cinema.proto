@@ -26,11 +26,12 @@ service Cinema {
 }
 
 message SizeRequest {
-
+    int32 id = 1;
 }
 
 message SizeResponse {
-    int32 size = 1;
+    int32 row = 1;
+    int32 column = 2;
 }
 
 message SeatMessage {

@@ -8,8 +8,8 @@ import (
 	"time"
 
 	protocin "github.com/ob-vss-ws19/blatt-4-pwn2own/cinemahall/proto"
-	min "github.com/ob-vss-ws19/blatt-4-pwn2own/movies/proto"
 	proto "github.com/ob-vss-ws19/blatt-4-pwn2own/reservation/proto"
+	showproto "github.com/ob-vss-ws19/blatt-4-pwn2own/show/proto"
 )
 
 const (
@@ -76,7 +76,7 @@ ReservationsDependency all dependencys for the reservation service.
 */
 type ReservationsDependency struct {
 	Cinemahall func() protocin.CinemaService
-	Movies     func() min.MoviesService
+	Show       func() showproto.ShowService
 }
 
 /*
@@ -211,17 +211,18 @@ func (r *ReservatServiceHandler) swapValuesBetweenMaps(id int32) bool {
 	return false
 }
 
-func (r *ReservatServiceHandler) makeSeatsCinemaHallSeats(context context.Context, id int32) *[]protocin.SeatMessage {
+/*
+makeSeatsCinemaHallSeats will turn a seat id into a row colum combination.
+*/
+func (r *ReservatServiceHandler) makeSeatsCinemaHallSeats(context context.Context, id int32, cinema *protocin.SizeResponse) *[]*protocin.SeatMessage {
 	seats := []protocin.SeatMessage{}
-	//moviehandler := r.dependencies.movies()
-	//in := &protomin.FindMovieRequest{Movie: &protomin.Movie{Id: (*r.getPotantialReservationsMap())[id].ShowID}}
-	//response := moviehandler.FindMovie(context, in, nil)
+
 	if r.containsPotantialReservations(id) {
 		for _, v := range (*r.getPotantialReservationsMap())[id].Seats {
 			seats = append(seats, protocin.SeatMessage{})
 			fmt.Println(v)
 		}
-		return &seats
+		return nil //TODO return
 	}
 	return nil
 }
@@ -234,15 +235,36 @@ func (r *ReservatServiceHandler) AcceptReservation(ctx context.Context, in *prot
 		if swapped := r.swapValuesBetweenMaps(in.TmpID); !swapped {
 			return fmt.Errorf("cannot make the potantial reservation a actuall reservation id: %d (invalid id)", in.TmpID)
 		}
-		//TODO reservieren im service. --> Blocken der Sitze.
+		moviehandler := r.dependencies.Show()
+		inShow := &showproto.FindShowConnectedMovieRequest{MovieId: (*r.getPotantialReservationsMap())[in.TmpID].ShowID}
+		response, err := moviehandler.FindShowConnectedMovie(ctx, inShow)
+		if err != nil {
+			fmt.Println("there is an error while accepting a reservation")
+		}
+		id := response.MovieData
+
 		service := r.dependencies.Cinemahall()
-		cinin := &protocin.ReservationRequest{}
+		var seats *[]*protocin.SeatMessage
+		var cinin *protocin.ReservationRequest
+		longenouth := (len(id) == 1)
+		if longenouth {
+			inSize := &protocin.SizeRequest{Id: id[0].MovieId}
+			size, err := service.GetSizeOfCinema(ctx, inSize)
+			if err == nil {
+				seats = r.makeSeatsCinemaHallSeats(ctx, in.TmpID, size)
+				cinin = &protocin.ReservationRequest{Id: id[0].MovieId, Seatreservation: *seats}
+			} else {
+				fmt.Printf("Cannot find a Cinema with the given id %d, Error: %e \n", id[0].MovieId, err)
+			}
 
-		service.Reservation(ctx, cinin)
-
-		out.FinalID = in.TmpID
-		out.Taken = true
-		return nil
+		}
+		responseReservationRequest, err2 := service.Reservation(ctx, cinin)
+		if longenouth && err2 == nil && responseReservationRequest.Answer {
+			out.FinalID = in.TmpID
+			out.Taken = true
+			return nil
+		}
+		return fmt.Errorf("cannot accept or delete a reservation with the id: %d (invalid id)", in.TmpID)
 	} else if r.containsPotantialReservations(in.TmpID) && !in.Want {
 		r.mutex.Lock()
 		delete(*r.getPotantialReservationsMap(), in.TmpID)

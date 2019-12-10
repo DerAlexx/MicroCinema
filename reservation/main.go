@@ -5,9 +5,9 @@ import (
 
 	"github.com/micro/go-micro"
 	cinproto "github.com/ob-vss-ws19/blatt-4-pwn2own/cinemahall/proto"
-	movieproto "github.com/ob-vss-ws19/blatt-4-pwn2own/movies/proto"
 	proto "github.com/ob-vss-ws19/blatt-4-pwn2own/reservation/proto"
 	res "github.com/ob-vss-ws19/blatt-4-pwn2own/reservation/reservation"
+	showproto "github.com/ob-vss-ws19/blatt-4-pwn2own/show/proto"
 )
 
 func main() {
@@ -15,8 +15,8 @@ func main() {
 	service.Init()
 	newResService := res.CreateNewReservationHandlerInstance()
 	newResService.AddDependencyRes(&res.ReservationsDependency{
-		Movies: func() movieproto.MoviesService {
-			return movieproto.NewMoviesService("movies", service.Client())
+		Show: func() showproto.ShowService {
+			return showproto.NewShowService("show", service.Client())
 		},
 		Cinemahall: func() cinproto.CinemaService {
 			return cinproto.NewCinemaService("cinemahall", service.Client())
