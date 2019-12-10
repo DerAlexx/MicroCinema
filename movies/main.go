@@ -11,7 +11,7 @@ import (
 func main() {
 	service := micro.NewService(micro.Name("movies"))
 	service.Init()
-	proto.RegisterMoviesHandler(service.Server(), new(movies.MovieHandlerService))
+	proto.RegisterMoviesHandler(service.Server(), movies.CreateNewMoviesHandlerInstance())
 
 	if err := service.Run(); err != nil {
 		fmt.Println(err)

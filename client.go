@@ -21,8 +21,10 @@ func main() {
 	}
 
 	fmt.Println("Creating 5 Movies")
-	//_, moviearray := createTestMovies(clientService)
-
+	_, moviearray := createTestMovies(clientService)
+	for i := range moviearray {
+		fmt.Println(i)
+	}
 	fmt.Println("Creating 3 Cinemas")
 	///cinemaService, cinemaarray := createTestCinemas(clientService)
 
@@ -84,7 +86,7 @@ func createTestMovies(service micro.Service) (moviesprot.MoviesService, []int32)
 	if err != nil {
 		fmt.Println(err)
 	}
-	if response == nil {
+	if response != nil {
 		fmt.Println(string(response.Movie.Id))
 	}
 	//arr[1] = response.Movie.Id

@@ -32,9 +32,8 @@ func (mo *Movie) getName() string {
 MovieHandlerService will be the representation of our service.
 */
 type MovieHandlerService struct {
-	movies       map[int32]*Movie
-	dependencies []interface{}
-	mutex        *sync.Mutex
+	movies map[int32]*Movie
+	mutex  *sync.Mutex
 }
 
 /*
@@ -91,7 +90,9 @@ appendMovie will add a movie in the datastructure.
 */
 func (m *MovieHandlerService) appendMovie(id int32, movie *Movie) bool {
 	if id > 0 && movie != nil {
+		m.mutex.Lock()
 		(*m.getMoviesMap())[id] = movie
+		defer m.mutex.Unlock()
 		return true
 	}
 	return false
@@ -102,12 +103,9 @@ CreateMovie will create a movie.
 */
 func (m *MovieHandlerService) CreateMovie(context context.Context, in *proto.CreateMovieRequest, out *proto.CreatedMovieResponse) error {
 	if in.GetName() != "" {
-		m.mutex.Lock()
 		mid := m.getRandomMovieID(maxmoviesid)
 		if m.appendMovie(mid, &Movie{name: in.GetName()}) {
-			out.Movie.Id = mid
-			out.Movie.Name = in.GetName()
-			m.mutex.Unlock()
+			out.Movie = &proto.Movie{Id: mid, Name: in.GetName()}
 			return nil
 		}
 	}
