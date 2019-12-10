@@ -7,6 +7,8 @@ import (
 	"sync"
 	"time"
 
+	resproto "github.com/ob-vss-ws19/blatt-4-pwn2own/reservation/proto"
+	res "github.com/ob-vss-ws19/blatt-4-pwn2own/reservation/reservation"
 	proto "github.com/ob-vss-ws19/blatt-4-pwn2own/users/proto"
 )
 
@@ -65,11 +67,18 @@ func (us *userS) getName() string {
 }
 
 /*
+Dependencies are all Dependencies a user-service has.
+*/
+type Dependencies struct {
+	ResService func() res.ReservatServiceHandler
+}
+
+/*
 UserHandlerService will be the representation of our service.
 */
 type UserHandlerService struct {
 	user         map[int32]*userS
-	dependencies []interface{}
+	dependencies *Dependencies
 	mutex        *sync.Mutex
 }
 
@@ -81,6 +90,13 @@ func CreateNewUserHandleInstance() *UserHandlerService {
 		user:  make(map[int32]*userS),
 		mutex: &sync.Mutex{},
 	}
+}
+
+/*
+AddDependency will add a dependency into the service.
+*/
+func (u *UserHandlerService) AddDependency(dep *Dependencies) {
+	u.dependencies = dep
 }
 
 /*
@@ -114,16 +130,30 @@ func (u *UserHandlerService) CreateUser(context context.Context, request *proto.
 }
 
 /*
+HasOpenReservations will check for open reservations of a user in the Reservationsservice.
+*/
+func (u *UserHandlerService) HasOpenReservations(context context.Context, uid int32) bool {
+	serv := u.dependencies.ResService()
+	in := &resproto.HasReservationsRequest{Res: &resproto.Reservation{User: uid}}
+	out := &resproto.HasReservationsResponse{}
+	serv.HasReservations(context, in, out)
+	if out.Has {
+		return true
+	}
+	return false
+}
+
+/*
 DeleteUser will delete a user from the map.
 */
 func (u *UserHandlerService) DeleteUser(context context.Context, request *proto.DeleteUserRequest, response *proto.DeleteUserResponse) error {
 	if u.containsID(request.User.Userid) {
+		//if (.)
 		u.mutex.Lock()
 		delete(u.user, request.User.Userid)
 		response.IsDeleted = true
 		u.mutex.Unlock()
 		return nil
-		//TODO Missing check whether or not a users has reservations left of. --> Delete the Reservations.
 	}
 	return fmt.Errorf("cannot delete user with the id %d", request.User.Userid)
 }

@@ -70,9 +70,6 @@ type Reservation struct {
 }
 
 type reservationsDependency struct {
-	//User func interface{}
-	//Show func ShowServiceHandler
-	// Presention func
 }
 
 /*
@@ -93,7 +90,6 @@ func CreateNewReservationHandlerInstance() *ReservatServiceHandler {
 		reservations: map[int32]*Reservation{},
 		unaccepted:   map[int32]*Reservation{},
 		mutex:        &sync.Mutex{},
-		//dependencies: addDependency([]*interface{  }),
 	}
 }
 
