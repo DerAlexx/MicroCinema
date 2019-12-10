@@ -21,7 +21,7 @@ pipeline {
                 sh 'echo run tests...'
                 sh 'cd cinemahall/cinemahall && go test -cover'
                 sh 'cd movies/movies && go test -cover'
-                sh 'cd reservation/reservation && go test -cover'
+                //sh 'cd reservation/reservation && go test -cover'
                 sh 'cd show/show && go test -cover'
                 sh 'cd users/users && go test -cover'
             }
@@ -31,11 +31,11 @@ pipeline {
                 docker { image 'obraun/vss-protoactor-jenkins' }
             }
             steps {
-                sh 'cd cinemahall && golangci-lint run --enable-all --skip-dirs proto' //--deadline 20m --enable-all; --disable-all -E errcheck  
-                sh 'cd ../movies && golangci-lint run --enable-all --skip-dirs proto' 
-                sh 'cd ../reservation && golangci-lint run --enable-all --skip-dirs proto'
-                sh 'cd ../show && golangci-lint run --enable-all --skip-dirs proto'
-                sh 'cd ../users && golangci-lint run --enable-all --skip-dirs proto'
+                sh 'cd cinemahall && golangci-lint run --enable-all --skip-dirs proto -D wsl' //--deadline 20m --enable-all; --disable-all -E errcheck  
+                sh 'cd ../movies && golangci-lint run --enable-all --skip-dirs proto -D wsl' 
+                sh 'cd ../reservation && golangci-lint run --enable-all --skip-dirs proto -D wsl'
+                sh 'cd ../show && golangci-lint run --enable-all --skip-dirs proto -D wsl'
+                sh 'cd ../users && golangci-lint run --enable-all --skip-dirs proto -D wsl'
             }
         }
         stage('Build Docker Image') {

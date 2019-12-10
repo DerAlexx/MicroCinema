@@ -3,10 +3,9 @@ package main
 import (
 	"fmt"
 
+	micro "github.com/micro/go-micro"
 	showproto "github.com/ob-vss-ws19/blatt-4-pwn2own/show/proto"
 	"github.com/ob-vss-ws19/blatt-4-pwn2own/show/show"
-
-	micro "github.com/micro/go-micro"
 )
 
 const serviceName = "show-service"
@@ -21,7 +20,7 @@ func main() {
 	// Init will parse the command line flags.
 	service.Init()
 
-	showproto.RegisterShowHandler(service.Server(), new(show.ShowPool))
+	showproto.RegisterShowHandler(service.Server(), show.NewShowPool())
 
 	// Run the server
 	if err := service.Run(); err != nil {
