@@ -19,6 +19,18 @@ service Cinema {
 
     rpc FreeSeats (FreeSeatsRequest) returns (FreeSeatsResponse) {
     }
+
+    rpc GetSizeOfCinema (SizeRequest) returns (SizeResponse) {
+
+    }
+}
+
+message SizeRequest {
+
+}
+
+message SizeResponse {
+    int32 size = 1;
 }
 
 message SeatMessage {

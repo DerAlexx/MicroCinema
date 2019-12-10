@@ -7,6 +7,8 @@ import (
 	"sync"
 	"time"
 
+	cin "github.com/ob-vss-ws19/blatt-4-pwn2own/cinemahall/cinemahall"
+	protocin "github.com/ob-vss-ws19/blatt-4-pwn2own/cinemahall/proto"
 	proto "github.com/ob-vss-ws19/blatt-4-pwn2own/reservation/proto"
 )
 
@@ -69,7 +71,11 @@ type Reservation struct {
 	Seats  []int32
 }
 
-type reservationsDependency struct {
+/*
+ReservationsDependency all dependencys for the reservation service.
+*/
+type ReservationsDependency struct {
+	cinemahall func() cin.CinemaPool
 }
 
 /*
@@ -78,7 +84,7 @@ ReservatServiceHandler will handle all reservations.
 type ReservatServiceHandler struct {
 	reservations map[int32]*Reservation
 	unaccepted   map[int32]*Reservation
-	dependencies *reservationsDependency //TODO
+	dependencies *ReservationsDependency
 	mutex        *sync.Mutex
 }
 
@@ -197,6 +203,16 @@ func (r *ReservatServiceHandler) swapValuesBetweenMaps(id int32) bool {
 	return false
 }
 
+func (r *ReservatServiceHandler) makeSeatsCinemaHallSeats(id int32) *[]protocin.SeatMessage {
+	seats := &[]protocin.SeatMessage{}
+	if r.containsPotantialReservations(id) {
+		for _, v := range *r.getPotantialReservationsMap() {
+
+		}
+	}
+	return nil
+}
+
 /*
 AcceptReservation will accept a reservation of a temporally stored reservation request.
 */
@@ -206,6 +222,12 @@ func (r *ReservatServiceHandler) AcceptReservation(ctx context.Context, in *prot
 			return fmt.Errorf("cannot make the potantial reservation a actuall reservation id: %d (invalid id)", in.TmpID)
 		}
 		//TODO reservieren im service. --> Blocken der Sitze.
+		service := r.dependencies.cinemahall()
+		cinin := &protocin.ReservationRequest{}
+		cinout := &protocin.ReservationResponse{}
+
+		service.Reservation(ctx, cinin, cinout)
+
 		out.FinalID = in.TmpID
 		out.Taken = true
 		return nil

@@ -31,6 +31,7 @@ type seats struct {
 type cinema struct {
 	name    string
 	seatmap map[*seats]bool
+	size    int32
 }
 
 /*
@@ -103,7 +104,7 @@ func (handler *CinemaPool) Create(ctx context.Context, request *cinemaproto.Crea
 
 	createid := handler.getRandomCinemaID()
 	handler.mutex.Lock()
-	handler.cinemamap[createid] = &cinema{name: request.Name, seatmap: newseatmap}
+	handler.cinemamap[createid] = &cinema{name: request.Name, seatmap: newseatmap, size: (request.Row * request.Column)}
 	handler.mutex.Unlock()
 	response.Name = request.Name
 	response.Id = createid

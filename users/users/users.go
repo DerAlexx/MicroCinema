@@ -135,7 +135,7 @@ HasOpenReservations will check for open reservations of a user in the Reservatio
 func (u *UserHandlerService) HasOpenReservations(context context.Context, uid int32) bool {
 	serv := u.dependencies.ResService()
 	in := &resproto.HasReservationsRequest{Res: &resproto.Reservation{User: uid}}
-	out := &resproto.HasReservationsResponse{}
+	out := &resproto.HasReservationsResponse{Has: false}
 	serv.HasReservations(context, in, out)
 	if out.Has {
 		return true
