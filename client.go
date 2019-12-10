@@ -22,15 +22,8 @@ func main() {
 	}
 
 	fmt.Println("Creating 5 Movies")
-<<<<<<< HEAD
-	_, moviearray := createTestMovies(clientService)
-	for i := range moviearray {
-		fmt.Println(i)
-	}
-=======
 	createTestMovies(clientService)
 
->>>>>>> e6df912b0294416e1b7775cabb599d88fe14fb16
 	fmt.Println("Creating 3 Cinemas")
 	//createTestCinemas(clientService)
 
@@ -87,17 +80,6 @@ func createTestMovies(service micro.Service) (moviesprot.MoviesService, []int32)
 	movieService := moviesprot.NewMoviesService("movies", service.Client())
 	arr := make([]int32, 5)
 
-<<<<<<< HEAD
-	arr := []int32{}
-
-	//for i := 1; i < 5; i++ {
-	response, err := movieService.CreateMovie(context.TODO(), &moviesprot.CreateMovieRequest{Name: "Movie1"})
-	if err != nil {
-		fmt.Println(err)
-	}
-	if response != nil {
-		fmt.Println(string(response.Movie.Id))
-=======
 	for i := 1; i < 6; i++ {
 		response, err := movieService.CreateMovie(context.TODO(), &moviesprot.CreateMovieRequest{Name: "Movie" + strconv.Itoa(i)})
 		if err != nil {
@@ -109,7 +91,6 @@ func createTestMovies(service micro.Service) (moviesprot.MoviesService, []int32)
 		} else {
 			fmt.Println("Error - repsonse is nil")
 		}
->>>>>>> e6df912b0294416e1b7775cabb599d88fe14fb16
 	}
 	return movieService, arr
 }
