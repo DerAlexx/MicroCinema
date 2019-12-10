@@ -62,9 +62,9 @@ func main() {
 		}
 		//list all reservations
 		for k := range response2.Reservations {
-			println("ReservationID: " + strconv.Itoa(response2.Reservations[k].ResId) + "Show " + strconv.Itoa(response2.Reservations[k].Show) + "User " + string(response2.Reservations[k].User))
+			println("ReservationID: " + strconv.Itoa(int(response2.Reservations[k].ResId)) + " Show " + strconv.Itoa(int(response2.Reservations[k].Show)) + " User " + strconv.Itoa(int(response2.Reservations[k].User)))
 			for i := range response2.Reservations[k].Seats {
-				println("Seat: " + strconv.Itoa(response2.Reservations[k].Seats[i].Seat))
+				println("Seat: " + strconv.Itoa(int(response2.Reservations[k].Seats[i].Seat)))
 			}
 		}
 	*/
