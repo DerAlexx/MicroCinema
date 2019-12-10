@@ -215,16 +215,16 @@ func (r *ReservatServiceHandler) swapValuesBetweenMaps(id int32) bool {
 makeSeatsCinemaHallSeats will turn a seat id into a row colum combination.
 */
 func (r *ReservatServiceHandler) makeSeatsCinemaHallSeats(context context.Context, id int32, cinema *protocin.SizeResponse) *[]*protocin.SeatMessage {
-	seats := []protocin.SeatMessage{}
-
+	seats := []*protocin.SeatMessage{}
+	//TODO convert seats
 	if r.containsPotantialReservations(id) {
 		for _, v := range (*r.getPotantialReservationsMap())[id].Seats {
-			seats = append(seats, protocin.SeatMessage{})
+			seats = append(seats, &protocin.SeatMessage{})
 			fmt.Println(v)
 		}
-		return nil //TODO return
+		return &seats
 	}
-	return nil
+	return &seats
 }
 
 /*
@@ -242,7 +242,7 @@ func (r *ReservatServiceHandler) AcceptReservation(ctx context.Context, in *prot
 			fmt.Println("there is an error while accepting a reservation")
 		}
 		id := response.MovieData
-
+		//TODO refactor
 		service := r.dependencies.Cinemahall()
 		var seats *[]*protocin.SeatMessage
 		var cinin *protocin.ReservationRequest
