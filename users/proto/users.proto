@@ -10,32 +10,32 @@ service users {
     /*
     CreateUser will create user.
     */
-    rpc createUser(CreateUserRequest) returns (CreatedUserResponse) {}
+    rpc CreateUser(CreateUserRequest) returns (CreatedUserResponse) {}
 
     /*
     FindUser will find a user by his userid.
     */
-    rpc findUser(FindUserRequest) returns (FindUserResponse) {}
+    rpc FindUser(FindUserRequest) returns (FindUserResponse) {}
 
     /*
     FindUserByName will find a user by his name.
     */
-    rpc findUserByName(FindUserByNameRequest) returns (FindUserResponse) {}
+    rpc FindUserByName(FindUserByNameRequest) returns (FindUserResponse) {}
 
     /*
     DeleteUser will delete a user by his userid.
     */
-    rpc deleteUser(DeleteUserRequest) returns (DeleteUserResponse) {}
+    rpc DeleteUser(DeleteUserRequest) returns (DeleteUserResponse) {}
 
     /*
     changeUser will change a users entry in the service.
     */
-    rpc changeUser(ChangeUserRequest) returns (ChangeUserResponse) {}
+    rpc ChangeUser(ChangeUserRequest) returns (ChangeUserResponse) {}
 
     /*
     GetAllUsers will return a list with all users.
     */
-    rpc receiveAndSendAllUsers(AllUsersRequest) returns (AllUsersResponse) {}
+    rpc ReceiveAndSendAllUsers(AllUsersRequest) returns (AllUsersResponse) {}
 }
 
 message UserMessageResponse {

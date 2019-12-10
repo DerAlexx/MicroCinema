@@ -237,9 +237,8 @@ func (r *ReservatServiceHandler) AcceptReservation(ctx context.Context, in *prot
 		//TODO reservieren im service. --> Blocken der Sitze.
 		service := r.dependencies.Cinemahall()
 		cinin := &protocin.ReservationRequest{}
-		cinout := &protocin.ReservationResponse{}
 
-		service.Reservation(ctx, cinin, cinout)
+		service.Reservation(ctx, cinin)
 
 		out.FinalID = in.TmpID
 		out.Taken = true

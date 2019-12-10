@@ -129,13 +129,15 @@ func createTestUsers(service micro.Service) (usersprot.UsersService, []int32) {
 	arr := []int32{}
 
 	for i := 1; i < 6; i++ {
-		response, err := userService.CreateUser(context.TODO(), &usersprot.CreateUserRequest{Name: ""})
+		response, err := userService.CreateUser(context.TODO(), &usersprot.CreateUserRequest{Name: "paul"})
 		if err != nil {
 			fmt.Println(err)
 		}
-		if response == nil {
+		if response != nil {
+			fmt.Println(response.User.Userid)
 			fmt.Println(string(response.User.Name))
 		}
+		//fmt.Println(string(response.User.GetUserid()))
 		//arr[i] = response.User.Userid
 		//fmt.Printf("Adding User succeeded; id: %d, name: %s", response.User.Userid, response.User.Name)
 	}

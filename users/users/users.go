@@ -118,14 +118,12 @@ func (u *UserHandlerService) CreateUser(context context.Context, request *proto.
 		uid := u.getRandomUserID(maxuserid)
 		u.mutex.Lock()
 		if u.appendANewUser(uid, &userS{name: request.GetName()}) {
-			response.User.Name = request.GetName()
-			response.User.Userid = uid
-			u.mutex.Unlock()
+			response.User = &proto.UserMessageResponse{Name: request.GetName(), Userid: uid}
+			defer u.mutex.Unlock()
 			return nil
 		}
 	}
-	u.mutex.Unlock()
-	return fmt.Errorf("cannot create user with name: %s", request.GetName())
+	return fmt.Errorf("cannot create user with empty name")
 }
 
 /*
