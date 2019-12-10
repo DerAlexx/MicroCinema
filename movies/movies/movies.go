@@ -105,9 +105,8 @@ func (m *MovieHandlerService) CreateMovie(context context.Context, in *proto.Cre
 		m.mutex.Lock()
 		mid := m.getRandomMovieID(maxmoviesid)
 		if m.appendMovie(mid, &Movie{name: in.GetName()}) {
-			out.Movie.Id = mid
-			out.Movie.Name = in.GetName()
-			m.mutex.Unlock()
+			out.Movie = &proto.Movie{Id: mid, Name: in.GetName()}
+			defer m.mutex.Unlock()
 			return nil
 		}
 	}

@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"strconv"
 
 	micro "github.com/micro/go-micro"
 	cinemaprot "github.com/ob-vss-ws19/blatt-4-pwn2own/cinemahall/proto"
@@ -21,16 +22,16 @@ func main() {
 	}
 
 	fmt.Println("Creating 5 Movies")
-	//_, moviearray := createTestMovies(clientService)
+	//createTestMovies(clientService)
 
 	fmt.Println("Creating 3 Cinemas")
-	///cinemaService, cinemaarray := createTestCinemas(clientService)
+	createTestCinemas(clientService)
 
 	fmt.Println("Creating 3 Shows")
 	//showService, _ := createTestShows(clientService, moviearray, cinemaarray)
 
 	fmt.Println("Creating 6 Users")
-	createTestUsers(clientService)
+	//createTestUsers(clientService)
 	/*
 		fmt.Println("Creating 5 Reservation")
 		reservationService, _ := createTestReservations(clientService)
@@ -75,36 +76,38 @@ func main() {
 
 func createTestMovies(service micro.Service) (moviesprot.MoviesService, []int32) {
 	movieService := moviesprot.NewMoviesService("movies", service.Client())
-	println("hallo1")
+	arr := make([]int32, 5)
 
-	arr := []int32{}
-
-	//for i := 1; i < 5; i++ {
-	response, err := movieService.CreateMovie(context.TODO(), &moviesprot.CreateMovieRequest{Name: "Movie1"})
-	if err != nil {
-		fmt.Println(err)
+	for i := 1; i < 6; i++ {
+		response, err := movieService.CreateMovie(context.TODO(), &moviesprot.CreateMovieRequest{Name: "Movie" + strconv.Itoa(i)})
+		if err != nil {
+			fmt.Println(err)
+		}
+		if response != nil {
+			arr[i-1] = response.Movie.Id
+			fmt.Printf("Adding Movie succeeded; id: %d, name: %s", response.Movie.Id, response.Movie.Name)
+		} else {
+			fmt.Println("Error - repsonse is nil")
+		}
 	}
-	if response == nil {
-		fmt.Println(string(response.Movie.Id))
-	}
-	//arr[1] = response.Movie.Id
-	//fmt.Printf("Adding Movie succeeded; id: %d, name: %s", response.Movie.Id, response.Movie.Name)
-	println("hallo2")
-	//}
 	return movieService, arr
 }
 
 func createTestCinemas(service micro.Service) (cinemaprot.CinemaService, []int32) {
 	cinemaService := cinemaprot.NewCinemaService("cinema-service", service.Client())
-	arr := []int32{}
+	arr := make([]int32, 4)
 
-	for i := 1; i < 3; i++ {
-		response, err := cinemaService.Create(context.TODO(), &cinemaprot.CreateCinemaRequest{Name: "Cinema" + string(i), Row: int32(5 * i), Column: int32(5 * i)})
+	for i := 1; i < 4; i++ {
+		response, err := cinemaService.Create(context.TODO(), &cinemaprot.CreateCinemaRequest{Name: "Cinema" + strconv.Itoa(i), Row: int32(5 * i), Column: int32(5 * i)})
 		if err != nil {
 			fmt.Println(err)
 		}
-		arr[i] = response.Id
-		fmt.Printf("Adding Cinema succeeded; id: %d, name: %s", response.Id, response.Name)
+		if response != nil {
+			arr[i-1] = response.Id
+			fmt.Printf("Adding Cinema succeeded; id: %d, name: %s", response.Id, response.Name)
+		} else {
+			fmt.Println("Error - repsonse is nil")
+		}
 	}
 	return cinemaService, arr
 }
@@ -118,28 +121,30 @@ func createTestShows(service micro.Service, moviearr []int32, cinemaarr []int32)
 		if err != nil {
 			fmt.Println(err)
 		}
-		arr[i] = response.CreateShowId
-		fmt.Printf("Adding Show succeeded; id: %d", response.CreateShowId)
+		if response != nil {
+			arr[i] = response.CreateShowId
+			fmt.Printf("Adding Show succeeded; id: %d", response.CreateShowId)
+		}
+		fmt.Println("Error - repsonse is nil")
 	}
 	return showService, arr
 }
 
 func createTestUsers(service micro.Service) (usersprot.UsersService, []int32) {
 	userService := usersprot.NewUsersService("users", service.Client())
-	arr := []int32{}
+	arr := make([]int32, 6)
 
-	for i := 1; i < 6; i++ {
-		response, err := userService.CreateUser(context.TODO(), &usersprot.CreateUserRequest{Name: "paul"})
+	for i := 1; i < 7; i++ {
+		response, err := userService.CreateUser(context.TODO(), &usersprot.CreateUserRequest{Name: "User" + strconv.Itoa(i)})
 		if err != nil {
 			fmt.Println(err)
 		}
 		if response != nil {
-			fmt.Println(response.User.Userid)
-			fmt.Println(string(response.User.Name))
+			arr[i-1] = response.User.Userid
+			fmt.Printf("Adding User succeeded; id: %d, name: %s\n", response.User.Userid, response.User.Name)
+		} else {
+			fmt.Println("Error - repsonse is nil")
 		}
-		//fmt.Println(string(response.User.GetUserid()))
-		//arr[i] = response.User.Userid
-		//fmt.Printf("Adding User succeeded; id: %d, name: %s", response.User.Userid, response.User.Name)
 	}
 	return userService, arr
 }
