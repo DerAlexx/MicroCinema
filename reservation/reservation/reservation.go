@@ -7,8 +7,8 @@ import (
 	"sync"
 	"time"
 
-	cin "github.com/ob-vss-ws19/blatt-4-pwn2own/cinemahall/cinemahall"
 	protocin "github.com/ob-vss-ws19/blatt-4-pwn2own/cinemahall/proto"
+	min "github.com/ob-vss-ws19/blatt-4-pwn2own/movies/proto"
 	proto "github.com/ob-vss-ws19/blatt-4-pwn2own/reservation/proto"
 )
 
@@ -75,7 +75,8 @@ type Reservation struct {
 ReservationsDependency all dependencys for the reservation service.
 */
 type ReservationsDependency struct {
-	cinemahall func() cin.CinemaPool
+	Cinemahall func() protocin.CinemaService
+	Movies     func() min.MoviesService
 }
 
 /*
@@ -97,6 +98,13 @@ func CreateNewReservationHandlerInstance() *ReservatServiceHandler {
 		unaccepted:   map[int32]*Reservation{},
 		mutex:        &sync.Mutex{},
 	}
+}
+
+/*
+AddDependencyRes will add a dependency into the service.
+*/
+func (r *ReservatServiceHandler) AddDependencyRes(dep *ReservationsDependency) {
+	r.dependencies = dep
 }
 
 /*
@@ -203,9 +211,12 @@ func (r *ReservatServiceHandler) swapValuesBetweenMaps(id int32) bool {
 	return false
 }
 
-func (r *ReservatServiceHandler) makeSeatsCinemaHallSeats(id int32) *[]protocin.SeatMessage {
-	seats := []protocin.SeatMessage{} // array not int32
-	if r.containsPotantialReservations(id) && false {
+func (r *ReservatServiceHandler) makeSeatsCinemaHallSeats(context context.Context, id int32) *[]protocin.SeatMessage {
+	seats := []protocin.SeatMessage{}
+	//moviehandler := r.dependencies.movies()
+	//in := &protomin.FindMovieRequest{Movie: &protomin.Movie{Id: (*r.getPotantialReservationsMap())[id].ShowID}}
+	//response := moviehandler.FindMovie(context, in, nil)
+	if r.containsPotantialReservations(id) {
 		for _, v := range (*r.getPotantialReservationsMap())[id].Seats {
 			seats = append(seats, protocin.SeatMessage{})
 			fmt.Println(v)
@@ -224,7 +235,7 @@ func (r *ReservatServiceHandler) AcceptReservation(ctx context.Context, in *prot
 			return fmt.Errorf("cannot make the potantial reservation a actuall reservation id: %d (invalid id)", in.TmpID)
 		}
 		//TODO reservieren im service. --> Blocken der Sitze.
-		service := r.dependencies.cinemahall()
+		service := r.dependencies.Cinemahall()
 		cinin := &protocin.ReservationRequest{}
 		cinout := &protocin.ReservationResponse{}
 
