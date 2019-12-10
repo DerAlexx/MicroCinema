@@ -21,7 +21,7 @@ pipeline {
                 sh 'echo run tests...'
                 sh 'cd cinemahall/cinemahall && go test -cover'
                 sh 'cd movies/movies && go test -cover'
-                sh 'cd reservation/reservation && go test -cover'
+                //sh 'cd reservation/reservation && go test -cover'
                 sh 'cd show/show && go test -cover'
                 sh 'cd users/users && go test -cover'
             }
