@@ -112,6 +112,13 @@ func (handler *CinemaPool) Create(ctx context.Context, request *cinemaproto.Crea
 }
 
 /*
+
+ */
+func (handler *CinemaPool) GetSizeOfCinema(ctx context.Context, in *cinemaproto.SizeRequest, out *cinemaproto.SizeResponse) error {
+	return nil
+}
+
+/*
 Delete will delete a cinema(id) from the CinemaPool.
 */
 func (handler *CinemaPool) Delete(ctx context.Context, request *cinemaproto.DeleteCinemaRequest, response *cinemaproto.DeleteCinemaResponse) error {

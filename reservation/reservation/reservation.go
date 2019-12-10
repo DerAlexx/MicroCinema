@@ -204,11 +204,13 @@ func (r *ReservatServiceHandler) swapValuesBetweenMaps(id int32) bool {
 }
 
 func (r *ReservatServiceHandler) makeSeatsCinemaHallSeats(id int32) *[]protocin.SeatMessage {
-	seats := &[]protocin.SeatMessage{}
-	if r.containsPotantialReservations(id) {
-		for _, v := range *r.getPotantialReservationsMap() {
-
+	seats := []protocin.SeatMessage{} // array not int32
+	if r.containsPotantialReservations(id) && false {
+		for _, v := range (*r.getPotantialReservationsMap())[id].Seats {
+			seats = append(seats, protocin.SeatMessage{})
+			fmt.Println(v)
 		}
+		return &seats
 	}
 	return nil
 }

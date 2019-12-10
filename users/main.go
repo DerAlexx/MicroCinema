@@ -4,8 +4,9 @@ import (
 	"fmt"
 
 	micro "github.com/micro/go-micro"
+	protores "github.com/ob-vss-ws19/blatt-4-pwn2own/reservation/proto"
+	proto "github.com/ob-vss-ws19/blatt-4-pwn2own/users/proto"
 	us "github.com/ob-vss-ws19/blatt-4-pwn2own/users/users"
-	res "github.com/ob-vss-ws19/blatt-4-pwn2own/reservation/reservation"
 )
 
 /*
@@ -15,12 +16,12 @@ func main() {
 	service := micro.NewService(micro.Name("users"))
 	service.Init()
 	newUserService := us.CreateNewUserHandleInstance()
-	newUserService.AddDependency(us.Dependencies{
-		ResService: func() res.RegisterUsersHandler {
-			return res.CreateNewReservationHandlerInstance("reservation", service.Client())
-		}
+	newUserService.AddDependency(&us.Dependencies{
+		ResService: func() protores.ReservationService {
+			return protores.NewReservationService("reservation", service.Client())
+		},
 	})
-	proto.RegisterUsersHandler(service.Server())
+	proto.RegisterUsersHandler(service.Server(), newUserService)
 
 	if err := service.Run(); err != nil {
 		fmt.Println(err)

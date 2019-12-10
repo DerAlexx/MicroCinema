@@ -167,7 +167,7 @@ func (handler *ShowPool) FindShowConnectedCinema(ctx context.Context, request *s
 }
 
 /*
-FindShowConnectedMovie will show all shows connected to a movie.
+FindShowConnectedMovie will show all shows connected to a movie. ++
 */
 func (handler *ShowPool) FindShowConnectedMovie(ctx context.Context, request *showproto.FindShowConnectedMovieRequest, response *showproto.FindShowConnectedMovieResponse) error {
 	if request.MovieId > 0 {

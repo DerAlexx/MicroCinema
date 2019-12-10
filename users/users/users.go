@@ -8,7 +8,6 @@ import (
 	"time"
 
 	resproto "github.com/ob-vss-ws19/blatt-4-pwn2own/reservation/proto"
-	res "github.com/ob-vss-ws19/blatt-4-pwn2own/reservation/reservation"
 	proto "github.com/ob-vss-ws19/blatt-4-pwn2own/users/proto"
 )
 
@@ -70,7 +69,7 @@ func (us *userS) getName() string {
 Dependencies are all Dependencies a user-service has.
 */
 type Dependencies struct {
-	ResService func() res.ReservatServiceHandler
+	ResService func() resproto.ReservationService
 }
 
 /*
@@ -135,9 +134,8 @@ HasOpenReservations will check for open reservations of a user in the Reservatio
 func (u *UserHandlerService) HasOpenReservations(context context.Context, uid int32) bool {
 	serv := u.dependencies.ResService()
 	in := &resproto.HasReservationsRequest{Res: &resproto.Reservation{User: uid}}
-	out := &resproto.HasReservationsResponse{Has: false}
-	serv.HasReservations(context, in, out)
-	if out.Has {
+	res, err := serv.HasReservations(context, in)
+	if res.Has && err == nil {
 		return true
 	}
 	return false
