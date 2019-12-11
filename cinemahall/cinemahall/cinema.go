@@ -88,12 +88,11 @@ func (currentcinema *cinema) getSeat(row int32, column int32) *seats {
 
 /*
 Create creates a new cinema. It will be saved in the CinemaPool. The id to access the new cinema will be randomly generated.
-If the creation was successfull the id will be returned
+If the creation was successful the id will be returned
 */
 func (handler *CinemaPool) Create(ctx context.Context, request *cinemaproto.CreateCinemaRequest, response *cinemaproto.CreateCinemaResponse) error {
-
 	if len(request.Name) == 0 || request.Row == 0 || request.Column == 0 {
-		return errors.New("Cinema Service - Create | Cannot create a cinema with an empty name, zero rows or zero columns")
+		return errors.New("cinema service - create | Cannot create a cinema with an empty name, zero rows or zero columns")
 	}
 
 	newseatmap := map[*seats]bool{}
@@ -132,7 +131,7 @@ func (handler *CinemaPool) Delete(ctx context.Context, request *cinemaproto.Dele
 	if !mapcontainscinema {
 		handler.mutex.Unlock()
 		response.Answer = false
-		return fmt.Errorf("Cinema Service - Delete | Cannot delete cinema with id: %d", request.Id)
+		return fmt.Errorf("cinema service - delete | Cannot delete cinema with id: %d", request.Id)
 	}
 	delete(handler.cinemamap, request.Id)
 	handler.mutex.Unlock()
@@ -150,7 +149,7 @@ func (handler *CinemaPool) Reservation(ctx context.Context, request *cinemaproto
 	if !mapcontainscinema {
 		handler.mutex.Unlock()
 		response.Answer = false
-		return errors.New("Cinema Service - Reservation | Cannot execute reservation because cinema doesnt exist")
+		return errors.New("cinema service - reservation | Cannot execute reservation because cinema doesnt exist")
 	}
 	for _, curreservation := range request.Seatreservation {
 		if currentcinema.containsSeatMap(curreservation.Row, curreservation.Column) {
@@ -173,7 +172,7 @@ func (handler *CinemaPool) Storno(ctx context.Context, request *cinemaproto.Stor
 	if !mapcontainscinema {
 		handler.mutex.Unlock()
 		response.Answer = false
-		return errors.New("Cinema Service - Storno | Cannot execute storno because cinema doesnt exist")
+		return errors.New("cinema service - storno | Cannot execute storno because cinema doesnt exist")
 	}
 	for _, curreservation := range request.Seatstorno {
 		if currentcinema.containsSeatMap(curreservation.Row, curreservation.Column) {

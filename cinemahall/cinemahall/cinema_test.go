@@ -1,6 +1,7 @@
 package cinemahall_test
 
 import (
+	"context"
 	"testing"
 
 	"github.com/ob-vss-ws19/blatt-4-pwn2own/cinemahall/cinemahall"
@@ -14,13 +15,14 @@ func TestCreate(t *testing.T) {
 	TestName := "C1"
 	service := cinemahall.NewCinemaPool()
 	response := cinemaprototest.CreateCinemaResponse{}
-	service.Create(nil, &cinemaprototest.CreateCinemaRequest{Name: TestName, Row: 5, Column: 5}, &response)
+	service.Create(context.TODO(), &cinemaprototest.CreateCinemaRequest{Name: TestName, Row: 5, Column: 5}, &response)
 
-	if response.Name != "C1" {
+	switch {
+	case response.Name != "C1":
 		t.Errorf("Cannot create a cinema with the name %s", TestName)
-	} else if response.Id < 0 {
+	case response.Id < 0:
 		t.Fatal("Cannot create a cinema with a proper ID")
-	} else {
+	default:
 		t.Log("Creating a Cinema will work.")
 	}
 }
@@ -32,9 +34,9 @@ func TestDelete(t *testing.T) {
 	TestName := "C1"
 	service := cinemahall.NewCinemaPool()
 	response := cinemaprototest.CreateCinemaResponse{}
-	service.Create(nil, &cinemaprototest.CreateCinemaRequest{Name: TestName, Row: 5, Column: 5}, &response)
+	service.Create(context.TODO(), &cinemaprototest.CreateCinemaRequest{Name: TestName, Row: 5, Column: 5}, &response)
 	responseDelete := cinemaprototest.DeleteCinemaResponse{}
-	service.Delete(nil, &cinemaprototest.DeleteCinemaRequest{Id: response.Id}, &responseDelete)
+	service.Delete(context.TODO(), &cinemaprototest.DeleteCinemaRequest{Id: response.Id}, &responseDelete)
 
 	if !responseDelete.Answer {
 		t.Errorf("Cannot delete the cinema with the namide %d", 1)
@@ -50,11 +52,11 @@ func TestReservation(t *testing.T) {
 	TestName := "C1"
 	service := cinemahall.NewCinemaPool()
 	response := cinemaprototest.CreateCinemaResponse{}
-	service.Create(nil, &cinemaprototest.CreateCinemaRequest{Name: TestName, Row: 5, Column: 5}, &response)
+	service.Create(context.TODO(), &cinemaprototest.CreateCinemaRequest{Name: TestName, Row: 5, Column: 5}, &response)
 	responseReservation := cinemaprototest.ReservationResponse{}
 	x := []*cinemaprototest.SeatMessage{}
 	x = append(x, &cinemaprototest.SeatMessage{Row: 1, Column: 1})
-	service.Reservation(nil, &cinemaprototest.ReservationRequest{Id: response.Id, Seatreservation: x}, &responseReservation)
+	service.Reservation(context.TODO(), &cinemaprototest.ReservationRequest{Id: response.Id, Seatreservation: x}, &responseReservation)
 
 	if !responseReservation.Answer {
 		t.Error("Reservation failed")
@@ -70,13 +72,13 @@ func TestStorno(t *testing.T) {
 	TestName := "C1"
 	service := cinemahall.NewCinemaPool()
 	response := cinemaprototest.CreateCinemaResponse{}
-	service.Create(nil, &cinemaprototest.CreateCinemaRequest{Name: TestName, Row: 5, Column: 5}, &response)
+	service.Create(context.TODO(), &cinemaprototest.CreateCinemaRequest{Name: TestName, Row: 5, Column: 5}, &response)
 	responseReservation := cinemaprototest.ReservationResponse{}
 	x := []*cinemaprototest.SeatMessage{}
 	x = append(x, &cinemaprototest.SeatMessage{Row: 1, Column: 1})
-	service.Reservation(nil, &cinemaprototest.ReservationRequest{Id: response.Id, Seatreservation: x}, &responseReservation)
+	service.Reservation(context.TODO(), &cinemaprototest.ReservationRequest{Id: response.Id, Seatreservation: x}, &responseReservation)
 	responseStorno := cinemaprototest.StornoResponse{}
-	service.Storno(nil, &cinemaprototest.StornoRequest{Id: response.Id, Seatstorno: x}, &responseStorno)
+	service.Storno(context.TODO(), &cinemaprototest.StornoRequest{Id: response.Id, Seatstorno: x}, &responseStorno)
 
 	if !responseStorno.Answer {
 		t.Error("Storno failed")
@@ -92,13 +94,13 @@ func TestCheckSeats(t *testing.T) {
 	TestName := "C1"
 	service := cinemahall.NewCinemaPool()
 	response := cinemaprototest.CreateCinemaResponse{}
-	service.Create(nil, &cinemaprototest.CreateCinemaRequest{Name: TestName, Row: 5, Column: 5}, &response)
+	service.Create(context.TODO(), &cinemaprototest.CreateCinemaRequest{Name: TestName, Row: 5, Column: 5}, &response)
 	responseReservation := cinemaprototest.ReservationResponse{}
 	x := []*cinemaprototest.SeatMessage{}
 	x = append(x, &cinemaprototest.SeatMessage{Row: 1, Column: 1})
-	service.Reservation(nil, &cinemaprototest.ReservationRequest{Id: response.Id, Seatreservation: x}, &responseReservation)
+	service.Reservation(context.TODO(), &cinemaprototest.ReservationRequest{Id: response.Id, Seatreservation: x}, &responseReservation)
 	responseCheckSeats := cinemaprototest.CheckSeatsResponse{}
-	service.CheckSeats(nil, &cinemaprototest.CheckSeatsRequest{Id: response.Id, Seatcheck: x}, &responseCheckSeats)
+	service.CheckSeats(context.TODO(), &cinemaprototest.CheckSeatsRequest{Id: response.Id, Seatcheck: x}, &responseCheckSeats)
 
 	if responseCheckSeats.Answer {
 		t.Error("CheckSeats failed")
@@ -114,13 +116,13 @@ func TestFreeSeats(t *testing.T) {
 	TestName := "C1"
 	service := cinemahall.NewCinemaPool()
 	response := cinemaprototest.CreateCinemaResponse{}
-	service.Create(nil, &cinemaprototest.CreateCinemaRequest{Name: TestName, Row: 2, Column: 2}, &response)
+	service.Create(context.TODO(), &cinemaprototest.CreateCinemaRequest{Name: TestName, Row: 2, Column: 2}, &response)
 	responseReservation := cinemaprototest.ReservationResponse{}
 	x := []*cinemaprototest.SeatMessage{}
 	x = append(x, &cinemaprototest.SeatMessage{Row: 1, Column: 1})
-	service.Reservation(nil, &cinemaprototest.ReservationRequest{Id: response.Id, Seatreservation: x}, &responseReservation)
+	service.Reservation(context.TODO(), &cinemaprototest.ReservationRequest{Id: response.Id, Seatreservation: x}, &responseReservation)
 	responseFreeSeats := cinemaprototest.FreeSeatsResponse{}
-	service.FreeSeats(nil, &cinemaprototest.FreeSeatsRequest{Id: response.Id}, &responseFreeSeats)
+	service.FreeSeats(context.TODO(), &cinemaprototest.FreeSeatsRequest{Id: response.Id}, &responseFreeSeats)
 
 	if len(responseFreeSeats.Freeseats) != 3 {
 		t.Errorf("FreeSeats failed; len: %d", len(responseFreeSeats.Freeseats))
