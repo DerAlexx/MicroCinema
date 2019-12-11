@@ -11,7 +11,6 @@ import (
 const serviceName = "cinema-service"
 
 func main() {
-
 	// Create a new service. Optionally include some options here.
 	service := cinemamicromain.NewService(
 		cinemamicromain.Name(serviceName),
@@ -20,10 +19,13 @@ func main() {
 	// Init will parse the command line flags.
 	service.Init()
 
-	cinemaprotomain.RegisterCinemaHandler(service.Server(), cinemahall.NewCinemaPool())
-
-	// Run the server
-	if err := service.Run(); err != nil {
+	err1 := cinemaprotomain.RegisterCinemaHandler(service.Server(), cinemahall.NewCinemaPool())
+	if err1 == nil {
+		// Run the server
+		if err := service.Run(); err != nil {
+			fmt.Println(err)
+		}
+	} else {
 		fmt.Println(err)
 	}
 }
