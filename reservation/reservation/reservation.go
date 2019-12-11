@@ -12,10 +12,6 @@ import (
 	showproto "github.com/ob-vss-ws19/blatt-4-pwn2own/show/proto"
 )
 
-const (
-	maxreservationsid int32 = 987654321
-)
-
 /*
 containsID will check whether generated ID is already set or not.
 @id will be a int32 id to check for.
@@ -49,7 +45,7 @@ func (r *ReservatServiceHandler) getRandomReservationsID(length int32) int32 {
 	rand.Seed(time.Now().UnixNano())
 	for {
 		potantialID := rand.Int31n(length)
-		if !r.containsID(int32(potantialID)) && !r.containsPotantialReservations(int32(potantialID)) {
+		if !r.containsID(int32(potantialID)) && !r.containsPotantialReservations(potantialID) {
 			return potantialID
 		}
 	}
@@ -121,7 +117,7 @@ func convertSeats(seats []*proto.Seat) []int32 {
 }
 
 /*
-checkIfSeatIsTaken will check whether a given seat is allready in a reservation.
+checkIfSeatIsTaken will check whether a given seat is already in a reservation.
 */
 func (r *ReservatServiceHandler) checkIfSeatIsTaken(seat int32) bool {
 	for _, v := range *r.getReservationsMap() {
@@ -256,7 +252,6 @@ func (r *ReservatServiceHandler) AcceptReservation(ctx context.Context, in *prot
 			} else {
 				fmt.Printf("Cannot find a Cinema with the given id %d, Error: %e \n", id[0].MovieId, err)
 			}
-
 		}
 		responseReservationRequest, err2 := service.Reservation(ctx, cinin)
 		if longenouth && err2 == nil && responseReservationRequest.Answer {
@@ -405,7 +400,7 @@ func (r *ReservatServiceHandler) prepareStream() []*proto.Reservation {
 StreamUsersReservations will send all reservations.
 */
 func (r *ReservatServiceHandler) StreamUsersReservations(ctx context.Context, in *proto.StreamUsersReservationsRequest, out *proto.StreamUsersReservationsResponse) error {
-	if reservations := r.prepareStream(); reservations != nil && len(reservations) > 0 {
+	if reservations := r.prepareStream(); len(reservations) > 0 {
 		out.Reservations = reservations
 		return nil
 	}
@@ -445,15 +440,16 @@ HasReservations will send a bool and an int32 to indicate that.
 */
 func (r *ReservatServiceHandler) HasReservations(ctx context.Context, in *proto.HasReservationsRequest, out *proto.HasReservationsResponse) error {
 	has, howmuch, _ := r.FindUserIfReservation(in.Res.User)
-	if has && howmuch > 0 {
+	switch {
+	case has && howmuch > 0:
 		out.Has = has
 		out.Amount = howmuch
 		return nil
-	} else if !has && howmuch < 1 {
+	case !has && howmuch < 1:
 		out.Has = false
 		out.Amount = -1
 		return nil
-	} else {
-		return fmt.Errorf("an error occured cannot make sure wether the user is unknown or got a wrong combination of has entry and the amout like (true and -1)")
+	default:
+		return fmt.Errorf("an error occurred cannot make sure wether the user is unknown or got a wrong combination of has entry and the amout like (true and -1)")
 	}
 }

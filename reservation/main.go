@@ -22,9 +22,13 @@ func main() {
 			return cinproto.NewCinemaService("cinemahall", service.Client())
 		},
 	})
-	proto.RegisterReservationHandler(service.Server(), newResService)
+	err1 := proto.RegisterReservationHandler(service.Server(), newResService)
 
-	if err := service.Run(); err != nil {
-		fmt.Println(err)
+	if err1 == nil {
+		if err := service.Run(); err != nil {
+			fmt.Println(err)
+		}
+	} else {
+		fmt.Println(err1)
 	}
 }

@@ -1,6 +1,8 @@
 package reservation_test
 
 import (
+	"context"
+	"fmt"
 	"testing"
 
 	proto "github.com/ob-vss-ws19/blatt-4-pwn2own/reservation/proto"
@@ -20,11 +22,14 @@ func TestAddReservation(t *testing.T) {
 		},
 	}
 	out := &proto.MakeReservationResponse{}
-	re.MakeReservation(nil, in, out)
-	if out.TmpID < 0 || !out.Works {
-		t.Errorf("cannot add a potentialreservation into the map got ID: %d and Works: %t", out.TmpID, out.Works)
+	err := re.MakeReservation(context.TODO(), in, out)
+	if err == nil {
+		if out.TmpID < 0 || !out.Works {
+			t.Errorf("cannot add a potentialreservation into the map got ID: %d and Works: %t", out.TmpID, out.Works)
+		}
+	} else {
+		fmt.Println(err)
 	}
-
 }
 
 /*
@@ -41,19 +46,25 @@ func TestAddAcceptReservation(t *testing.T) {
 		},
 	}
 	out := &proto.MakeReservationResponse{}
-	re.MakeReservation(nil, in, out)
+	err := re.MakeReservation(context.TODO(), in, out)
 	ina := &proto.AcceptReservationRequest{TmpID: out.TmpID, Want: true}
 	outa := &proto.AcceptReservationResponse{}
-	re.AcceptReservation(nil, ina, outa)
+	err1 := re.AcceptReservation(context.TODO(), ina, outa)
 
-	if out.TmpID < 0 || !out.Works {
-		t.Errorf("cannot add a potentialreservation into the map got ID: %d and Works: %t", out.TmpID, out.Works)
-	} else if outa.FinalID < 1 && !outa.Taken {
-		t.Errorf("Accepted responsed with the wrong answer: %d and Works: %t", outa.FinalID, outa.Taken)
+	if err == nil && err1 == nil {
+		switch {
+		case out.TmpID < 0 || !out.Works:
+			t.Errorf("cannot add a potentialreservation into the map got ID: %d and Works: %t", out.TmpID, out.Works)
+		case outa.FinalID < 1 && !outa.Taken:
+			t.Errorf("Accepted responsed with the wrong answer: %d and Works: %t", outa.FinalID, outa.Taken)
+		default:
+			t.Log("test add the same reservation 2 times worked fine.")
+		}
+
 	} else {
-		t.Log("test add the same reservation 2 times worked fine.")
+		fmt.Println(err)
+		fmt.Println(err1)
 	}
-
 }
 
 /*
@@ -70,19 +81,23 @@ func TestAddTroughAwayReservation(t *testing.T) {
 		},
 	}
 	out := &proto.MakeReservationResponse{}
-	re.MakeReservation(nil, in, out)
+	err := re.MakeReservation(context.TODO(), in, out)
 	ina := &proto.AcceptReservationRequest{TmpID: out.TmpID, Want: false}
 	outa := &proto.AcceptReservationResponse{}
-	re.AcceptReservation(nil, ina, outa)
-
-	if out.TmpID < 0 || !out.Works {
-		t.Errorf("cannot add a potentialreservation into the map got ID: %d and Works: %t", out.TmpID, out.Works)
-	} else if outa.FinalID > 1 && outa.Taken {
-		t.Errorf("Accepted responsed with the wrong answer: %d and Works: %t", outa.FinalID, outa.Taken)
+	err1 := re.AcceptReservation(context.TODO(), ina, outa)
+	if err == nil && err1 == nil {
+		switch {
+		case out.TmpID < 0 || !out.Works:
+			t.Errorf("cannot add a potentialreservation into the map got ID: %d and Works: %t", out.TmpID, out.Works)
+		case outa.FinalID > 1 && outa.Taken:
+			t.Errorf("Accepted responsed with the wrong answer: %d and Works: %t", outa.FinalID, outa.Taken)
+		default:
+			t.Log("test add the same reservation 2 times worked fine.")
+		}
 	} else {
-		t.Log("test add the same reservation 2 times worked fine.")
+		fmt.Println(err)
+		fmt.Println(err1)
 	}
-
 }
 
 /*
@@ -99,19 +114,23 @@ func TestAddErrorReservation(t *testing.T) {
 		},
 	}
 	out := &proto.MakeReservationResponse{}
-	re.MakeReservation(nil, in, out)
+	err := re.MakeReservation(context.TODO(), in, out)
 	ina := &proto.AcceptReservationRequest{TmpID: -1, Want: true}
 	outa := &proto.AcceptReservationResponse{}
-	re.AcceptReservation(nil, ina, outa)
-
-	if out.TmpID < 0 || !out.Works {
-		t.Errorf("cannot add a potentialreservation into the map got ID: %d and Works: %t", out.TmpID, out.Works)
-	} else if outa.FinalID > 1 && outa.Taken {
-		t.Errorf("Accepted responsed with the wrong answer: %d and Works: %t", outa.FinalID, outa.Taken)
+	err1 := re.AcceptReservation(context.TODO(), ina, outa)
+	if err == nil && err1 == nil {
+		switch {
+		case out.TmpID < 0 || !out.Works:
+			t.Errorf("cannot add a potentialreservation into the map got ID: %d and Works: %t", out.TmpID, out.Works)
+		case outa.FinalID > 1 && outa.Taken:
+			t.Errorf("Accepted responsed with the wrong answer: %d and Works: %t", outa.FinalID, outa.Taken)
+		default:
+			t.Log("test add the same reservation 2 times worked fine.")
+		}
 	} else {
-		t.Log("test add the same reservation 2 times worked fine.")
+		fmt.Println(err)
+		fmt.Println(err1)
 	}
-
 }
 
 /*
@@ -128,10 +147,10 @@ func TestAddAcceptAddAgainReservation(t *testing.T) {
 		},
 	}
 	out := &proto.MakeReservationResponse{}
-	re.MakeReservation(nil, in, out)
+	err := re.MakeReservation(context.TODO(), in, out)
 	ina := &proto.AcceptReservationRequest{TmpID: out.TmpID, Want: true}
 	outa := &proto.AcceptReservationResponse{}
-	re.AcceptReservation(nil, ina, outa)
+	err1 := re.AcceptReservation(context.TODO(), ina, outa)
 	in2 := &proto.MakeReservationRequest{
 		Res: &proto.Reservation{
 			User:  23,
@@ -140,17 +159,24 @@ func TestAddAcceptAddAgainReservation(t *testing.T) {
 		},
 	}
 	out2 := &proto.MakeReservationResponse{}
-	re.MakeReservation(nil, in2, out2)
-	if out.TmpID < 0 || !out.Works {
-		t.Errorf("cannot add a potentialreservation into the map got ID: %d and Works: %t", out.TmpID, out.Works)
-	} else if out2.TmpID != -1 || out2.Works {
-		t.Errorf("second time to send a reservation which should not be executed returned the wrong response: %d and Works: %t", out.TmpID, out.Works)
-	} else if outa.FinalID < 1 && !outa.Taken {
-		t.Errorf("Accepted responsed with the wrong answer: %d and Works: %t", outa.FinalID, outa.Taken)
-	} else {
-		t.Log("test add the same reservation 2 times worked fine.")
-	}
+	err2 := re.MakeReservation(context.TODO(), in2, out2)
 
+	if err == nil && err1 == nil && err2 == nil {
+		switch {
+		case out.TmpID < 0 || !out.Works:
+			t.Errorf("cannot add a potentialreservation into the map got ID: %d and Works: %t", out.TmpID, out.Works)
+		case out2.TmpID != -1 || out2.Works:
+			t.Errorf("second time to send a reservation which should not be executed returned the wrong response: %d and Works: %t", out.TmpID, out.Works)
+		case outa.FinalID < 1 && !outa.Taken:
+			t.Errorf("Accepted responsed with the wrong answer: %d and Works: %t", outa.FinalID, outa.Taken)
+		default:
+			t.Log("test add the same reservation 2 times worked fine.")
+		}
+	} else {
+		fmt.Println(err)
+		fmt.Println(err1)
+		fmt.Println(err2)
+	}
 }
 
 /*
@@ -167,23 +193,29 @@ func TestAddAcceptDeleteReservation(t *testing.T) {
 		},
 	}
 	out := &proto.MakeReservationResponse{}
-	re.MakeReservation(nil, in, out)
+	err := re.MakeReservation(context.TODO(), in, out)
 	ina := &proto.AcceptReservationRequest{TmpID: out.TmpID, Want: true}
 	outa := &proto.AcceptReservationResponse{}
-	re.AcceptReservation(nil, ina, outa)
+	err1 := re.AcceptReservation(context.TODO(), ina, outa)
 	din := &proto.DeleteReservationRequest{Id: outa.FinalID}
 	dout := &proto.DeleteReservationResponse{}
 
-	re.DeleteReservation(nil, din, dout)
-
-	if out.TmpID < 0 || !out.Works {
-		t.Errorf("cannot add a potentialreservation into the map got ID: %d and Works: %t", out.TmpID, out.Works)
-	} else if outa.FinalID < 1 && !outa.Taken {
-		t.Errorf("Accepted responsed with the wrong answer: %d and Works: %t", outa.FinalID, outa.Taken)
-	} else if !dout.Deleted {
-		t.Errorf("Cannot delete the reservation with the ID:%d, Taken: %t, Deleted responed: %t", outa.FinalID, outa.Taken, dout.Deleted)
+	err2 := re.DeleteReservation(context.TODO(), din, dout)
+	if err == nil && err1 == nil && err2 == nil {
+		switch {
+		case out.TmpID < 0 || !out.Works:
+			t.Errorf("cannot add a potentialreservation into the map got ID: %d and Works: %t", out.TmpID, out.Works)
+		case outa.FinalID < 1 && !outa.Taken:
+			t.Errorf("Accepted responsed with the wrong answer: %d and Works: %t", outa.FinalID, outa.Taken)
+		case !dout.Deleted:
+			t.Errorf("Cannot delete the reservation with the ID:%d, Taken: %t, Deleted responded: %t", outa.FinalID, outa.Taken, dout.Deleted)
+		default:
+			t.Log("test add the same reservation 2 times worked fine.")
+		}
 	} else {
-		t.Log("test add the same reservation 2 times worked fine.")
+		fmt.Println(err)
+		fmt.Println(err1)
+		fmt.Println(err2)
 	}
 }
 
@@ -201,26 +233,32 @@ func TestAddAcceptFindReservation(t *testing.T) {
 		},
 	}
 	out := &proto.MakeReservationResponse{}
-	re.MakeReservation(nil, in, out)
+	err := re.MakeReservation(context.TODO(), in, out)
 	ina := &proto.AcceptReservationRequest{TmpID: out.TmpID, Want: true}
 	outa := &proto.AcceptReservationResponse{}
-	re.AcceptReservation(nil, ina, outa)
+	err1 := re.AcceptReservation(context.TODO(), ina, outa)
 	din := &proto.ShowReservationsRequest{Id: outa.FinalID}
 	dout := &proto.ShowReservationsResponse{}
 
-	re.ShowReservations(nil, din, dout)
-
-	if out.TmpID < 0 || !out.Works {
-		t.Errorf("cannot add a potentialreservation into the map got ID: %d and Works: %t", out.TmpID, out.Works)
-	} else if outa.FinalID < 1 && !outa.Taken {
-		t.Errorf("Accepted responsed with the wrong answer: %d and Works: %t", outa.FinalID, outa.Taken)
-	} else if dout.Res.ResId < 1 || dout.Res.ResId != outa.FinalID || dout.Res.Show != 34 || dout.Res.Show < 1 || dout.Res.User != 23 || dout.Res.User < 1 || len(dout.Res.Seats) < 1 || len(dout.Res.Seats) != 2 {
-		t.Errorf("got the wrong answer back wanted-RES-ID: %d, got: %d", dout.Res.ResId, outa.FinalID)
-		t.Errorf("got the wrong answer back wanted-UserID: %d, got: %d", dout.Res.User, 23)
-		t.Errorf("got the wrong answer back wanted-ShowID: %d, got: %d", dout.Res.Show, 34)
-		t.Errorf("got the wrong answer back wanted-Seats: %d, got: %d", len(dout.Res.Seats), 2)
+	err2 := re.ShowReservations(context.TODO(), din, dout)
+	if err == nil && err1 == nil && err2 == nil {
+		switch {
+		case out.TmpID < 0 || !out.Works:
+			t.Errorf("cannot add a potentialreservation into the map got ID: %d and Works: %t", out.TmpID, out.Works)
+		case outa.FinalID < 1 && !outa.Taken:
+			t.Errorf("Accepted responsed with the wrong answer: %d and Works: %t", outa.FinalID, outa.Taken)
+		case dout.Res.ResId < 1 || dout.Res.ResId != outa.FinalID || dout.Res.Show != 34 || dout.Res.Show < 1 || dout.Res.User != 23 || dout.Res.User < 1 || len(dout.Res.Seats) < 1 || len(dout.Res.Seats) != 2:
+			t.Errorf("got the wrong answer back wanted-RES-ID: %d, got: %d", dout.Res.ResId, outa.FinalID)
+			t.Errorf("got the wrong answer back wanted-UserID: %d, got: %d", dout.Res.User, 23)
+			t.Errorf("got the wrong answer back wanted-ShowID: %d, got: %d", dout.Res.Show, 34)
+			t.Errorf("got the wrong answer back wanted-Seats: %d, got: %d", len(dout.Res.Seats), 2)
+		default:
+			t.Log("test add the same reservation 2 times worked fine.")
+		}
 	} else {
-		t.Log("test add the same reservation 2 times worked fine.")
+		fmt.Println(err)
+		fmt.Println(err1)
+		fmt.Println(err2)
 	}
 }
 
@@ -237,21 +275,25 @@ func TestAddCheckHasReservationReservation(t *testing.T) {
 		},
 	}
 	out := &proto.MakeReservationResponse{}
-	re.MakeReservation(nil, in, out)
+	err := re.MakeReservation(context.TODO(), in, out)
 
 	fin := &proto.HasReservationsRequest{Res: &proto.Reservation{User: 23}}
 	fout := &proto.HasReservationsResponse{}
 
-	re.HasReservations(nil, fin, fout)
-
-	if out.TmpID < 0 || !out.Works {
-		t.Errorf("cannot add a potentialreservation into the map got ID: %d and Works: %t", out.TmpID, out.Works)
-	} else if fout.Amount < 1 || !fout.Has {
-		t.Errorf("got the wrong answer there is a reservation but answer was wrong Amount: %d and Has: %t", fout.Amount, fout.Has)
+	err1 := re.HasReservations(context.TODO(), fin, fout)
+	if err == nil && err1 == nil {
+		switch {
+		case out.TmpID < 0 || !out.Works:
+			t.Errorf("cannot add a potentialreservation into the map got ID: %d and Works: %t", out.TmpID, out.Works)
+		case fout.Amount < 1 || !fout.Has:
+			t.Errorf("got the wrong answer there is a reservation but answer was wrong Amount: %d and Has: %t", fout.Amount, fout.Has)
+		default:
+			t.Log("worked")
+		}
 	} else {
-		t.Log("worked")
+		fmt.Println(err)
+		fmt.Println(err1)
 	}
-
 }
 
 /*
@@ -262,14 +304,17 @@ func TestAddCheckHasReservationOnEmptyServiceReservation(t *testing.T) {
 	fin := &proto.HasReservationsRequest{Res: &proto.Reservation{User: 23}}
 	fout := &proto.HasReservationsResponse{}
 
-	re.HasReservations(nil, fin, fout)
+	err := re.HasReservations(context.TODO(), fin, fout)
 
-	if fout.Amount > 1 || fout.Has {
-		t.Errorf("got the wrong answer there is a reservation but answer was wrong Amount: %d and Has: %t", fout.Amount, fout.Has)
+	if err == nil {
+		if fout.Amount > 1 || fout.Has {
+			t.Errorf("got the wrong answer there is a reservation but answer was wrong Amount: %d and Has: %t", fout.Amount, fout.Has)
+		} else {
+			t.Log("worked")
+		}
 	} else {
-		t.Log("worked")
+		fmt.Println(err)
 	}
-
 }
 
 /*
@@ -285,29 +330,35 @@ func TestAddCheckStreamReservation(t *testing.T) {
 		},
 	}
 	out := &proto.MakeReservationResponse{}
-	re.MakeReservation(nil, in, out)
+	err := re.MakeReservation(context.TODO(), in, out)
 	ina := &proto.AcceptReservationRequest{TmpID: out.TmpID, Want: true}
 	outa := &proto.AcceptReservationResponse{}
-	re.AcceptReservation(nil, ina, outa)
+	err1 := re.AcceptReservation(context.TODO(), ina, outa)
 
 	sin := &proto.StreamUsersReservationsRequest{}
 	sout := &proto.StreamUsersReservationsResponse{}
 
-	re.StreamUsersReservations(nil, sin, sout)
-
-	if out.TmpID < 0 || !out.Works {
-		t.Errorf("cannot add a potentialreservation into the map got ID: %d and Works: %t", out.TmpID, out.Works)
-	} else if outa.FinalID < 1 && !outa.Taken {
-		t.Errorf("Accepted responsed with the wrong answer: %d and Works: %t", outa.FinalID, outa.Taken)
-	} else if len(sout.Reservations) < 1 {
-		t.Errorf("The length of the answer and the expectation does not match up: %d and Works: %d", len(sout.Reservations), 1)
-	} else if (*sout.Reservations[0]).User != 23 || (*sout.Reservations[0]).Show != 34 || (*sout.Reservations[0]).Seats[0].Seat != 23 || (*sout.Reservations[0]).Seats[1].Seat != 34 {
-		t.Errorf("The user got does not match up with the expected one: got %d wanted: %d", (*sout.Reservations[0]).User, 23)
-		t.Errorf("The show got does not match up with the expected one: got %d wanted: %d", (*sout.Reservations[0]).Show, 34)
-		t.Errorf("The seat 1 got does not match up with the expected one: got %d wanted: %d", (*sout.Reservations[0]).Seats[0].Seat, 23)
-		t.Errorf("The seat 2 got does not match up with the expected one: got %d wanted: %d", (*sout.Reservations[0]).Seats[1].Seat, 34)
+	err2 := re.StreamUsersReservations(context.TODO(), sin, sout)
+	if err == nil && err1 == nil && err2 == nil {
+		switch {
+		case out.TmpID < 0 || !out.Works:
+			t.Errorf("cannot add a potentialreservation into the map got ID: %d and Works: %t", out.TmpID, out.Works)
+		case outa.FinalID < 1 && !outa.Taken:
+			t.Errorf("Accepted responsed with the wrong answer: %d and Works: %t", outa.FinalID, outa.Taken)
+		case len(sout.Reservations) < 1:
+			t.Errorf("The length of the answer and the expectation does not match up: %d and Works: %d", len(sout.Reservations), 1)
+		case (*sout.Reservations[0]).User != 23 || (*sout.Reservations[0]).Show != 34 || (*sout.Reservations[0]).Seats[0].Seat != 23 || (*sout.Reservations[0]).Seats[1].Seat != 34:
+			t.Errorf("The user got does not match up with the expected one: got %d wanted: %d", (*sout.Reservations[0]).User, 23)
+			t.Errorf("The show got does not match up with the expected one: got %d wanted: %d", (*sout.Reservations[0]).Show, 34)
+			t.Errorf("The seat 1 got does not match up with the expected one: got %d wanted: %d", (*sout.Reservations[0]).Seats[0].Seat, 23)
+			t.Errorf("The seat 2 got does not match up with the expected one: got %d wanted: %d", (*sout.Reservations[0]).Seats[1].Seat, 34)
+		default:
+			t.Log("test add the same reservation 2 times worked fine.")
+		}
 	} else {
-		t.Log("test add the same reservation 2 times worked fine.")
+		fmt.Println(err)
+		fmt.Println(err1)
+		fmt.Println(err2)
 	}
 }
 
@@ -325,10 +376,10 @@ func TestAddAcceptChangeReservation(t *testing.T) {
 		},
 	}
 	out := &proto.MakeReservationResponse{}
-	re.MakeReservation(nil, in, out)
+	err := re.MakeReservation(context.TODO(), in, out)
 	ina := &proto.AcceptReservationRequest{TmpID: out.TmpID, Want: true}
 	outa := &proto.AcceptReservationResponse{}
-	re.AcceptReservation(nil, ina, outa)
+	err1 := re.AcceptReservation(context.TODO(), ina, outa)
 
 	cin := &proto.ChangeReservationRequest{Res: &proto.Reservation{
 		ResId: outa.FinalID,
@@ -338,16 +389,21 @@ func TestAddAcceptChangeReservation(t *testing.T) {
 	}}
 	cout := &proto.ChangeReservationResponse{}
 
-	re.ChangeReservation(nil, cin, cout)
-
-	if out.TmpID < 0 || !out.Works {
-		t.Errorf("cannot add a potentialreservation into the map got ID: %d and Works: %t", out.TmpID, out.Works)
-	} else if outa.FinalID < 1 && !outa.Taken {
-		t.Errorf("Accepted responsed with the wrong answer: %d and Works: %t", outa.FinalID, outa.Taken)
-	} else if !cout.Changed {
-		t.Errorf("The value did not changed --> Got %t", cout.Changed)
+	err2 := re.ChangeReservation(context.TODO(), cin, cout)
+	if err == nil && err1 == nil && err2 == nil {
+		switch {
+		case out.TmpID < 0 || !out.Works:
+			t.Errorf("cannot add a potentialreservation into the map got ID: %d and Works: %t", out.TmpID, out.Works)
+		case outa.FinalID < 1 && !outa.Taken:
+			t.Errorf("Accepted responsed with the wrong answer: %d and Works: %t", outa.FinalID, outa.Taken)
+		case !cout.Changed:
+			t.Errorf("The value did not changed --> Got %t", cout.Changed)
+		default:
+			t.Log("test add the same reservation 2 times worked fine.")
+		}
 	} else {
-		t.Log("test add the same reservation 2 times worked fine.")
+		fmt.Println(err)
+		fmt.Println(err1)
+		fmt.Println(err2)
 	}
-
 }
