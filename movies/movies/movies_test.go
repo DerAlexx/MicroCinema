@@ -1,6 +1,7 @@
 package movies_test
 
 import (
+	"context"
 	"testing"
 
 	"github.com/ob-vss-ws19/blatt-4-pwn2own/movies/movies"
@@ -14,7 +15,7 @@ func TestAddMovie(t *testing.T) {
 	TestName := "Bibi und Tina"
 	service := movies.CreateNewMoviesHandlerInstance()
 	response := protoo.CreatedMovieResponse{Movie: &protoo.Movie{}}
-	service.CreateMovie(nil, &protoo.CreateMovieRequest{Name: TestName}, &response)
+	service.CreateMovie(context.TODO(), &protoo.CreateMovieRequest{Name: TestName}, &response)
 
 	if response.Movie.Name != TestName {
 		t.Errorf("Cannot create a movie with the name %s", TestName)
@@ -34,12 +35,12 @@ func TestAddMultipleMoviesAndReadAllOfThem(t *testing.T) {
 	service := movies.CreateNewMoviesHandlerInstance()
 	responseInsert := protoo.CreatedMovieResponse{Movie: &protoo.Movie{}}
 	responseInsert2 := protoo.CreatedMovieResponse{Movie: &protoo.Movie{}}
-	service.CreateMovie(nil, &protoo.CreateMovieRequest{Name: FirstName}, &responseInsert)
-	service.CreateMovie(nil, &protoo.CreateMovieRequest{Name: SecondName}, &responseInsert2)
+	service.CreateMovie(context.TODO(), &protoo.CreateMovieRequest{Name: FirstName}, &responseInsert)
+	service.CreateMovie(context.TODO(), &protoo.CreateMovieRequest{Name: SecondName}, &responseInsert2)
 
 	all := protoo.StreamMovieResponse{}
 
-	service.StreamMovie(nil, &protoo.StreamMovieRequest{}, &all)
+	service.StreamMovie(context.TODO(), &protoo.StreamMovieRequest{}, &all)
 
 	if len(all.Movies) != 2 {
 		t.Errorf("The length does not match up. expected %d got %d", 2, len(all.Movies))
@@ -53,14 +54,14 @@ func TestAddandDeleteAMovie(t *testing.T) {
 	TestName := "Tim"
 	service := movies.CreateNewMoviesHandlerInstance()
 	response := protoo.CreatedMovieResponse{Movie: &protoo.Movie{}}
-	service.CreateMovie(nil, &protoo.CreateMovieRequest{Name: TestName}, &response)
+	service.CreateMovie(context.TODO(), &protoo.CreateMovieRequest{Name: TestName}, &response)
 	id := response.Movie.Id
 	deleteResponse := protoo.DeleteMovieResponse{}
-	service.DeleteMovie(nil, &protoo.DeleteMovieRequest{Id: id}, &deleteResponse)
+	service.DeleteMovie(context.TODO(), &protoo.DeleteMovieRequest{Id: id}, &deleteResponse)
 
 	responseFind := protoo.FindMovieResponse{Movie: &protoo.Movie{}}
 
-	service.FindMovie(nil, &protoo.FindMovieRequest{Movie: &protoo.Movie{}}, &responseFind)
+	service.FindMovie(context.TODO(), &protoo.FindMovieRequest{Movie: &protoo.Movie{}}, &responseFind)
 
 	if !deleteResponse.Deleted && responseFind.Movie.Id == -1 {
 		t.Errorf("Movie was deleted. But returned the false state.")
@@ -76,12 +77,12 @@ func TestAddMovieAndFindIt(t *testing.T) {
 	TestName := "Mission Impossible 6"
 	service := movies.CreateNewMoviesHandlerInstance()
 	response := protoo.CreatedMovieResponse{Movie: &protoo.Movie{}}
-	service.CreateMovie(nil, &protoo.CreateMovieRequest{Name: TestName}, &response)
+	service.CreateMovie(context.TODO(), &protoo.CreateMovieRequest{Name: TestName}, &response)
 	id := response.Movie.Id
 
 	responseFind := protoo.FindMovieResponse{Movie: &protoo.Movie{}}
 
-	service.FindMovie(nil, &protoo.FindMovieRequest{Movie: &protoo.Movie{Name: TestName}}, &responseFind)
+	service.FindMovie(context.TODO(), &protoo.FindMovieRequest{Movie: &protoo.Movie{Name: TestName}}, &responseFind)
 
 	if responseFind.Movie.Id != id {
 		t.Errorf("Cannot find or create a movie with the name %s --> ID does not match given %d want %d", TestName, responseFind.Movie.Id, id)
@@ -101,12 +102,12 @@ func TestAddMovieAndFindItById(t *testing.T) {
 	TestName := "Harry Potter und der Plastikpokal"
 	service := movies.CreateNewMoviesHandlerInstance()
 	response := protoo.CreatedMovieResponse{Movie: &protoo.Movie{}}
-	service.CreateMovie(nil, &protoo.CreateMovieRequest{Name: TestName}, &response)
+	service.CreateMovie(context.TODO(), &protoo.CreateMovieRequest{Name: TestName}, &response)
 	id := response.Movie.Id
 
 	responseFind := protoo.FindMovieResponse{Movie: &protoo.Movie{}}
 
-	service.FindMovie(nil, &protoo.FindMovieRequest{Movie: &protoo.Movie{Id: id}}, &responseFind)
+	service.FindMovie(context.TODO(), &protoo.FindMovieRequest{Movie: &protoo.Movie{Id: id}}, &responseFind)
 
 	if responseFind.Movie.Name != TestName {
 		t.Errorf("Cannot find or create a movie with the name %s --> ID does not match given %d want %d", TestName, responseFind.Movie.Id, id)
@@ -128,11 +129,11 @@ func TestAddChange(t *testing.T) {
 	NewName := "Die Abenteuer des Paulanius 2"
 	service := movies.CreateNewMoviesHandlerInstance()
 	response := protoo.CreatedMovieResponse{Movie: &protoo.Movie{}}
-	service.CreateMovie(nil, &protoo.CreateMovieRequest{Name: TestName}, &response)
+	service.CreateMovie(context.TODO(), &protoo.CreateMovieRequest{Name: TestName}, &response)
 	id := response.Movie.Id
 	chresponse := protoo.ChangeMovieResponse{}
 	beforeChange := service.Find(response.Movie.Id).(string)
-	service.ChangeMovie(nil, &protoo.ChangeMovieRequest{Movie: &protoo.Movie{Id: id, Name: NewName}}, &chresponse)
+	service.ChangeMovie(context.TODO(), &protoo.ChangeMovieRequest{Movie: &protoo.Movie{Id: id, Name: NewName}}, &chresponse)
 	AfterChange := service.Find(response.Movie.Id).(string)
 
 	if beforeChange != TestName {

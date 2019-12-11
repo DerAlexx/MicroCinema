@@ -11,10 +11,13 @@ import (
 func main() {
 	service := micro.NewService(micro.Name("movies"))
 	service.Init()
-	proto.RegisterMoviesHandler(service.Server(), movies.CreateNewMoviesHandlerInstance())
-
-	if err := service.Run(); err != nil {
-		fmt.Println(err)
+	err1 := proto.RegisterMoviesHandler(service.Server(), movies.CreateNewMoviesHandlerInstance())
+	if err1 == nil {
+		if err := service.Run(); err != nil {
+			fmt.Println(err)
+		}
+	} else {
+		fmt.Println(err1)
 	}
 
 }

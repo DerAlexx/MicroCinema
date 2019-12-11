@@ -54,7 +54,7 @@ func (m *MovieHandlerService) getRandomMovieID(length int32) int32 {
 	rand.Seed(time.Now().UnixNano())
 	for {
 		potantialID := rand.Int31n(length)
-		if !m.containsID(int32(potantialID)) {
+		if !m.containsID(potantialID) {
 			return potantialID
 		}
 	}
@@ -109,7 +109,7 @@ func (m *MovieHandlerService) CreateMovie(context context.Context, in *proto.Cre
 			return nil
 		}
 	}
-	return fmt.Errorf("cannot create movie with an emtpy name")
+	return fmt.Errorf("cannot create movie with an empty name")
 }
 
 /*
@@ -149,7 +149,7 @@ func (m *MovieHandlerService) StreamMovie(ctx context.Context, in *proto.StreamM
 		}
 		out.Movies = movies
 	}
-	return fmt.Errorf("There are currently no movies store (Advice: find some customers)")
+	return fmt.Errorf("there are currently no movies store (Advice: find some customers)")
 }
 
 /*
