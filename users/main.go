@@ -21,9 +21,13 @@ func main() {
 			return protores.NewReservationService("reservation", service.Client())
 		},
 	})
-	proto.RegisterUsersHandler(service.Server(), newUserService)
+	err1 := proto.RegisterUsersHandler(service.Server(), newUserService)
 
-	if err := service.Run(); err != nil {
-		fmt.Println(err)
+	if err1 == nil {
+		if err := service.Run(); err != nil {
+			fmt.Println(err)
+		}
+	} else {
+		fmt.Println(err1)
 	}
 }

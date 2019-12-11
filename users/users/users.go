@@ -33,7 +33,7 @@ func (u *UserHandlerService) getRandomUserID(length int32) int32 {
 	rand.Seed(time.Now().UnixNano())
 	for {
 		potantialID := rand.Int31n(length)
-		if !u.containsID(int32(potantialID)) {
+		if !u.containsID(potantialID) {
 			return potantialID
 		}
 	}
@@ -49,10 +49,10 @@ func (u *UserHandlerService) getUserMap() *map[int32]*userS {
 /*
 setUserMap will set the map of a userhandlerservice instance.
 @param users will be the map to set.
-*/
 func (u *UserHandlerService) setUserMap(users *map[int32]*userS) {
 	u.user = *users
 }
+*/
 
 type userS struct {
 	name string
@@ -158,11 +158,11 @@ func (u *UserHandlerService) DeleteUser(context context.Context, request *proto.
 GetInformationFromMap will find a users information by a given parameter for example a string (Name) or his id (int32)
 */
 func (u *UserHandlerService) GetInformationFromMap(value interface{}) interface{} {
-	switch value.(type) {
+	switch tp := value.(type) {
 	case string:
 		u.mutex.Lock()
 		for k, v := range *u.getUserMap() {
-			if v.getName() == value.(string) {
+			if v.getName() == tp {
 				u.mutex.Unlock()
 				return k
 			}
@@ -171,7 +171,7 @@ func (u *UserHandlerService) GetInformationFromMap(value interface{}) interface{
 		return int32(-1)
 	case int32:
 		u.mutex.Lock()
-		name := ((*u.getUserMap())[value.(int32)]).getName()
+		name := ((*u.getUserMap())[tp]).getName()
 		u.mutex.Unlock()
 		if name != "" {
 			return name
@@ -249,5 +249,5 @@ func (u *UserHandlerService) ReceiveAndSendAllUsers(context context.Context, in 
 		}
 		out.Users = users
 	}
-	return fmt.Errorf("There are currently no users store (Advice: find some customers)")
+	return fmt.Errorf("there are currently no users store (Advice: find some customers)")
 }
