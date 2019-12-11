@@ -31,8 +31,9 @@ pipeline {
                 docker { image 'obraun/vss-protoactor-jenkins' }
             }
             steps {
-                sh 'cd movies/movies && golangci-lint run --enable-all -D wsl lll' 
-                sh 'cd cinemahall && golangci-lint run --enable-all --skip-dirs proto -D wsl lll' //--deadline 20m --enable-all; --disable-all -E errcheck  
+                sh 'cd cinemahall && golangci-lint run --enable-all --skip-dirs proto -D wsl lll' //--deadline 20m --enable-all; --disable-all -E errcheck
+                sh 'cd movies && golangci-lint run --enable-all -D wsl lll' 
+                  
                 sh 'cd ../reservation && golangci-lint run --enable-all --skip-dirs proto -D wsl lll'
                 sh 'cd ../show && golangci-lint run --enable-all --skip-dirs proto -D wsl lll'
                 sh 'cd ../users && golangci-lint run --enable-all --skip-dirs proto -D wsl lll'
