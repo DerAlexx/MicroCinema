@@ -196,7 +196,7 @@ func (handler *CinemaPool) CheckSeats(ctx context.Context, request *cinemaproto.
 	if !mapcontainscinema {
 		handler.mutex.Unlock()
 		response.Answer = false
-		return errors.New("Cinema Service - CheckSeats | Cannot execute storno because cinema doesnt exist")
+		return errors.New("cinema service - checkSeats | Cannot execute storno because cinema doesnt exist")
 	}
 
 	isnotreserved := true
@@ -225,7 +225,7 @@ func (handler *CinemaPool) FreeSeats(ctx context.Context, request *cinemaproto.F
 	if !mapcontainscinema {
 		handler.mutex.Unlock()
 		response.Freeseats = nil
-		return errors.New("Cinema Service - FreeSeats | Cannot execute storno because cinema doesnt exist")
+		return errors.New("cinema service - freeSeats | Cannot execute storno because cinema doesnt exist")
 	}
 
 	retseatmap := map[*seats]bool{}
