@@ -33,8 +33,8 @@ pipeline {
             steps {
                 //sh 'cd cinemahall && golangci-lint run --enable-all --skip-dirs proto -D wsl -D lll' //--deadline 20m --enable-all; --disable-all -E errcheck
                 //sh 'cd movies && golangci-lint run --enable-all --skip-dirs proto -D wsl -D lll -D gosimple' 
-                sh 'cd reservation && golangci-lint run --enable-all --skip-dirs proto -D wsl -D lll -D unparam -D godox'
-                sh 'cd show && golangci-lint run --enable-all --skip-dirs proto -D wsl -D lll'
+                //sh 'cd reservation && golangci-lint run --enable-all --skip-dirs proto -D wsl -D lll -D unparam -D godox'
+                sh 'cd show && golangci-lint run --enable-all --skip-dirs proto -D wsl -D lll -D golint'
                 sh 'cd users && golangci-lint run --enable-all --skip-dirs proto -D wsl -D lll'
             }
         }

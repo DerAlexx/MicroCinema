@@ -11,7 +11,6 @@ import (
 const serviceName = "show-service"
 
 func main() {
-
 	// Create a new service. Optionally include some options here.
 	service := micro.NewService(
 		micro.Name(serviceName),
@@ -20,10 +19,15 @@ func main() {
 	// Init will parse the command line flags.
 	service.Init()
 
-	showproto.RegisterShowHandler(service.Server(), show.NewShowPool())
+	err1 := showproto.RegisterShowHandler(service.Server(), show.NewShowPool())
 
 	// Run the server
-	if err := service.Run(); err != nil {
-		fmt.Println(err)
+	if err1 == nil {
+		if err := service.Run(); err != nil {
+			fmt.Println(err)
+		}
+	} else {
+		fmt.Println(err1)
 	}
+
 }
