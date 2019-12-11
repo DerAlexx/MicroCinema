@@ -70,10 +70,10 @@ func (m *MovieHandlerService) getMoviesMap() *map[int32]*Movie {
 /*
 setMoviesMap will set the map of a moviehandlerservice instance.
 @param movies will be the map to set.
-*/
 func (m *MovieHandlerService) setMoviesMap(movies *map[int32]*Movie) {
 	m.movies = *movies
 }
+*/
 
 /*
 CreateNewMoviesHandlerInstance will return a new movies instance.
@@ -193,15 +193,16 @@ func (m *MovieHandlerService) Find(value interface{}) interface{} {
 FindMovie will find a movie.
 */
 func (m *MovieHandlerService) FindMovie(ctx context.Context, in *proto.FindMovieRequest, out *proto.FindMovieResponse) error {
-	if m.containsID(in.Movie.Id) {
+	switch {
+	case m.containsID(in.Movie.Id):
 		out.Movie.Name = m.Find(in.Movie.Id).(string)
 		out.Movie.Id = in.Movie.Id
 		return nil
-	} else if in.Movie.Name != "" {
+	case in.Movie.Name != "":
 		out.Movie.Name = in.Movie.Name
 		out.Movie.Id = m.Find(in.Movie.Name).(int32)
 		return nil
-	} else {
+	default:
 		return fmt.Errorf("cannot find a movie with the given id %d or the name %s", in.Movie.Id, in.Movie.Name)
 	}
 }
