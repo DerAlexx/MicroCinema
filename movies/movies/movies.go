@@ -171,15 +171,15 @@ Find will search by a given value for its oppotsite. E.g if you
 have the name you can get the id.
 */
 func (m *MovieHandlerService) Find(value interface{}) interface{} {
-	switch value.(type) {
+	switch tp := value.(type) {
 	case int32:
-		if m.containsID(value.(int32)) {
-			return (*m.getMoviesMap())[value.(int32)].getName()
+		if m.containsID(tp) {
+			return (*m.getMoviesMap())[tp].getName()
 		}
 		return ""
 	case string:
 		for k, v := range *m.getMoviesMap() {
-			if v.getName() == value.(string) {
+			if v.getName() == tp {
 				return k
 			}
 		}

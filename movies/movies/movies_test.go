@@ -57,7 +57,6 @@ func TestAddMultipleMoviesAndReadAllOfThem(t *testing.T) {
 		fmt.Println(err1)
 		fmt.Println(err2)
 	}
-
 }
 
 /*
@@ -137,15 +136,16 @@ func TestAddChange(t *testing.T) {
 	AfterChange := service.Find(response.Movie.Id).(string)
 
 	if err == nil && err1 == nil {
-		if beforeChange != TestName {
+		switch {
+		case beforeChange != TestName:
 			t.Errorf("Beforename is wrong got: %s wanted %s", beforeChange, TestName)
-		} else if id <= 0 {
+		case id <= 0:
 			t.Errorf("Got a wrong movieid %d wanted a value bigger than 0", id)
-		} else if AfterChange != NewName {
+		case AfterChange != NewName:
 			t.Errorf("Aftername is wrong got: %s wanted %s", AfterChange, NewName)
-		} else if AfterChange == NewName && !chresponse.Changed {
+		case AfterChange == NewName && !chresponse.Changed:
 			t.Errorf("Name was changed. Found by getinformationfrommap but did not send the correct response.")
-		} else {
+		default:
 			t.Log("Create a movie and change it later on is fine.")
 		}
 	} else {
