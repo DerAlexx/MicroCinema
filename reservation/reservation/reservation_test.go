@@ -19,8 +19,8 @@ func TestAddReservation(t *testing.T) {
 			User: 23,
 			Show: 34,
 			Seats: []*proto.Seat{
-				&proto.Seat{Seat: 23},
-				&proto.Seat{Seat: 34}},
+				{Seat: 23},
+				{Seat: 34}},
 		},
 	}
 	out := &proto.MakeReservationResponse{}
@@ -44,7 +44,7 @@ func TestAddAcceptReservation(t *testing.T) {
 		Res: &proto.Reservation{
 			User:  23,
 			Show:  34,
-			Seats: []*proto.Seat{&proto.Seat{Seat: 23}, &proto.Seat{Seat: 34}},
+			Seats: []*proto.Seat{{Seat: 23}, {Seat: 34}},
 		},
 	}
 	out := &proto.MakeReservationResponse{}
@@ -78,7 +78,7 @@ func TestAddTroughAwayReservation(t *testing.T) {
 		Res: &proto.Reservation{
 			User:  23,
 			Show:  34,
-			Seats: []*proto.Seat{&proto.Seat{Seat: 23}, &proto.Seat{Seat: 34}},
+			Seats: []*proto.Seat{{Seat: 23}, {Seat: 34}},
 		},
 	}
 	out := &proto.MakeReservationResponse{}
@@ -111,7 +111,7 @@ func TestAddErrorReservation(t *testing.T) {
 		Res: &proto.Reservation{
 			User:  23,
 			Show:  34,
-			Seats: []*proto.Seat{&proto.Seat{Seat: 23}, &proto.Seat{Seat: 34}},
+			Seats: []*proto.Seat{{Seat: 23}, {Seat: 34}},
 		},
 	}
 	out := &proto.MakeReservationResponse{}
@@ -144,7 +144,7 @@ func TestAddAcceptAddAgainReservation(t *testing.T) {
 		Res: &proto.Reservation{
 			User:  23,
 			Show:  34,
-			Seats: []*proto.Seat{&proto.Seat{Seat: 23}, &proto.Seat{Seat: 34}},
+			Seats: []*proto.Seat{{Seat: 23}, {Seat: 34}},
 		},
 	}
 	out := &proto.MakeReservationResponse{}
@@ -156,7 +156,7 @@ func TestAddAcceptAddAgainReservation(t *testing.T) {
 		Res: &proto.Reservation{
 			User:  23,
 			Show:  34,
-			Seats: []*proto.Seat{&proto.Seat{Seat: 23}, &proto.Seat{Seat: 34}},
+			Seats: []*proto.Seat{{Seat: 23}, {Seat: 34}},
 		},
 	}
 	out2 := &proto.MakeReservationResponse{}
@@ -190,7 +190,7 @@ func TestAddAcceptDeleteReservation(t *testing.T) {
 		Res: &proto.Reservation{
 			User:  23,
 			Show:  34,
-			Seats: []*proto.Seat{&proto.Seat{Seat: 23}, &proto.Seat{Seat: 34}},
+			Seats: []*proto.Seat{{Seat: 23}, {Seat: 34}},
 		},
 	}
 	out := &proto.MakeReservationResponse{}
@@ -230,7 +230,7 @@ func TestAddAcceptFindReservation(t *testing.T) {
 		Res: &proto.Reservation{
 			User:  23,
 			Show:  34,
-			Seats: []*proto.Seat{&proto.Seat{Seat: 23}, &proto.Seat{Seat: 34}},
+			Seats: []*proto.Seat{{Seat: 23}, {Seat: 34}},
 		},
 	}
 	out := &proto.MakeReservationResponse{}
@@ -272,7 +272,7 @@ func TestAddCheckHasReservationReservation(t *testing.T) {
 		Res: &proto.Reservation{
 			User:  23,
 			Show:  34,
-			Seats: []*proto.Seat{&proto.Seat{Seat: 23}, &proto.Seat{Seat: 34}},
+			Seats: []*proto.Seat{{Seat: 23}, {Seat: 34}},
 		},
 	}
 	out := &proto.MakeReservationResponse{}
@@ -327,7 +327,7 @@ func TestAddCheckStreamReservation(t *testing.T) {
 		Res: &proto.Reservation{
 			User:  23,
 			Show:  34,
-			Seats: []*proto.Seat{&proto.Seat{Seat: 23}, &proto.Seat{Seat: 34}},
+			Seats: []*proto.Seat{{Seat: 23}, {Seat: 34}},
 		},
 	}
 	out := &proto.MakeReservationResponse{}
@@ -373,7 +373,7 @@ func TestAddAcceptChangeReservation(t *testing.T) {
 		Res: &proto.Reservation{
 			User:  23,
 			Show:  34,
-			Seats: []*proto.Seat{&proto.Seat{Seat: 23}, &proto.Seat{Seat: 34}},
+			Seats: []*proto.Seat{{Seat: 23}, {Seat: 34}},
 		},
 	}
 	out := &proto.MakeReservationResponse{}
@@ -386,7 +386,7 @@ func TestAddAcceptChangeReservation(t *testing.T) {
 		ResId: outa.FinalID,
 		User:  23,
 		Show:  33,
-		Seats: []*proto.Seat{&proto.Seat{Seat: 23}, &proto.Seat{Seat: 34}},
+		Seats: []*proto.Seat{{Seat: 23}, {Seat: 34}},
 	}}
 	cout := &proto.ChangeReservationResponse{}
 
