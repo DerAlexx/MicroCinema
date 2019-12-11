@@ -16,9 +16,11 @@ func TestAddReservation(t *testing.T) {
 	re := res.CreateNewReservationHandlerInstance()
 	in := &proto.MakeReservationRequest{
 		Res: &proto.Reservation{
-			User:  23,
-			Show:  34,
-			Seats: []*proto.Seat{&proto.Seat{Seat: 23}, &proto.Seat{Seat: 34}},
+			User: 23,
+			Show: 34,
+			Seats: []*proto.Seat{
+				&proto.Seat{Seat: 23},
+				&proto.Seat{Seat: 34}},
 		},
 	}
 	out := &proto.MakeReservationResponse{}
@@ -60,7 +62,6 @@ func TestAddAcceptReservation(t *testing.T) {
 		default:
 			t.Log("test add the same reservation 2 times worked fine.")
 		}
-
 	} else {
 		fmt.Println(err)
 		fmt.Println(err1)
@@ -347,11 +348,11 @@ func TestAddCheckStreamReservation(t *testing.T) {
 			t.Errorf("Accepted responsed with the wrong answer: %d and Works: %t", outa.FinalID, outa.Taken)
 		case len(sout.Reservations) < 1:
 			t.Errorf("The length of the answer and the expectation does not match up: %d and Works: %d", len(sout.Reservations), 1)
-		case (*sout.Reservations[0]).User != 23 || (*sout.Reservations[0]).Show != 34 || (*sout.Reservations[0]).Seats[0].Seat != 23 || (*sout.Reservations[0]).Seats[1].Seat != 34:
-			t.Errorf("The user got does not match up with the expected one: got %d wanted: %d", (*sout.Reservations[0]).User, 23)
-			t.Errorf("The show got does not match up with the expected one: got %d wanted: %d", (*sout.Reservations[0]).Show, 34)
-			t.Errorf("The seat 1 got does not match up with the expected one: got %d wanted: %d", (*sout.Reservations[0]).Seats[0].Seat, 23)
-			t.Errorf("The seat 2 got does not match up with the expected one: got %d wanted: %d", (*sout.Reservations[0]).Seats[1].Seat, 34)
+		case (sout.Reservations[0]).User != 23 || (sout.Reservations[0]).Show != 34 || (sout.Reservations[0]).Seats[0].Seat != 23 || (sout.Reservations[0]).Seats[1].Seat != 34:
+			t.Errorf("The user got does not match up with the expected one: got %d wanted: %d", (sout.Reservations[0]).User, 23)
+			t.Errorf("The show got does not match up with the expected one: got %d wanted: %d", (sout.Reservations[0]).Show, 34)
+			t.Errorf("The seat 1 got does not match up with the expected one: got %d wanted: %d", (sout.Reservations[0]).Seats[0].Seat, 23)
+			t.Errorf("The seat 2 got does not match up with the expected one: got %d wanted: %d", (sout.Reservations[0]).Seats[1].Seat, 34)
 		default:
 			t.Log("test add the same reservation 2 times worked fine.")
 		}

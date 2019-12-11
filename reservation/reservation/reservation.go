@@ -45,7 +45,7 @@ func (r *ReservatServiceHandler) getRandomReservationsID(length int32) int32 {
 	rand.Seed(time.Now().UnixNano())
 	for {
 		potantialID := rand.Int31n(length)
-		if !r.containsID(int32(potantialID)) && !r.containsPotantialReservations(potantialID) {
+		if !r.containsID(potantialID) && !r.containsPotantialReservations(potantialID) {
 			return potantialID
 		}
 	}
@@ -151,7 +151,7 @@ func (r *ReservatServiceHandler) addInReservationsMap(id int32, reserve Reservat
 		(*r.getPotantialReservationsMap())[id] = &reserve
 		return true
 	}
-	fmt.Println(fmt.Errorf("Cannot add a potantial reservation because the given reservation or id were no as expected userID: %d, showID: %d, Seats-len: %d, ReservationID: %d", reserve.UserID, reserve.ShowID, len(reserve.Seats), id))
+	fmt.Println(fmt.Errorf("cannot add a potantial reservation because the given reservation or id were no as expected userID: %d, showID: %d, Seats-len: %d, ReservationID: %d", reserve.UserID, reserve.ShowID, len(reserve.Seats), id))
 	return false
 }
 
@@ -227,7 +227,8 @@ func (r *ReservatServiceHandler) makeSeatsCinemaHallSeats(context context.Contex
 AcceptReservation will accept a reservation of a temporally stored reservation request.
 */
 func (r *ReservatServiceHandler) AcceptReservation(ctx context.Context, in *proto.AcceptReservationRequest, out *proto.AcceptReservationResponse) error {
-	if in.TmpID > 0 && in.Want && r.containsPotantialReservations(in.TmpID) && r.checkIfSeatsStillFree(&(*r.getPotantialReservationsMap())[in.TmpID].Seats) {
+	switch {
+	case in.TmpID > 0 && in.Want && r.containsPotantialReservations(in.TmpID) && r.checkIfSeatsStillFree(&(*r.getPotantialReservationsMap())[in.TmpID].Seats):
 		if swapped := r.swapValuesBetweenMaps(in.TmpID); !swapped {
 			return fmt.Errorf("cannot make the potantial reservation a actuall reservation id: %d (invalid id)", in.TmpID)
 		}
@@ -260,14 +261,14 @@ func (r *ReservatServiceHandler) AcceptReservation(ctx context.Context, in *prot
 			return nil
 		}
 		return fmt.Errorf("cannot accept or delete a reservation with the id: %d (invalid id)", in.TmpID)
-	} else if r.containsPotantialReservations(in.TmpID) && !in.Want {
+	case r.containsPotantialReservations(in.TmpID) && !in.Want:
 		r.mutex.Lock()
 		delete(*r.getPotantialReservationsMap(), in.TmpID)
 		r.mutex.Unlock()
 		out.FinalID = -1
 		out.Taken = false
 		return nil
-	} else {
+	default:
 		out.FinalID = -1
 		out.Taken = false
 		return fmt.Errorf("cannot accept or delete a reservation with the id: %d (invalid id)", in.TmpID)
