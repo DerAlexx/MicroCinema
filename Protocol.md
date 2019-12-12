@@ -3,7 +3,7 @@
 ## Kommunikation zwischen den Services
 
 ### Grundlagen
-Jeder Service kommuniziert über Proto Nachrichten mit den anderen Services.
+Jeder Service kommuniziert über Proto (gRPC) Nachrichten mit den anderen Services.
 
 Beispielhafter Aufbau der Proto Files
 ![](https://github.com/ob-vss-ws19/blatt-4-pwn2own/blob/develop/images/Proto.PNG)
