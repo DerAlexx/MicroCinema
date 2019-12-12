@@ -82,5 +82,6 @@ message FindShowConnectedCinemaRequest {
 }
 
 message FindShowConnectedCinemaResponse {
-    repeated ShowMessage cinemaData = 1;
+    repeated int32 ids = 1;
+    repeated ShowMessage cinemaData = 2;
 }

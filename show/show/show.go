@@ -28,7 +28,7 @@ type show struct {
 }
 
 /*
-NewCinemaPool creates a new CinemaPool
+NewShowPool creates a new CinemaPool
 */
 func NewShowPool() *ShowPool {
 	newshowmap := make(map[int32]*show)
@@ -153,14 +153,17 @@ FindShowConnectedCinema will show all shows connected to a cinema.
 */
 func (handler *ShowPool) FindShowConnectedCinema(ctx context.Context, request *showproto.FindShowConnectedCinemaRequest, response *showproto.FindShowConnectedCinemaResponse) error {
 	if request.CinemaId > 0 {
+		ids := []int32{}
 		responseData := []*showproto.ShowMessage{}
 		handler.mutex.Lock()
-		for _, findCinShow := range handler.showmap {
+		for showid, findCinShow := range handler.showmap {
 			if findCinShow.cinemaID == int(request.CinemaId) {
+				ids = append(ids, showid)
 				responseData = append(responseData, &showproto.ShowMessage{CinemaId: int32(findCinShow.cinemaID), MovieId: int32(findCinShow.movieID)})
 			}
 		}
 		handler.mutex.Unlock()
+		response.Ids = ids
 		response.CinemaData = responseData
 		return nil
 	}

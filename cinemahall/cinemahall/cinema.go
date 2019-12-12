@@ -9,6 +9,7 @@ import (
 	"time"
 
 	cinemaproto "github.com/ob-vss-ws19/blatt-4-pwn2own/cinemahall/proto"
+	showproto "github.com/ob-vss-ws19/blatt-4-pwn2own/show/proto"
 )
 
 const (
@@ -16,11 +17,19 @@ const (
 )
 
 /*
+CinemaDependency will be the dependency for a Cinema.
+*/
+type CinemaDependency struct {
+	ShowService func() showproto.ShowService
+}
+
+/*
 CinemaPool contains all cinemas.
 */
 type CinemaPool struct {
-	cinemamap map[int32]*cinema
-	mutex     *sync.Mutex
+	cinemamap  map[int32]*cinema
+	mutex      *sync.Mutex
+	dependency *CinemaDependency
 }
 
 type seats struct {
@@ -33,6 +42,13 @@ type cinema struct {
 	seatmap map[*seats]bool
 	row     int32
 	colum   int32
+}
+
+/*
+AddDependency will add all dependencys to the service.
+*/
+func (handler *CinemaPool) AddDependency(dep *CinemaDependency) {
+	handler.dependency = dep
 }
 
 /*
@@ -118,8 +134,22 @@ func (handler *CinemaPool) GetSizeOfCinema(ctx context.Context, in *cinemaproto.
 	/*if handler.cinemamap {
 
 	} */
-
+	//TODO
 	return nil
+}
+
+/*
+DeleteShows will delete a show incase a cienma will be deleted.
+*/
+func (handler *CinemaPool) DeleteShows(ctx context.Context, cinemaid int32) {
+	if handler.containscinema(cinemaid) {
+		service := handler.dependency.ShowService()
+		in := &showproto.DeleteShowConnectedCinemaRequest{CinemaId: cinemaid}
+		res, err := service.DeleteShowConnectedCinema(ctx, in)
+		if err != nil && res.Answer {
+			fmt.Printf("All shows are deleted for the Cinema %d", cinemaid)
+		}
+	}
 }
 
 /*
