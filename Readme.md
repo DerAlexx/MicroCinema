@@ -24,4 +24,5 @@ In den Unterverzeichnissen der einzelnen Services befindet sich jeweils eine aus
 - go run show/main.go
 - go run users/main.go
 
-Über go run client.go kann ein exemplarisches Testprogramm gestartet werden, dass die grundlegenden Funktionen der Services testet
+Alternativ können mit dem Shell Skript ./startservices.sh auch alle Services auf ein mal gestartet werden.
+Über go run client.go kann ein exemplarisches Testprogramm gestartet werden, dass die grundlegenden Funktionen der Services testet.
