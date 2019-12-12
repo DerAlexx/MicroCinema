@@ -207,9 +207,22 @@ func (r *ReservatServiceHandler) swapValuesBetweenMaps(id int32) bool {
 	return false
 }
 
-func convertSeatsToCinemaHallSeats(seat int32) (int32, int32) {
-	//TODO convert
-	return int32(0), int32(0)
+/*
+convertSeatsToCinemaHallSeats will turn a seat id like 23 into a combination of row and column.
+*/
+func (r *ReservatServiceHandler) convertSeatsToCinemaHallSeats(ctx context.Context, seat int32) (int32, int32) {
+	service := r.dependencies.Cinemahall()
+	in := &protocin.SizeRequest{}
+	resp, err := service.GetSizeOfCinema(ctx, in)
+	if err == nil && resp != nil {
+		reihe := seat / resp.Column
+		spalte := seat % resp.Column
+		if spalte == 0 {
+			spalte = resp.Column
+		}
+		return int32(reihe), int32(spalte)
+	}
+	return int32(-1), int32(-1)
 }
 
 /*
@@ -219,7 +232,8 @@ func (r *ReservatServiceHandler) makeSeatsCinemaHallSeats(context context.Contex
 	seats := []*protocin.SeatMessage{}
 	if r.containsPotantialReservations(id) {
 		for _, v := range (*r.getPotantialReservationsMap())[id].Seats {
-			seats = append(seats, &protocin.SeatMessage{convertSeatsToCinemaHallSeats(v)})
+			row, column := r.convertSeatsToCinemaHallSeats(context, v)
+			seats = append(seats, &protocin.SeatMessage{Row: row, Column: column})
 		}
 		return &seats
 	}
