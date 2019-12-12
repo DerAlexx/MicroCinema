@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"strconv"
+	"sync"
 
 	micro "github.com/micro/go-micro"
 	cinemaprot "github.com/ob-vss-ws19/blatt-4-pwn2own/cinemahall/proto"
@@ -28,7 +29,7 @@ func main() {
 	showService, showarray := createTestShows(clientService, moviearray, cinemaarray)
 
 	fmt.Println("Creating 6 Users")
-	_,userarray createTestUsers(clientService)
+	_, userarray := createTestUsers(clientService)
 
 	fmt.Println("Creating 5 Reservation")
 	reservationService, _ := createTestReservations(clientService)
@@ -68,17 +69,20 @@ func main() {
 	}
 	fmt.Println("Start Scenario 2")
 	var wg sync.WaitGroup
-	go scen2(&wg, 0)
-	go scen2(&wg, 1)
+	go scen2(reservationService, &wg, 0, showarray, userarray)
+	go scen2(reservationService, &wg, 1, showarray, userarray)
 	wg.Wait()
 }
 
-func scen2(wg *sync.WaitGroup, user int32){
-	response3,err3:= reservationService.MakeReservation(context.TODO, &reservationprot.MakeReservationRequest{Res: &reservationprot.Reservation{Show: showarray[0] User:userarrray[user], Seats: &reservationprot.Seat{Seat: 5}})
+func scen2(reservationService reservationprot.ReservationService, wg *sync.WaitGroup, user int32, showarray, userarray []int32) {
+	response3, err3 := reservationService.MakeReservation(context.TODO(), &reservationprot.MakeReservationRequest{Res: &reservationprot.Reservation{
+		Show:  showarray[0],
+		User:  userarray[user],
+		Seats: []*reservationprot.Seat{Seat: &reservationprot.Seat{Seat: 5}}}})
 	if err3 != nil {
 		fmt.Println(err)
 	} else {
-		response4, err4 := reservationService.AcceptReservation(context.TODO, &reservationprot.AcceptReservationRequest{TmpID: response3.TmpID, Want: true})
+		response4, err4 := reservationService.AcceptReservation(context.TODO(), &reservationprot.AcceptReservationRequest{TmpID: response3.TmpID, Want: true})
 		switch {
 		case err4 != nil:
 			fmt.Println(err4)
@@ -173,7 +177,13 @@ func createTestReservations(service micro.Service) (reservationprot.ReservationS
 	reservationService := reservationprot.NewReservationService("registration", service.Client())
 	arr := []int32{}
 
-	response, err := reservationService.MakeReservation(context.TODO, &reservationprot.MakeReservationRequest{Res: &reservationprot.Reservation{Show: showarray[1] User:userarrray[1], Seats: &reservationprot.Seat{Seat: 10}})
+	response, err := reservationService.MakeReservation(context.TODO, &reservationprot.MakeReservationRequest{
+		Res: &reservationprot.Reservation{
+			Show:  showarray[1],
+			User:  userarrray[1],
+			Seats: &reservationprot.Seat{Seat: 10},
+		},
+	})
 
 	if err != nil {
 		fmt.Println(err)
