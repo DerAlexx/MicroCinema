@@ -5,13 +5,14 @@
 ### Grundlagen
 Jeder Service kommuniziert über Proto Nachrichten mit den anderen Services.
 
-![](https://github.com/ob-vss-ws19/blatt-4-pwn2own/blob/develop/images/MovieService.PNG)
-
-![](https://github.com/ob-vss-ws19/blatt-4-pwn2own/blob/develop/images/MovieCreate.PNG)
-
+Beispielhafter Aufbau der Proto Files
 ![](https://github.com/ob-vss-ws19/blatt-4-pwn2own/blob/develop/images/Proto.PNG)
 
+Beispielhaftes Kreieren eines Services
+![](https://github.com/ob-vss-ws19/blatt-4-pwn2own/blob/develop/images/MovieService.PNG)
 
+Beispielhaftes Ausführen einer Funktion eines Services
+![](https://github.com/ob-vss-ws19/blatt-4-pwn2own/blob/develop/images/MovieCreate.PNG)
 
 ### Abhängigkeiten
 Damit die Daten der Services konsistent sind, existieren folgende Abhängigkeiten:
@@ -25,6 +26,9 @@ Damit die Daten der Services konsistent sind, existieren folgende Abhängigkeite
 #### Cinemahall und Show
 - **Wird ein Kino gelöscht werden auch alle dazugehörigen Veranstaltungen automatisch gelöscht**
 
+Einbau einer Abhängigkeit in die main.go
 ![](https://github.com/ob-vss-ws19/blatt-4-pwn2own/blob/develop/images/Depend.PNG)
 
+Einbau der Abhängigkeit in die jeweilige Funktion.
+Die Services müssen hier miteinander kommunizieren. Daher ist es zwingend notwendig, dass beim Aufruf der Funktion beide Services laufen.
 ![](https://github.com/ob-vss-ws19/blatt-4-pwn2own/blob/develop/images/DependUser.PNG)

@@ -25,13 +25,13 @@ func main() {
 	cinemaService, cinemaarray := createTestCinemas(clientService)
 
 	fmt.Println("Creating 3 Shows")
-	showService, _ := createTestShows(clientService, moviearray, cinemaarray)
+	showService, showarray := createTestShows(clientService, moviearray, cinemaarray)
 
 	fmt.Println("Creating 6 Users")
-	createTestUsers(clientService)
+	_,userarray createTestUsers(clientService)
 
-	//fmt.Println("Creating 5 Reservation")
-	//reservationService, _ := createTestReservations(clientService)
+	fmt.Println("Creating 5 Reservation")
+	reservationService, _ := createTestReservations(clientService)
 
 	fmt.Println("Start Scenario 1")
 
@@ -52,24 +52,45 @@ func main() {
 	}
 	//list all shows
 	for k := range response1.ShowId {
-		println("ShowID: " + strconv.Itoa(int(response1.ShowId[k])) + " CinemaID: " + strconv.Itoa(int(response1.AllShowsData[k].CinemaId)) + " MovieID: " + strconv.Itoa(int(response1.AllShowsData[k].MovieId)))
+		println("ShowID: " + strconv.Itoa(k) + " CinemaID: " + strconv.Itoa(int(response1.AllShowsData[k].CinemaId)) + " MovieID: " + strconv.Itoa(int(response1.AllShowsData[k].MovieId)))
 	}
 
-	/*
-		response2, err2 := reservationService.StreamUsersReservations(context.TODO(), &reservationprot.StreamUsersReservationsRequest{})
-		if err2 != nil {
-			fmt.Println(err1)
+	response2, err2 := reservationService.StreamUsersReservations(context.TODO(), &reservationprot.StreamUsersReservationsRequest{})
+	if err2 != nil {
+		fmt.Println(err1)
+	}
+	//list all reservations
+	for k := range response2.Reservations {
+		println("ReservationID: " + strconv.Itoa(int(response2.Reservations[k].ResId)) + " Show " + strconv.Itoa(int(response2.Reservations[k].Show)) + " User " + strconv.Itoa(int(response2.Reservations[k].User)))
+		for i := range response2.Reservations[k].Seats {
+			println("Seat: " + strconv.Itoa(int(response2.Reservations[k].Seats[i].Seat)))
 		}
-		//list all reservations
-		for k := range response2.Reservations {
-			println("ReservationID: " + strconv.Itoa(int(response2.Reservations[k].ResId)) + " Show " + strconv.Itoa(int(response2.Reservations[k].Show)) + " User " + strconv.Itoa(int(response2.Reservations[k].User)))
-			for i := range response2.Reservations[k].Seats {
-				println("Seat: " + strconv.Itoa(int(response2.Reservations[k].Seats[i].Seat)))
-			}
-		}
-	*/
+	}
 	fmt.Println("Start Scenario 2")
+	var wg sync.WaitGroup
+	go scen2(&wg, 0)
+	go scen2(&wg, 1)
+	wg.Wait()
+}
 
+func scen2(wg *sync.WaitGroup, user int32){
+	response3,err3:= reservationService.MakeReservation(context.TODO, &reservationprot.MakeReservationRequest{Res: &reservationprot.Reservation{Show: showarray[0] User:userarrray[user], Seats: &reservationprot.Seat{Seat: 5}})
+	if err3 != nil {
+		fmt.Println(err)
+	} else {
+		response4, err4 := reservationService.AcceptReservation(context.TODO, &reservationprot.AcceptReservationRequest{TmpID: response3.TmpID, Want: true})
+		switch {
+		case err4 != nil:
+			fmt.Println(err4)
+		case err4 == nil:
+			fmt.Println("Error - repsonse is nil")
+		case response4.Works:
+			arr[0] = response4.FinalID
+			fmt.Printf("Adding Reservation for user %d succeeded; id: %d", userarray[user], response1.FinalID)
+		default:
+			fmt.Printf("Adding Reservation for user %d failed", userarray[user])
+		}
+	}
 }
 
 func createTestMovies(service micro.Service) (moviesprot.MoviesService, []int32) {
@@ -152,12 +173,23 @@ func createTestReservations(service micro.Service) (reservationprot.ReservationS
 	reservationService := reservationprot.NewReservationService("registration", service.Client())
 	arr := []int32{}
 
-	/*response, err := reservationService.
+	response, err := reservationService.MakeReservation(context.TODO, &reservationprot.MakeReservationRequest{Res: &reservationprot.Reservation{Show: showarray[1] User:userarrray[1], Seats: &reservationprot.Seat{Seat: 10}})
 
 	if err != nil {
 		fmt.Println(err)
+	} else {
+		response1, err1 := reservationService.AcceptReservation(context.TODO, &reservationprot.AcceptReservationRequest{TmpID: response.TmpID, Want: true})
+		switch {
+		case err1 != nil:
+			fmt.Println(err1)
+		case err1 == nil:
+			fmt.Println("Error - repsonse is nil")
+		case response1.Works:
+			arr[0] = response1.FinalID
+			fmt.Printf("Adding Reservation succeeded; id: %d", response1.FinalID)
+		default:
+			fmt.Println("Adding Reservation failed")
+		}
 	}
-	*/
-
 	return reservationService, arr
 }
