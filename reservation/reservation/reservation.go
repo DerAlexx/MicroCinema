@@ -218,7 +218,7 @@ func (r *ReservatServiceHandler) convertSeatsToCinemaHallSeats(ctx context.Conte
 		if spalte == 0 {
 			spalte = resp.Column
 		}
-		return int32(reihe), int32(spalte)
+		return reihe, spalte
 	}
 	return int32(-1), int32(-1)
 }
@@ -332,15 +332,16 @@ func (r *ReservatServiceHandler) DeleteReservationByShowID(ctx context.Context, 
 DeleteReservation will delete a final reservation from the database.
 */
 func (r *ReservatServiceHandler) DeleteReservation(ctx context.Context, in *proto.DeleteReservationRequest, out *proto.DeleteReservationResponse) error {
-	if r.containsID(in.Id) {
+	switch {
+	case r.containsID(in.Id):
 		r.rdelete(in.Id)
 		out.Deleted = true
 		return nil
-	} else if in.ShowId > -1 {
+	case in.ShowId > -1:
 		r.DeleteReservationByShowID(ctx, in.ShowId)
 		out.Deleted = true
 		return nil
-	} else {
+	default:
 		out.Deleted = false
 		return fmt.Errorf("cannot find a entry with the id %d --> cannot delete this", in.Id)
 	}
