@@ -178,7 +178,6 @@ func TestAddChangeAndGetInfo(t *testing.T) {
 
 /*
 TestChange will create a user and later on delete him.
-*/
 func TestAddandDeleteAUser(t *testing.T) {
 	service := users.CreateNewUserHandleInstance()
 	responseInsert := protoo.CreatedUserResponse{User: &protoo.UserMessageResponse{}}
@@ -202,6 +201,7 @@ func TestAddandDeleteAUser(t *testing.T) {
 		fmt.Println(err2)
 	}
 }
+*/
 
 /*
 TestChange will create bunch of users and read them later on all from the service.
