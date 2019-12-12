@@ -9,11 +9,17 @@ import (
 	"github.com/ob-vss-ws19/blatt-4-pwn2own/users/users"
 )
 
+const (
+	TestName   = "Tim"
+	FirstName  = "Tim"
+	NewName    = "Paulanius"
+	SecondName = "Paulanius"
+)
+
 /*
 TestAddUser will be a testcase for adding users into the service.
 */
 func TestAddUser(t *testing.T) {
-	TestName := "Tim"
 	service := users.CreateNewUserHandleInstance()
 	response := protoo.CreatedUserResponse{User: &protoo.UserMessageResponse{}}
 	err := service.CreateUser(context.TODO(), &protoo.CreateUserRequest{Name: TestName}, &response)
@@ -36,7 +42,6 @@ TestGetInformationFromMap will be a testcase for adding users into the service a
 get all information from him from the map.
 */
 func TestGetInformationFromMap(t *testing.T) {
-	TestName := "Tim"
 	service := users.CreateNewUserHandleInstance()
 	responseInsert := protoo.CreatedUserResponse{User: &protoo.UserMessageResponse{}}
 	err := service.CreateUser(context.TODO(), &protoo.CreateUserRequest{Name: TestName}, &responseInsert)
@@ -61,7 +66,6 @@ TestGetInformationFromMap will be a testcase for adding users into the service a
 get all information from him from the map.
 */
 func TestGetInformationFromMapByName(t *testing.T) {
-	TestName := "Tim"
 	service := users.CreateNewUserHandleInstance()
 	responseInsert := protoo.CreatedUserResponse{User: &protoo.UserMessageResponse{}}
 	err := service.CreateUser(context.TODO(), &protoo.CreateUserRequest{Name: TestName}, &responseInsert)
@@ -86,7 +90,6 @@ func TestGetInformationFromMapByName(t *testing.T) {
 TestAddUserAndFindHim will be a testcase for adding users into the service and try to find him by ID.
 */
 func TestAddUserAndFindHim(t *testing.T) {
-	TestName := "Tim"
 	service := users.CreateNewUserHandleInstance()
 	responseInsert := protoo.CreatedUserResponse{User: &protoo.UserMessageResponse{}}
 	err := service.CreateUser(context.TODO(), &protoo.CreateUserRequest{Name: TestName}, &responseInsert)
@@ -116,7 +119,6 @@ func TestAddUserAndFindHim(t *testing.T) {
 TestAddUserAndFindHim will be a testcase for adding users into the service and try to find him by his name.
 */
 func TestAddUserAndFindHimByHisName(t *testing.T) {
-	TestName := "Tim"
 	service := users.CreateNewUserHandleInstance()
 	responseInsert := protoo.CreatedUserResponse{User: &protoo.UserMessageResponse{}}
 	err := service.CreateUser(context.TODO(), &protoo.CreateUserRequest{Name: TestName}, &responseInsert)
@@ -149,8 +151,6 @@ TestChange will create a user change him an later on call getinformationfrommap 
 has changed.
 */
 func TestAddChangeAndGetInfo(t *testing.T) {
-	FirstName := "Tim"
-	NewName := "Paulanius"
 	service := users.CreateNewUserHandleInstance()
 	responseInsert := protoo.CreatedUserResponse{User: &protoo.UserMessageResponse{}}
 	err := service.CreateUser(context.TODO(), &protoo.CreateUserRequest{Name: FirstName}, &responseInsert)
@@ -180,7 +180,6 @@ func TestAddChangeAndGetInfo(t *testing.T) {
 TestChange will create a user and later on delete him.
 */
 func TestAddandDeleteAUser(t *testing.T) {
-	TestName := "Tim"
 	service := users.CreateNewUserHandleInstance()
 	responseInsert := protoo.CreatedUserResponse{User: &protoo.UserMessageResponse{}}
 	err := service.CreateUser(context.TODO(), &protoo.CreateUserRequest{Name: TestName}, &responseInsert)
@@ -208,8 +207,6 @@ func TestAddandDeleteAUser(t *testing.T) {
 TestChange will create bunch of users and read them later on all from the service.
 */
 func TestAddMultipleUsersAndReadAllOfThem(t *testing.T) {
-	FirstName := "Tim"
-	SecondName := "Paulanius"
 	service := users.CreateNewUserHandleInstance()
 	responseInsert := protoo.CreatedUserResponse{User: &protoo.UserMessageResponse{}}
 	responseInsert2 := protoo.CreatedUserResponse{User: &protoo.UserMessageResponse{}}

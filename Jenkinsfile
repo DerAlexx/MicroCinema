@@ -12,7 +12,7 @@ pipeline {
                 sh 'cd show && go build main.go'
                 sh 'cd users && go build main.go'
             }
-        }/*
+        }
         stage('Test') {
             agent {
                 docker { image 'obraun/vss-protoactor-jenkins' }
@@ -25,16 +25,17 @@ pipeline {
                 sh 'cd show/show && go test -cover'
                 sh 'cd users/users && go test -cover'
             }
-        }*/
+        }
         stage('Lint') {
             agent {
                 docker { image 'obraun/vss-protoactor-jenkins' }
             }
             steps {
-                //sh 'cd cinemahall && golangci-lint run --enable-all --skip-dirs proto -D wsl -D lll' //--deadline 20m --enable-all; --disable-all -E errcheck
-                //sh 'cd movies && golangci-lint run --enable-all --skip-dirs proto -D wsl -D lll -D gosimple' 
-                //sh 'cd reservation && golangci-lint run --enable-all --skip-dirs proto -D wsl -D lll -D unparam -D godox'
-                //sh 'cd show && golangci-lint run --enable-all --skip-dirs proto -D wsl -D lll -D golint'
+                //--deadline 20m --enable-all; --disable-all -E errcheck
+                sh 'cd cinemahall && golangci-lint run --enable-all --skip-dirs proto -D wsl -D lll' 
+                sh 'cd movies && golangci-lint run --enable-all --skip-dirs proto -D wsl -D lll -D gosimple' 
+                sh 'cd reservation && golangci-lint run --enable-all --skip-dirs proto -D wsl -D lll -D unparam -D godox'
+                sh 'cd show && golangci-lint run --enable-all --skip-dirs proto -D wsl -D lll -D golint'
                 sh 'cd users && golangci-lint run --enable-all --skip-dirs proto -D wsl -D lll'
             }
         }
