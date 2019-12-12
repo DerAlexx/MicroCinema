@@ -32,7 +32,7 @@ func main() {
 	_, userarray := createTestUsers(clientService)
 
 	fmt.Println("Creating 5 Reservation")
-	reservationService, _ := createTestReservations(clientService)
+	reservationService, _ := createTestReservations(clientService, showarray, userarray)
 
 	fmt.Println("Start Scenario 1")
 
@@ -75,12 +75,15 @@ func main() {
 }
 
 func scen2(reservationService reservationprot.ReservationService, wg *sync.WaitGroup, user int32, showarray, userarray []int32) {
+	seats := []*reservationprot.Seat{}
+	seats = append(seats, &reservationprot.Seat{Seat: 5})
 	response3, err3 := reservationService.MakeReservation(context.TODO(), &reservationprot.MakeReservationRequest{Res: &reservationprot.Reservation{
 		Show:  showarray[0],
 		User:  userarray[user],
-		Seats: []*reservationprot.Seat{Seat: &reservationprot.Seat{Seat: 5}}}})
+		Seats: seats,
+	}})
 	if err3 != nil {
-		fmt.Println(err)
+		fmt.Println(err3)
 	} else {
 		response4, err4 := reservationService.AcceptReservation(context.TODO(), &reservationprot.AcceptReservationRequest{TmpID: response3.TmpID, Want: true})
 		switch {
@@ -88,9 +91,8 @@ func scen2(reservationService reservationprot.ReservationService, wg *sync.WaitG
 			fmt.Println(err4)
 		case err4 == nil:
 			fmt.Println("Error - repsonse is nil")
-		case response4.Works:
-			arr[0] = response4.FinalID
-			fmt.Printf("Adding Reservation for user %d succeeded; id: %d", userarray[user], response1.FinalID)
+		case response4.Taken:
+			fmt.Printf("Adding Reservation for user %d succeeded; id: %d", userarray[user], response4.FinalID)
 		default:
 			fmt.Printf("Adding Reservation for user %d failed", userarray[user])
 		}
@@ -173,33 +175,33 @@ func createTestUsers(service micro.Service) (usersprot.UsersService, []int32) {
 	return userService, arr
 }
 
-func createTestReservations(service micro.Service) (reservationprot.ReservationService, []int32) {
+func createTestReservations(service micro.Service, showarray, userarray []int32) (reservationprot.ReservationService, []int32) {
 	reservationService := reservationprot.NewReservationService("registration", service.Client())
-	arr := []int32{}
+	seats := []*reservationprot.Seat{}
+	seats = append(seats, &reservationprot.Seat{Seat: 10})
 
-	response, err := reservationService.MakeReservation(context.TODO, &reservationprot.MakeReservationRequest{
+	response, err := reservationService.MakeReservation(context.TODO(), &reservationprot.MakeReservationRequest{
 		Res: &reservationprot.Reservation{
 			Show:  showarray[1],
-			User:  userarrray[1],
-			Seats: &reservationprot.Seat{Seat: 10},
+			User:  userarray[1],
+			Seats: seats,
 		},
 	})
 
 	if err != nil {
 		fmt.Println(err)
 	} else {
-		response1, err1 := reservationService.AcceptReservation(context.TODO, &reservationprot.AcceptReservationRequest{TmpID: response.TmpID, Want: true})
+		response1, err1 := reservationService.AcceptReservation(context.TODO(), &reservationprot.AcceptReservationRequest{TmpID: response.TmpID, Want: true})
 		switch {
 		case err1 != nil:
 			fmt.Println(err1)
 		case err1 == nil:
 			fmt.Println("Error - repsonse is nil")
-		case response1.Works:
-			arr[0] = response1.FinalID
+		case response1.Taken:
 			fmt.Printf("Adding Reservation succeeded; id: %d", response1.FinalID)
 		default:
 			fmt.Println("Adding Reservation failed")
 		}
 	}
-	return reservationService, arr
+	return reservationService, nil
 }
