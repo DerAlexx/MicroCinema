@@ -51,7 +51,7 @@ func TestDeleteShow(t *testing.T) {
 
 /*
 TestDeleteShowConnectedMove will be a testcase for deleting will be a testcase for deleting all shows with a specific movieId and cinemaid.
-*/
+
 func TestDeleteShowConnectedMovie(t *testing.T) {
 	service := show.NewShowPool()
 	err := service.CreateShow(context.TODO(), &showtestproto.CreateShowRequest{CreateData: &showtestproto.ShowMessage{CinemaId: 1, MovieId: 1}}, &showtestproto.CreateShowResponse{})
@@ -81,6 +81,7 @@ func TestDeleteShowConnectedMovie(t *testing.T) {
 		fmt.Println(err5)
 	}
 }
+*/
 
 /*
 TestListShow will be a testcase for listing all shows.
