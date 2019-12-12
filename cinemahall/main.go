@@ -1,8 +1,9 @@
 package main
 
 import (
-	"github.com/ob-vss-ws19/blatt-4-pwn2own/show/proto"
 	"fmt"
+
+	showproto "github.com/ob-vss-ws19/blatt-4-pwn2own/show/proto"
 
 	cinemamicromain "github.com/micro/go-micro"
 	"github.com/ob-vss-ws19/blatt-4-pwn2own/cinemahall/cinemahall"
@@ -20,7 +21,7 @@ func main() {
 	newService.AddDependency(&cinemahall.CinemaDependency{
 		ShowService: func() showproto.ShowService {
 			return showproto.NewShowService("show", service.Client())
-		}	
+		},
 	})
 	err1 := cinemaprotomain.RegisterCinemaHandler(service.Server(), cinemahall.NewCinemaPool())
 	if err1 == nil {

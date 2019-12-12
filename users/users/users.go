@@ -144,11 +144,13 @@ DeleteUser will delete a user from the map.
 */
 func (u *UserHandlerService) DeleteUser(context context.Context, request *proto.DeleteUserRequest, response *proto.DeleteUserResponse) error {
 	if u.containsID(request.User.Userid) {
-		//if (.)
-		u.mutex.Lock()
-		delete(u.user, request.User.Userid)
-		response.IsDeleted = true
-		u.mutex.Unlock()
+		if u.HasOpenReservations(context, request.User.Userid) {
+			u.mutex.Lock()
+			delete(u.user, request.User.Userid)
+			response.IsDeleted = true
+			u.mutex.Unlock()
+		}
+		response.IsDeleted = false
 		return nil
 	}
 	return fmt.Errorf("cannot delete user with the id %d", request.User.Userid)
