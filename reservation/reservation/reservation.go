@@ -197,6 +197,10 @@ func (r *ReservatServiceHandler) MakeReservation(ctx context.Context, in *proto.
 swapValuesBetweenMaps will change a pair form unaccepted to reservations.
 */
 func (r *ReservatServiceHandler) swapValuesBetweenMaps(id int32) bool {
+	x := r.containsPotantialReservations(id)
+	fmt.Println(x)
+	y := (*r.getPotantialReservationsMap())[id]
+	fmt.Println(y)
 	if r.containsPotantialReservations(id) {
 		r.mutex.Lock()
 		(*r.getReservationsMap())[id] = (*r.getPotantialReservationsMap())[id]
@@ -248,9 +252,7 @@ func (r *ReservatServiceHandler) AcceptReservation(ctx context.Context, in *prot
 	case in.TmpID > 0 && in.Want && r.containsPotantialReservations(in.TmpID) && r.checkIfSeatsStillFree(&(*r.getPotantialReservationsMap())[in.TmpID].Seats):
 		moviehandler := r.dependencies.Show()
 		inShow := &showproto.FindShowConnectedMovieRequest{MovieId: (*r.getPotantialReservationsMap())[in.TmpID].ShowID}
-		fmt.Println(inShow)
 		response, err := moviehandler.FindShowConnectedMovie(ctx, inShow)
-		fmt.Println("Here5")
 		if err != nil {
 			fmt.Println(response)
 			fmt.Println(err)
@@ -261,7 +263,6 @@ func (r *ReservatServiceHandler) AcceptReservation(ctx context.Context, in *prot
 		service := r.dependencies.Cinemahall()
 		var seats *[]*protocin.SeatMessage
 		var cinin *protocin.ReservationRequest
-		fmt.Println(len(id))
 		longenouth := (len(id) == 1)
 		fmt.Println("Here6")
 		if swapped := r.swapValuesBetweenMaps(in.TmpID); !swapped {

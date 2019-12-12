@@ -186,8 +186,8 @@ func createTestReservations(service micro.Service, showarray, userarray []int32)
 			Seats: seats,
 		},
 	})
-	fmt.Println(response.TmpID)
-	fmt.Println(response.Works)
+	//fmt.Println(response.TmpID)
+	//fmt.Println(response.Works)
 	if err != nil {
 		fmt.Println(err)
 	} else {
