@@ -131,11 +131,12 @@ func (handler *CinemaPool) Create(ctx context.Context, request *cinemaproto.Crea
 GetSizeOfCinema will sendof the size.
 */
 func (handler *CinemaPool) GetSizeOfCinema(ctx context.Context, in *cinemaproto.SizeRequest, out *cinemaproto.SizeResponse) error {
-	/*if handler.cinemamap {
-
-	} */
-	//TODO
-	return nil
+	if handler.containscinema(in.Id) {
+		out.Row = handler.cinemamap[in.Id].row
+		out.Column = handler.cinemamap[in.Id].colum
+		return nil
+	}
+	return fmt.Errorf("cannot get the size of the cinema by this id %d", in.Id)
 }
 
 /*
