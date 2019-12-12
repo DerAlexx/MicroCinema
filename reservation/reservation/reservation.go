@@ -207,16 +207,19 @@ func (r *ReservatServiceHandler) swapValuesBetweenMaps(id int32) bool {
 	return false
 }
 
+func convertSeatsToCinemaHallSeats(seat int32) (int32, int32) {
+	//TODO convert
+	return int32(0), int32(0)
+}
+
 /*
 makeSeatsCinemaHallSeats will turn a seat id into a row colum combination.
 */
 func (r *ReservatServiceHandler) makeSeatsCinemaHallSeats(context context.Context, id int32, cinema *protocin.SizeResponse) *[]*protocin.SeatMessage {
 	seats := []*protocin.SeatMessage{}
-	//TODO convert seats
 	if r.containsPotantialReservations(id) {
 		for _, v := range (*r.getPotantialReservationsMap())[id].Seats {
-			seats = append(seats, &protocin.SeatMessage{})
-			fmt.Println(v)
+			seats = append(seats, &protocin.SeatMessage{convertSeatsToCinemaHallSeats(v)})
 		}
 		return &seats
 	}
@@ -289,6 +292,19 @@ func (r *ReservatServiceHandler) rdelete(id int32) bool {
 }
 
 /*
+DeleteReservationByShowID will delete a reservation be the show id not by the user or reservation id.
+*/
+func (r *ReservatServiceHandler) DeleteReservationByShowID(ctx context.Context, showID int32) {
+	if showID > -1 {
+		for resID, reservation := range *r.getReservationsMap() {
+			if reservation.ShowID == showID {
+				r.rdelete(resID)
+			}
+		}
+	}
+}
+
+/*
 DeleteReservation will delete a final reservation from the database.
 */
 func (r *ReservatServiceHandler) DeleteReservation(ctx context.Context, in *proto.DeleteReservationRequest, out *proto.DeleteReservationResponse) error {
@@ -296,9 +312,14 @@ func (r *ReservatServiceHandler) DeleteReservation(ctx context.Context, in *prot
 		r.rdelete(in.Id)
 		out.Deleted = true
 		return nil
-	} //TODO search by show id and delete id by showid
-	out.Deleted = false
-	return fmt.Errorf("cannot find a entry with the id %d --> cannot delete this", in.Id)
+	} else if in.ShowId > -1 {
+		r.DeleteReservationByShowID(ctx, in.ShowId)
+		out.Deleted = true
+		return nil
+	} else {
+		out.Deleted = false
+		return fmt.Errorf("cannot find a entry with the id %d --> cannot delete this", in.Id)
+	}
 }
 
 /*
