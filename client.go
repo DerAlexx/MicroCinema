@@ -138,7 +138,7 @@ func createTestCinemas(service micro.Service) (cinemaprot.CinemaService, []int32
 }
 
 func createTestShows(service micro.Service, moviearr []int32, cinemaarr []int32) (showprot.ShowService, []int32) {
-	showService := showprot.NewShowService("show-service", service.Client())
+	showService := showprot.NewShowService("show", service.Client())
 	arr := make([]int32, 3)
 
 	for i := 1; i < 4; i++ {
@@ -176,10 +176,9 @@ func createTestUsers(service micro.Service) (usersprot.UsersService, []int32) {
 }
 
 func createTestReservations(service micro.Service, showarray, userarray []int32) (reservationprot.ReservationService, []int32) {
-	reservationService := reservationprot.NewReservationService("registration", service.Client())
+	reservationService := reservationprot.NewReservationService("reservation", service.Client())
 	seats := []*reservationprot.Seat{}
 	seats = append(seats, &reservationprot.Seat{Seat: 10})
-
 	response, err := reservationService.MakeReservation(context.TODO(), &reservationprot.MakeReservationRequest{
 		Res: &reservationprot.Reservation{
 			Show:  showarray[1],
@@ -187,7 +186,8 @@ func createTestReservations(service micro.Service, showarray, userarray []int32)
 			Seats: seats,
 		},
 	})
-
+	fmt.Println(response.TmpID)
+	fmt.Println(response.Works)
 	if err != nil {
 		fmt.Println(err)
 	} else {
@@ -195,7 +195,7 @@ func createTestReservations(service micro.Service, showarray, userarray []int32)
 		switch {
 		case err1 != nil:
 			fmt.Println(err1)
-		case err1 == nil:
+		case response1 == nil:
 			fmt.Println("Error - response is nil")
 		case response1.Taken:
 			fmt.Printf("Adding Reservation succeeded; id: %d", response1.FinalID)
