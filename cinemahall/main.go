@@ -23,7 +23,7 @@ func main() {
 			return showproto.NewShowService("show", service.Client())
 		},
 	})
-	err1 := cinemaprotomain.RegisterCinemaHandler(service.Server(), cinemahall.NewCinemaPool())
+	err1 := cinemaprotomain.RegisterCinemaHandler(service.Server(), newService)
 	if err1 == nil {
 		if err := service.Run(); err != nil {
 			fmt.Println(err)

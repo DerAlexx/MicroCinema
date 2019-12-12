@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/ob-vss-ws19/blatt-4-pwn2own/reservation/proto"
 	"fmt"
 
 	micro "github.com/micro/go-micro"
@@ -11,15 +12,19 @@ import (
 const serviceName = "show-service"
 
 func main() {
-	// Create a new service. Optionally include some options here.
 	service := micro.NewService(
 		micro.Name(serviceName),
 	)
-
-	// Init will parse the command line flags.
 	service.Init()
 
-	err1 := showproto.RegisterShowHandler(service.Server(), show.NewShowPool())
+	newService := show.NewShowPool()
+	newService.AddDependency(&show.showDependency{
+		ReservationService: reservationproto.ReservationService {
+			return reservationproto.NewReservationService("reservation", service.Client())
+		}
+	})
+
+	err1 := showproto.RegisterShowHandler(service.Server(), newService)
 
 	// Run the server
 	if err1 == nil {

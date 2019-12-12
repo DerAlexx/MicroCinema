@@ -7,6 +7,8 @@ import (
 	"sync"
 	"time"
 
+	reservationproto "github.com/ob-vss-ws19/blatt-4-pwn2own/reservation/proto"
+
 	showproto "github.com/ob-vss-ws19/blatt-4-pwn2own/show/proto"
 )
 
@@ -15,11 +17,19 @@ const (
 )
 
 /*
+ShowDependencyStruc all dependencys of Show
+*/
+type showDependency struct {
+	ReservationService func() reservationproto.ReservationService
+}
+
+/*
 ShowPool contains all cinemas.
 */
 type ShowPool struct {
-	showmap map[int32]*show
-	mutex   *sync.Mutex
+	showmap    map[int32]*show
+	mutex      *sync.Mutex
+	dependency *showDependency
 }
 
 type show struct {
@@ -110,6 +120,25 @@ func (handler *ShowPool) DeleteShowConnectedCinema(ctx context.Context, request 
 }
 
 /*
+AddDependency will add a dependency into the service.
+*/
+func (handler *ShowPool) AddDependency(dep *showDependency) {
+	handler.dependency = dep
+}
+
+/*
+deleteReservation will send a delete request to the reservation service.
+*/
+func (handler *ShowPool) deleteReservations(context context.Context, todelete int32) {
+	service := handler.dependency.ReservationService()
+	in := &reservationproto.DeleteReservationRequest{Id: -1, ShowId: todelete}
+	resp, err := service.DeleteReservation(context, in)
+	if resp.Deleted && err != nil {
+		fmt.Printf("Reservation of show has been deleted with id %d", todelete)
+	}
+}
+
+/*
 DeleteShowConnectedMovie will delete all shows connected to a movie.
 */
 func (handler *ShowPool) DeleteShowConnectedMovie(ctx context.Context, request *showproto.DeleteShowConnectedMovieRequest, response *showproto.DeleteShowConnectedMovieResponse) error {
@@ -117,6 +146,7 @@ func (handler *ShowPool) DeleteShowConnectedMovie(ctx context.Context, request *
 		handler.mutex.Lock()
 		success := false
 		for deleteID, deleteShow := range handler.showmap {
+			handler.deleteReservations(ctx, deleteID)
 			if deleteShow.movieID == int(request.MovieId) {
 				delete(handler.showmap, deleteID)
 				success = true

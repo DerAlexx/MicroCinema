@@ -296,7 +296,7 @@ func (r *ReservatServiceHandler) DeleteReservation(ctx context.Context, in *prot
 		r.rdelete(in.Id)
 		out.Deleted = true
 		return nil
-	}
+	} //TODO search by show id and delete id by showid
 	out.Deleted = false
 	return fmt.Errorf("cannot find a entry with the id %d --> cannot delete this", in.Id)
 }
