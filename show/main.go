@@ -10,7 +10,7 @@ import (
 	show "github.com/ob-vss-ws19/blatt-4-pwn2own/show/show"
 )
 
-const serviceName = "show-service"
+const serviceName = "show"
 
 func main() {
 	service := micro.NewService(

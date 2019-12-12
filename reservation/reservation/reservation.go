@@ -246,13 +246,14 @@ AcceptReservation will accept a reservation of a temporally stored reservation r
 func (r *ReservatServiceHandler) AcceptReservation(ctx context.Context, in *proto.AcceptReservationRequest, out *proto.AcceptReservationResponse) error {
 	switch {
 	case in.TmpID > 0 && in.Want && r.containsPotantialReservations(in.TmpID) && r.checkIfSeatsStillFree(&(*r.getPotantialReservationsMap())[in.TmpID].Seats):
-		if swapped := r.swapValuesBetweenMaps(in.TmpID); !swapped {
-			return fmt.Errorf("cannot make the potantial reservation a actuall reservation id: %d (invalid id)", in.TmpID)
-		}
 		moviehandler := r.dependencies.Show()
 		inShow := &showproto.FindShowConnectedMovieRequest{MovieId: (*r.getPotantialReservationsMap())[in.TmpID].ShowID}
+		fmt.Println(inShow)
 		response, err := moviehandler.FindShowConnectedMovie(ctx, inShow)
+		fmt.Println("Here5")
 		if err != nil {
+			fmt.Println(response)
+			fmt.Println(err)
 			fmt.Println("there is an error while accepting a reservation")
 		}
 		id := response.MovieData
@@ -260,17 +261,25 @@ func (r *ReservatServiceHandler) AcceptReservation(ctx context.Context, in *prot
 		service := r.dependencies.Cinemahall()
 		var seats *[]*protocin.SeatMessage
 		var cinin *protocin.ReservationRequest
+		fmt.Println(len(id))
 		longenouth := (len(id) == 1)
+		fmt.Println("Here6")
+		if swapped := r.swapValuesBetweenMaps(in.TmpID); !swapped {
+			return fmt.Errorf("cannot make the potantial reservation a actuall reservation id: %d (invalid id)", in.TmpID)
+		}
+		fmt.Println(longenouth)
 		if longenouth {
 			inSize := &protocin.SizeRequest{Id: id[0].MovieId}
 			size, err := service.GetSizeOfCinema(ctx, inSize)
 			if err == nil {
 				seats = r.makeSeatsCinemaHallSeats(ctx, in.TmpID, size)
 				cinin = &protocin.ReservationRequest{Id: id[0].MovieId, Seatreservation: *seats}
+				fmt.Println("Here7")
 			} else {
-				fmt.Printf("Cannot find a Cinema with the given id %d, Error: %e \n", id[0].MovieId, err)
+				fmt.Printf("cannot find a Cinema with the given id %d, Error: %e \n", id[0].MovieId, err)
 			}
 		}
+		fmt.Println("Here8")
 		responseReservationRequest, err2 := service.Reservation(ctx, cinin)
 		if longenouth && err2 == nil && responseReservationRequest.Answer {
 			out.FinalID = in.TmpID
