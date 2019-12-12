@@ -197,10 +197,6 @@ func (r *ReservatServiceHandler) MakeReservation(ctx context.Context, in *proto.
 swapValuesBetweenMaps will change a pair form unaccepted to reservations.
 */
 func (r *ReservatServiceHandler) swapValuesBetweenMaps(id int32) bool {
-	x := r.containsPotantialReservations(id)
-	fmt.Println(x)
-	y := (*r.getPotantialReservationsMap())[id]
-	fmt.Println(y)
 	if r.containsPotantialReservations(id) {
 		r.mutex.Lock()
 		(*r.getReservationsMap())[id] = (*r.getPotantialReservationsMap())[id]
@@ -251,38 +247,38 @@ func (r *ReservatServiceHandler) AcceptReservation(ctx context.Context, in *prot
 	switch {
 	case in.TmpID > 0 && in.Want && r.containsPotantialReservations(in.TmpID) && r.checkIfSeatsStillFree(&(*r.getPotantialReservationsMap())[in.TmpID].Seats):
 		moviehandler := r.dependencies.Show()
-		inShow := &showproto.FindShowConnectedMovieRequest{MovieId: (*r.getPotantialReservationsMap())[in.TmpID].ShowID}
-		response, err := moviehandler.FindShowConnectedMovie(ctx, inShow)
+		service := r.dependencies.Cinemahall()
+		var (
+			cinemaid int32
+			seats    *[]*protocin.SeatMessage
+			cinin    *protocin.ReservationRequest
+		)
+		response, err := moviehandler.ListShow(ctx, &showproto.ListShowRequest{})
 		if err != nil {
 			fmt.Println(response)
 			fmt.Println(err)
 			fmt.Println("there is an error while accepting a reservation")
 		}
-		id := response.MovieData
-		//TODO refactor
-		service := r.dependencies.Cinemahall()
-		var seats *[]*protocin.SeatMessage
-		var cinin *protocin.ReservationRequest
-		longenouth := (len(id) == 1)
-		fmt.Println("Here6")
+		for k, v := range response.ShowId {
+			if v == (*r.getPotantialReservationsMap())[in.TmpID].ShowID {
+				cinemaid = response.AllShowsData[k].CinemaId
+			}
+		}
 		if swapped := r.swapValuesBetweenMaps(in.TmpID); !swapped {
 			return fmt.Errorf("cannot make the potantial reservation a actuall reservation id: %d (invalid id)", in.TmpID)
 		}
-		fmt.Println(longenouth)
-		if longenouth {
-			inSize := &protocin.SizeRequest{Id: id[0].MovieId}
+		if cinemaid > 0 {
+			inSize := &protocin.SizeRequest{Id: cinemaid}
 			size, err := service.GetSizeOfCinema(ctx, inSize)
 			if err == nil {
 				seats = r.makeSeatsCinemaHallSeats(ctx, in.TmpID, size)
-				cinin = &protocin.ReservationRequest{Id: id[0].MovieId, Seatreservation: *seats}
-				fmt.Println("Here7")
+				cinin = &protocin.ReservationRequest{Id: cinemaid, Seatreservation: *seats}
 			} else {
-				fmt.Printf("cannot find a Cinema with the given id %d, Error: %e \n", id[0].MovieId, err)
+				fmt.Printf("cannot find a Cinema with the given id %d, Error: %e \n", cinemaid, err)
 			}
 		}
-		fmt.Println("Here8")
 		responseReservationRequest, err2 := service.Reservation(ctx, cinin)
-		if longenouth && err2 == nil && responseReservationRequest.Answer {
+		if cinemaid > 0 && err2 == nil && responseReservationRequest.Answer {
 			out.FinalID = in.TmpID
 			out.Taken = true
 			return nil
