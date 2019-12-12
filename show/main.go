@@ -6,7 +6,7 @@ import (
 
 	micro "github.com/micro/go-micro"
 	showproto "github.com/ob-vss-ws19/blatt-4-pwn2own/show/proto"
-	"github.com/ob-vss-ws19/blatt-4-pwn2own/show/show"
+	show "github.com/ob-vss-ws19/blatt-4-pwn2own/show/show"
 )
 
 const serviceName = "show-service"
@@ -21,7 +21,7 @@ func main() {
 	newService.AddDependency(&show.showDependency{
 		ReservationService: reservationproto.ReservationService {
 			return reservationproto.NewReservationService("reservation", service.Client())
-		}
+		},
 	})
 
 	err1 := showproto.RegisterShowHandler(service.Server(), newService)
