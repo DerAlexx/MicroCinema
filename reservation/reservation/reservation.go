@@ -248,7 +248,6 @@ func (r *ReservatServiceHandler) AcceptReservation(ctx context.Context, in *prot
 	case in.TmpID > 0 && in.Want && r.containsPotantialReservations(in.TmpID) && r.checkIfSeatsStillFree(&(*r.getPotantialReservationsMap())[in.TmpID].Seats):
 		moviehandler := r.dependencies.Show()
 		service := r.dependencies.Cinemahall()
-
 		var (
 			cinemaid int32
 			seats    *[]*protocin.SeatMessage
