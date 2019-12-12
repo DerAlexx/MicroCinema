@@ -17,9 +17,9 @@ const (
 )
 
 /*
-ShowDependencyStruc all dependencys of Show
+SServiceDependency all dependencys of Show
 */
-type showDependency struct {
+type SServiceDependency struct {
 	ReservationService func() reservationproto.ReservationService
 }
 
@@ -29,7 +29,7 @@ ShowPool contains all cinemas.
 type ShowPool struct {
 	showmap    map[int32]*show
 	mutex      *sync.Mutex
-	dependency *showDependency
+	dependency *SServiceDependency
 }
 
 type show struct {
@@ -122,7 +122,7 @@ func (handler *ShowPool) DeleteShowConnectedCinema(ctx context.Context, request 
 /*
 AddDependency will add a dependency into the service.
 */
-func (handler *ShowPool) AddDependency(dep *showDependency) {
+func (handler *ShowPool) AddDependency(dep *SServiceDependency) {
 	handler.dependency = dep
 }
 

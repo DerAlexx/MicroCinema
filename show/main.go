@@ -1,8 +1,9 @@
 package main
 
 import (
-	"github.com/ob-vss-ws19/blatt-4-pwn2own/reservation/proto"
 	"fmt"
+
+	reservationproto "github.com/ob-vss-ws19/blatt-4-pwn2own/reservation/proto"
 
 	micro "github.com/micro/go-micro"
 	showproto "github.com/ob-vss-ws19/blatt-4-pwn2own/show/proto"
@@ -18,8 +19,8 @@ func main() {
 	service.Init()
 
 	newService := show.NewShowPool()
-	newService.AddDependency(&show.showDependency{
-		ReservationService: reservationproto.ReservationService {
+	newService.AddDependency(&show.SServiceDependency{
+		ReservationService: func() reservationproto.ReservationService {
 			return reservationproto.NewReservationService("reservation", service.Client())
 		},
 	})
