@@ -76,7 +76,6 @@ func (handler *ShowPool) CreateShow(ctx context.Context, request *showproto.Crea
 			movieID:  int(request.CreateData.MovieId),
 		}
 		handler.mutex.Unlock()
-		fmt.Println(createid)
 		response.CreateShowId = createid
 		return nil
 	}

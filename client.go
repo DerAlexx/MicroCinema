@@ -31,7 +31,7 @@ func main() {
 	fmt.Println("Creating 6 Users")
 	_, userarray := createTestUsers(clientService)
 
-	fmt.Println("Creating 5 Reservation")
+	fmt.Println("Creating Reservation")
 	reservationService, _ := createTestReservations(clientService, showarray, userarray)
 
 	fmt.Println("Start Scenario 1")
@@ -52,8 +52,8 @@ func main() {
 		fmt.Println(err1)
 	}
 	//list all shows
-	for k := range response1.ShowId {
-		println("ShowID: " + strconv.Itoa(k) + " CinemaID: " + strconv.Itoa(int(response1.AllShowsData[k].CinemaId)) + " MovieID: " + strconv.Itoa(int(response1.AllShowsData[k].MovieId)))
+	for k, v := range response1.ShowId {
+		println("ShowID: " + strconv.Itoa(int(v)) + " CinemaID: " + strconv.Itoa(int(response1.AllShowsData[k].CinemaId)) + " MovieID: " + strconv.Itoa(int(response1.AllShowsData[k].MovieId)))
 	}
 
 	response2, err2 := reservationService.StreamUsersReservations(context.TODO(), &reservationprot.StreamUsersReservationsRequest{})
@@ -69,6 +69,7 @@ func main() {
 	}
 	fmt.Println("Start Scenario 2")
 	var wg sync.WaitGroup
+	wg.Add(2)
 	go scen2(reservationService, &wg, 0, showarray, userarray)
 	go scen2(reservationService, &wg, 1, showarray, userarray)
 	wg.Wait()
@@ -89,12 +90,12 @@ func scen2(reservationService reservationprot.ReservationService, wg *sync.WaitG
 		switch {
 		case err4 != nil:
 			fmt.Println(err4)
-		case err4 == nil:
+		case response4 == nil:
 			fmt.Println("Error - response is nil")
 		case response4.Taken:
-			fmt.Printf("Adding Reservation for user %d succeeded; id: %d", userarray[user], response4.FinalID)
+			fmt.Printf("Adding Reservation for user %d succeeded; id: %d\n", userarray[user], response4.FinalID)
 		default:
-			fmt.Printf("Adding Reservation for user %d failed", userarray[user])
+			fmt.Printf("Adding Reservation for user %d failed\n", userarray[user])
 		}
 	}
 }
@@ -186,8 +187,6 @@ func createTestReservations(service micro.Service, showarray, userarray []int32)
 			Seats: seats,
 		},
 	})
-	//fmt.Println(response.TmpID)
-	//fmt.Println(response.Works)
 	if err != nil {
 		fmt.Println(err)
 	} else {
@@ -198,7 +197,7 @@ func createTestReservations(service micro.Service, showarray, userarray []int32)
 		case response1 == nil:
 			fmt.Println("Error - response is nil")
 		case response1.Taken:
-			fmt.Printf("Adding Reservation succeeded; id: %d", response1.FinalID)
+			fmt.Printf("Adding Reservation succeeded; id: %d\n", response1.FinalID)
 		default:
 			fmt.Println("Adding Reservation failed")
 		}

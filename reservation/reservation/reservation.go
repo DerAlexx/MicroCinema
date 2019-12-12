@@ -198,10 +198,8 @@ swapValuesBetweenMaps will change a pair form unaccepted to reservations.
 */
 func (r *ReservatServiceHandler) swapValuesBetweenMaps(id int32) bool {
 	if r.containsPotantialReservations(id) {
-		r.mutex.Lock()
 		(*r.getReservationsMap())[id] = (*r.getPotantialReservationsMap())[id]
 		delete(*r.getPotantialReservationsMap(), id)
-		r.mutex.Unlock()
 		return true
 	}
 	return false
@@ -244,6 +242,7 @@ func (r *ReservatServiceHandler) makeSeatsCinemaHallSeats(context context.Contex
 AcceptReservation will accept a reservation of a temporally stored reservation request.
 */
 func (r *ReservatServiceHandler) AcceptReservation(ctx context.Context, in *proto.AcceptReservationRequest, out *proto.AcceptReservationResponse) error {
+	r.mutex.Lock()
 	switch {
 	case in.TmpID > 0 && in.Want && r.containsPotantialReservations(in.TmpID) && r.checkIfSeatsStillFree(&(*r.getPotantialReservationsMap())[in.TmpID].Seats):
 		moviehandler := r.dependencies.Show()
@@ -265,6 +264,7 @@ func (r *ReservatServiceHandler) AcceptReservation(ctx context.Context, in *prot
 			}
 		}
 		if swapped := r.swapValuesBetweenMaps(in.TmpID); !swapped {
+			r.mutex.Unlock()
 			return fmt.Errorf("cannot make the potantial reservation a actuall reservation id: %d (invalid id)", in.TmpID)
 		}
 		if cinemaid > 0 {
@@ -281,8 +281,10 @@ func (r *ReservatServiceHandler) AcceptReservation(ctx context.Context, in *prot
 		if cinemaid > 0 && err2 == nil && responseReservationRequest.Answer {
 			out.FinalID = in.TmpID
 			out.Taken = true
+			r.mutex.Unlock()
 			return nil
 		}
+		r.mutex.Unlock()
 		return fmt.Errorf("cannot accept or delete a reservation with the id: %d (invalid id)", in.TmpID)
 	case r.containsPotantialReservations(in.TmpID) && !in.Want:
 		r.mutex.Lock()
@@ -290,11 +292,13 @@ func (r *ReservatServiceHandler) AcceptReservation(ctx context.Context, in *prot
 		r.mutex.Unlock()
 		out.FinalID = -1
 		out.Taken = false
+		r.mutex.Unlock()
 		return nil
 	default:
 		out.FinalID = -1
 		out.Taken = false
-		return fmt.Errorf("cannot accept or delete a reservation with the id: %d (invalid id)", in.TmpID)
+		r.mutex.Unlock()
+		return fmt.Errorf("cannot accept the reservation because the requested seats are already taken")
 	}
 }
 
