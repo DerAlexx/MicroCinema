@@ -90,7 +90,7 @@ func scen2(reservationService reservationprot.ReservationService, wg *sync.WaitG
 		case err4 != nil:
 			fmt.Println(err4)
 		case err4 == nil:
-			fmt.Println("Error - repsonse is nil")
+			fmt.Println("Error - response is nil")
 		case response4.Taken:
 			fmt.Printf("Adding Reservation for user %d succeeded; id: %d", userarray[user], response4.FinalID)
 		default:
@@ -119,7 +119,7 @@ func createTestMovies(service micro.Service) (moviesprot.MoviesService, []int32)
 }
 
 func createTestCinemas(service micro.Service) (cinemaprot.CinemaService, []int32) {
-	cinemaService := cinemaprot.NewCinemaService("cinema-service", service.Client())
+	cinemaService := cinemaprot.NewCinemaService("cinemahall", service.Client())
 	arr := make([]int32, 4)
 
 	for i := 1; i < 4; i++ {
@@ -131,7 +131,7 @@ func createTestCinemas(service micro.Service) (cinemaprot.CinemaService, []int32
 			arr[i-1] = response.Id
 			fmt.Printf("Adding Cinema succeeded; id: %d, name: %s\n", response.Id, response.Name)
 		} else {
-			fmt.Println("Error - repsonse is nil")
+			fmt.Println("Error - response is nil")
 		}
 	}
 	return cinemaService, arr
@@ -150,7 +150,7 @@ func createTestShows(service micro.Service, moviearr []int32, cinemaarr []int32)
 			arr[i-1] = response.CreateShowId
 			fmt.Printf("Adding Show succeeded; id: %d\n", response.CreateShowId)
 		} else {
-			fmt.Println("Error - repsonse is nil")
+			fmt.Println("Error - response is nil")
 		}
 	}
 	return showService, arr
@@ -169,7 +169,7 @@ func createTestUsers(service micro.Service) (usersprot.UsersService, []int32) {
 			arr[i-1] = response.User.Userid
 			fmt.Printf("Adding User succeeded; id: %d, name: %s\n", response.User.Userid, response.User.Name)
 		} else {
-			fmt.Println("Error - repsonse is nil")
+			fmt.Println("Error - response is nil")
 		}
 	}
 	return userService, arr
@@ -196,7 +196,7 @@ func createTestReservations(service micro.Service, showarray, userarray []int32)
 		case err1 != nil:
 			fmt.Println(err1)
 		case err1 == nil:
-			fmt.Println("Error - repsonse is nil")
+			fmt.Println("Error - response is nil")
 		case response1.Taken:
 			fmt.Printf("Adding Reservation succeeded; id: %d", response1.FinalID)
 		default:
