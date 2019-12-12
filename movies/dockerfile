@@ -1,0 +1,11 @@
+# Dockerfile for the movies-services
+
+FROM obraun/vss-protoactor-jenkins as builder
+COPY . /app
+WORKDIR /app/movies
+ 
+RUN go build -o movies main.go
+
+FROM iron/go
+EXPOSE 8200
+ENTRYPOINT ["/app/movies"]

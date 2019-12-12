@@ -1,0 +1,87 @@
+syntax = "proto3";
+package showproto;
+
+service Show {
+    rpc CreateShow (CreateShowRequest) returns (CreateShowResponse) {
+    }
+
+    rpc DeleteShow (DeleteShowRequest) returns (DeleteShowResponse) {
+    }
+
+    rpc DeleteShowConnectedCinema (DeleteShowConnectedCinemaRequest) returns (DeleteShowConnectedCinemaResponse) {
+    }
+
+    rpc DeleteShowConnectedMovie (DeleteShowConnectedMovieRequest) returns (DeleteShowConnectedMovieResponse) {
+    }
+
+    rpc ListShow (ListShowRequest) returns (ListShowResponse) {
+    }
+
+    rpc FindShowConnectedCinema (FindShowConnectedCinemaRequest) returns (FindShowConnectedCinemaResponse) {
+    }
+
+    rpc FindShowConnectedMovie (FindShowConnectedMovieRequest) returns (FindShowConnectedMovieResponse) {
+    }
+}
+
+message ShowMessage {
+    int32 cinemaId = 1;
+    int32 movieId = 2;
+}
+
+message CreateShowRequest {
+   ShowMessage createData = 1;
+}
+
+message CreateShowResponse {
+    int32 createShowId = 1;
+}
+
+message DeleteShowRequest {
+   int32 deleteShowId = 1;
+}
+
+message DeleteShowResponse {
+    bool answer = 1;
+}
+
+message DeleteShowConnectedCinemaRequest {
+   int32 cinemaId = 1;
+}
+
+message DeleteShowConnectedCinemaResponse {
+    bool answer = 1;
+}
+
+message DeleteShowConnectedMovieRequest {
+   int32 movieId = 1;
+}
+
+message DeleteShowConnectedMovieResponse {
+    bool answer = 1;
+}
+
+message ListShowRequest {
+}
+
+message ListShowResponse {
+    repeated int32 showId = 1;
+    repeated ShowMessage allShowsData = 2;
+}
+
+message FindShowConnectedMovieRequest {
+    int32 movieId = 1;
+}
+
+message FindShowConnectedMovieResponse {
+    repeated ShowMessage movieData = 1;
+}
+
+message FindShowConnectedCinemaRequest {
+    int32 cinemaId = 1;
+}
+
+message FindShowConnectedCinemaResponse {
+    repeated int32 ids = 1;
+    repeated ShowMessage cinemaData = 2;
+}

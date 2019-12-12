@@ -1,0 +1,94 @@
+syntax = "proto3";
+package cinemahallproto;
+
+service Cinema {
+    rpc Create (CreateCinemaRequest) returns (CreateCinemaResponse) {
+    }
+
+    rpc Delete (DeleteCinemaRequest) returns (DeleteCinemaResponse) {
+    }
+
+    rpc Reservation (ReservationRequest) returns (ReservationResponse) {
+    }
+
+    rpc Storno (StornoRequest) returns (StornoResponse) {
+    }
+
+    rpc CheckSeats (CheckSeatsRequest) returns (CheckSeatsResponse) {
+    }
+
+    rpc FreeSeats (FreeSeatsRequest) returns (FreeSeatsResponse) {
+    }
+
+    rpc GetSizeOfCinema (SizeRequest) returns (SizeResponse) {
+
+    }
+}
+
+message SizeRequest {
+    int32 id = 1;
+}
+
+message SizeResponse {
+    int32 row = 1;
+    int32 column = 2;
+}
+
+message SeatMessage {
+    int32 row = 1;
+    int32 column = 2;
+}
+
+message CreateCinemaRequest {
+    string name = 1;
+    int32 row = 2;
+    int32 column = 3;
+}
+
+message CreateCinemaResponse {
+    string name = 1;
+    int32 id = 2;
+}
+
+message DeleteCinemaRequest {
+    int32 id = 1;
+}
+
+message DeleteCinemaResponse {
+    bool answer = 1;
+}
+
+message ReservationRequest {
+    int32 id = 1;
+    repeated SeatMessage seatreservation = 2;
+}
+
+message ReservationResponse {
+    bool answer = 1;
+}
+
+message StornoRequest {
+    int32 id = 1;
+    repeated SeatMessage seatstorno = 2;
+}
+
+message StornoResponse {
+    bool answer = 1;
+}
+
+message CheckSeatsRequest {
+    int32 id = 1;
+    repeated SeatMessage seatcheck = 2;
+}
+
+message CheckSeatsResponse {
+    bool answer = 1;
+}
+
+message FreeSeatsRequest {
+    int32 id = 1;
+}
+
+message FreeSeatsResponse {
+    repeated SeatMessage freeseats = 1;
+}

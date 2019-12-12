@@ -1,0 +1,128 @@
+// Proto for the reservations
+
+syntax = "proto3";
+
+package reservationproto;
+
+/*
+reservation will be the reservationservice.
+*/
+service reservation {
+
+    // Function for making a Reservationsrequest.
+    rpc MakeReservation(MakeReservationRequest) returns (MakeReservationResponse);
+
+    // Function to Accept a Reservation.
+    rpc AcceptReservation(AcceptReservationRequest) returns (AcceptReservationResponse);
+
+    // Function to delete a Reservation.
+    rpc DeleteReservation(DeleteReservationRequest) returns (DeleteReservationResponse);
+
+    // Function to change a Reservation.
+    rpc ChangeReservation(ChangeReservationRequest) returns (ChangeReservationResponse);
+
+    // Function to Find a Reservation.
+    rpc ShowReservations(ShowReservationsRequest) returns (ShowReservationsResponse);
+
+    // Function to stream all reservations of a user.
+    rpc StreamUsersReservations(StreamUsersReservationsRequest) returns (StreamUsersReservationsResponse);
+
+    // Function to get the information whether or not a user has still some reservations.
+    rpc HasReservations(HasReservationsRequest) returns (HasReservationsResponse);
+}
+
+message Seat {
+    int32 seat = 1;
+}
+
+// Message representing a Reservation.
+message Reservation {
+    int32 ResId = 1;
+    int32 Show = 2;
+    int32 User = 3;
+    repeated Seat seats = 4;
+}
+
+// Response of reservations
+message ReservationResponse {
+    int32 tmpID = 1;
+    bool work = 2;
+    string show = 3;
+}
+
+// Request for HasReservations
+message HasReservationsRequest {
+    Reservation res = 1;
+}
+
+// Response for hasReservations
+message HasReservationsResponse {
+    bool has = 1;
+    int32 amount = 2;
+}   
+
+// StreamUsersReservations request.
+message StreamUsersReservationsRequest {
+
+}
+
+// StreamUsersReservations response.
+message StreamUsersReservationsResponse {
+    repeated Reservation reservations = 1;
+}
+
+// ShowReservations request.
+message ShowReservationsRequest {
+    int32 id = 1;
+    int32 user = 2;
+}
+
+// ShowReservations response.
+message ShowReservationsResponse {
+    Reservation res = 1;
+}
+
+// ChangeReservation request.
+message ChangeReservationRequest {
+    Reservation res = 1;
+}
+
+// ChangeReservation response.
+message ChangeReservationResponse {
+    Reservation res = 1;
+    bool Changed = 2; 
+}
+
+// DeleteReservation request.
+message DeleteReservationRequest {
+    int32 id = 1;
+    int32 showId = 2;
+}
+
+// DeleteReservation response.
+message DeleteReservationResponse {
+    bool Deleted = 1;
+}
+
+// AcceptReservation request.
+message AcceptReservationRequest {
+    int32 tmpID = 1;
+    bool want = 2;
+}
+
+// AcceptReservation response.
+message AcceptReservationResponse {
+    int32 finalID = 1;
+    bool taken = 2;
+}
+
+// MakeReservation request.
+message MakeReservationRequest {
+    Reservation res = 1;
+}
+
+// MakeReservation response.
+message MakeReservationResponse {
+    int32 tmpID = 1;
+    bool works = 2;
+}
